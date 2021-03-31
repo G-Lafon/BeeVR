@@ -221,7 +221,7 @@ public class ConditionningRunner : MonoBehaviour
                 BeeScreen.GetComponent<Renderer>().material.mainTexture =
                     arenaManager.Stimulations[absolute_stim[nbr]];
                 is_full_stim_on = true;
-            } else {
+            } else if( !On ) {
                 BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
                 is_full_stim_on = false;
             }
@@ -313,6 +313,8 @@ public class ConditionningRunner : MonoBehaviour
 
         private void NextTrial() {
             Speaker.PlayOneShot( Reload, 0.5f ); // play Reload sound once
+
+            ToggleFullScreenStim( false ); // ake sure the full screen stim is off now
 
             tempsDist = Dist;
             TrialSummaryDisp = true;
