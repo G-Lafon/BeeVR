@@ -23,6 +23,8 @@ public class ConditionningRunner : MonoBehaviour
         public ArenaManager arenaManager;
 
 
+        private float
+        PrepPhaseTimer; // Duration of the pre trial phase, between the inter trial interval and the actual trial
         private float USTimer; // Amount of time to give the US
         private float TrialTimer; // duration of the trial
         private float CSTimer;// duration before the CS appearance
@@ -54,6 +56,7 @@ public class ConditionningRunner : MonoBehaviour
         private Vector3 Stand; // the initial position
 
 
+        public InputField PREPTIME; // Inputfield to display duration of the prep phase
         public InputField CSSTART; // Inputfield to display delay before CS
         public InputField CSSTOP; // inputfield to display duration of trial
         public InputField US; // inputfield to display duration of US
@@ -79,6 +82,7 @@ public class ConditionningRunner : MonoBehaviour
         public RenderTexture screenText;
         private int nbr;
 
+        private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
         private int[] absolute_stim = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
         //private bool concept = false;
@@ -135,27 +139,24 @@ public class ConditionningRunner : MonoBehaviour
             }
 
             if( Go == true ) { // runs the experiment
-                if( Test == 1 && PreTest == 1 ) {
-                    if( TrialTimer > 0 ) {
-                        BeeScreen.GetComponent<Renderer>().material.mainTexture =
-                            arenaManager.Stimulations[absolute_stim[nbr]];
-                    }
-
-                } else {
-                    BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
-                }
-
                 if( CSTimer > 0 ) { // if Csstart Timer not finished
                     CSTimer -= Time.deltaTime; // decrement
 
-                    CSSTART.text = ( Mathf.Round( CSTimer ) ).ToString(); // display current time
+                    UpdateText(); // display current time
                     transform.position = Stand; // stuck to initial position
                     transform.rotation = look; // stuck to initial rotation
 
                     gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
 
+                } else if( PrepPhaseTimer >
+                           0 ) { // CS start timer is finished but there is a PrepPhase to go through before really starting
+                    PrepPhaseTimer -= Time.deltaTime;
+
+                    UpdateText();
+                    ToggleFullScreenStim( true ); // Turn On
                 } else if( Stim_On == false ) {
                     // CS start timer finished
+                    ToggleFullScreenStim(); // Turn Off
                     Stim( true );
                     gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
                 }
@@ -165,8 +166,7 @@ public class ConditionningRunner : MonoBehaviour
                     PreTest !=
                     1 ) {
                     // if choice is made AND Cs start timer finished AND Cs Stop timer NOT finished AND US Timer NOT finished
-                    USTimer -= Time.deltaTime; // update timer
-                    US.text = ( Mathf.Round( USTimer ) ).ToString(); // display
+                    UpdateText();
 
                     gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
                     transform.position = Stay; // stuck position
@@ -179,7 +179,7 @@ public class ConditionningRunner : MonoBehaviour
                                                    2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) ) / Time.deltaTime;
 
                     TrialTimer -= Time.deltaTime; // decrement
-                    CSSTOP.text = ( Mathf.Round( TrialTimer ) ).ToString(); //display
+                    UpdateText(); //display
 
                     gameObject.GetComponent<walking>().Distance.text = ( Dist * 100 ).ToString();
 
@@ -212,16 +212,31 @@ public class ConditionningRunner : MonoBehaviour
                     Stop();// stops the experiment
                 }
 
-                CSSTART.text = ( Mathf.Round( CSTimer ) ).ToString();
-                CSSTOP.text = ( Mathf.Round( TrialTimer ) ).ToString();
-                US.text = ( Mathf.Round( USTimer ) ).ToString();
-
-                where.text = ( Line.ToString() + " : " + a.ToString() );
-                what.text =
-                    Xpmanager.Experiment_data.selGridTest[Line].ToString();
+                UpdateText();
             }
         }
 
+        private void ToggleFullScreenStim( bool On = false ) {
+            if( !is_full_stim_on && On ) {
+                BeeScreen.GetComponent<Renderer>().material.mainTexture =
+                    arenaManager.Stimulations[absolute_stim[nbr]];
+                is_full_stim_on = true;
+            } else {
+                BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
+                is_full_stim_on = false;
+            }
+        }
+
+        private void UpdateText() {
+            PREPTIME.text = ( Mathf.Round( PrepPhaseTimer ) ).ToString();
+            CSSTART.text = ( Mathf.Round( CSTimer ) ).ToString();
+            CSSTOP.text = ( Mathf.Round( TrialTimer ) ).ToString();
+            US.text = ( Mathf.Round( USTimer ) ).ToString();
+
+            where.text = ( Line.ToString() + " : " + a.ToString() );
+            what.text =
+                Xpmanager.Experiment_data.selGridTest[Line].ToString();
+        }
 
         public void Stim( bool show ) {
 
@@ -256,6 +271,8 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Set_values( bool startup = false ) {
+            PrepPhaseTimer = float.Parse(
+                                 Xpmanager.Experiment_data.PrepPhaseDuration[Line] ); // gets the trial duration
             TrialTimer = float.Parse(
                              Xpmanager.Experiment_data.CSStop[Line] ); // gets the trial duration
             CSTimer = float.Parse(
@@ -413,12 +430,7 @@ public class ConditionningRunner : MonoBehaviour
             TimerLeft = 0;
             TimerRight = 0;
 
-
-            CSSTART.text = ( Mathf.Round( CSTimer ) ).ToString();
-            CSSTOP.text = ( Mathf.Round( TrialTimer ) ).ToString();
-            US.text = ( Mathf.Round( USTimer ) ).ToString();
-            where.text = ( Line.ToString() + " : " + a.ToString() );
-            what.text = ( Test + PreTest ).ToString();
+            UpdateText();
 
 
             Tmp_X = gameObject.transform.position.x;
