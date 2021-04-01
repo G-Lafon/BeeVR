@@ -22,6 +22,7 @@ public class ConditionningRunner : MonoBehaviour
 
         public ArenaManager arenaManager;
 
+        public string PrepPhase_Stim; // What stimulus was shown during the prep phase
 
         private float
         PrepPhaseTimer; // Duration of the pre trial phase, between the inter trial interval and the actual trial
@@ -84,8 +85,6 @@ public class ConditionningRunner : MonoBehaviour
 
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
-        private int[] absolute_stim = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
-
         private string[] stim_flag = { "Left", "Right" };
         private string[] env_flag = { "Wall", "Floor" };
 
@@ -141,16 +140,15 @@ public class ConditionningRunner : MonoBehaviour
                     CSTimer -= Time.deltaTime; // decrement
 
                     UpdateText(); // display current time
-                    transform.position = Stand; // stuck to initial position
-                    transform.rotation = look; // stuck to initial rotation
-
-                    gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+                    Stick_the_bee();// stick bee to initial position
 
                 } else if( PrepPhaseTimer >
                            0 ) { // CS start timer is finished but there is a PrepPhase to go through before really starting
                     PrepPhaseTimer -= Time.deltaTime;
-
                     UpdateText();
+
+                    Stick_the_bee();// stick bee to initial position
+
                     ToggleFullScreenStim( true ); // Turn On
                 } else if( Stim_On == false ) {
                     // CS start timer finished
@@ -215,10 +213,20 @@ public class ConditionningRunner : MonoBehaviour
             }
         }
 
+        private void Stick_the_bee() {
+            transform.position = Stand; // stuck to initial position
+            transform.rotation = look; // stuck to initial rotation
+
+            gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+        }
+
         private void ToggleFullScreenStim( bool On = false ) {
             if( !is_full_stim_on && On ) {
-                arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), Stim_names[0] );
+                int rand_index = ( int )Mathf.Round( UnityEngine.Random.value );
+                arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), Stim_names[rand_index] );
                 is_full_stim_on = true;
+
+                PrepPhase_Stim = Stim_names[rand_index];
             } else if( !On ) {
                 BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
                 is_full_stim_on = false;
@@ -530,6 +538,8 @@ public class ConditionningRunner : MonoBehaviour
             Object_looked_at = "None";
             Edge_looked_at = null;
             ChoiceIsMade = false;
+
+            PrepPhase_Stim = "None";
         }
 
         private void OnTriggerEnter( Collider other ) { // when enter stimulus area
