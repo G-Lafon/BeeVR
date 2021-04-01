@@ -166,6 +166,7 @@ public class ConditionningRunner : MonoBehaviour
                     PreTest !=
                     1 ) {
                     // if choice is made AND Cs start timer finished AND Cs Stop timer NOT finished AND US Timer NOT finished
+                    USTimer -= Time.deltaTime; // update timer
                     UpdateText();
 
                     gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
@@ -314,7 +315,7 @@ public class ConditionningRunner : MonoBehaviour
         private void NextTrial() {
             Speaker.PlayOneShot( Reload, 0.5f ); // play Reload sound once
 
-            ToggleFullScreenStim( false ); // ake sure the full screen stim is off now
+            ToggleFullScreenStim( false ); // make sure the full screen stim is off now
 
             tempsDist = Dist;
             TrialSummaryDisp = true;
@@ -425,7 +426,6 @@ public class ConditionningRunner : MonoBehaviour
             Waiting = true;
 
             Power_on = true;
-            //concept = arenaManager.concept;
 
             Set_values( true );
 
