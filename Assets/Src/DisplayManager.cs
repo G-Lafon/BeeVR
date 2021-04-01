@@ -11,21 +11,15 @@ public class DisplayManager : MonoBehaviour
         public Camera BeeCamera;
         public Camera ScreenCamera;
 
-
-        //public Canvas Calibrating;
         public GameObject Screen;
-
 
         public Texture Calib;
         public RenderTexture screenText;
 
         private bool a = false;
         public bool cali = false;
-        //private bool DispScreenChoice = false;
 
         public Dropdown ChoseDisplay;
-
-
 
         // Use this for initialization
         void Start() {

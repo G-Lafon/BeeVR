@@ -85,8 +85,6 @@ public class ConditionningRunner : MonoBehaviour
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
         private int[] absolute_stim = { 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 };
-        //private bool concept = false;
-        //private bool primer = false;
 
         private string[] stim_flag = { "Left", "Right" };
         private string[] env_flag = { "Wall", "Floor" };
@@ -219,8 +217,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void ToggleFullScreenStim( bool On = false ) {
             if( !is_full_stim_on && On ) {
-                BeeScreen.GetComponent<Renderer>().material.mainTexture =
-                    arenaManager.Stimulations[absolute_stim[nbr]];
+                arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), Stim_names[0] );
                 is_full_stim_on = true;
             } else if( !On ) {
                 BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
