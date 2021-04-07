@@ -222,7 +222,6 @@ public class ConditionningRunner : MonoBehaviour
 
         private void ToggleFullScreenStim( bool On = false ) {
             if( !is_full_stim_on && On ) {
-                int rand_index = ( int )Mathf.Round( UnityEngine.Random.value );
                 arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), PrepPhase_Stim );
                 is_full_stim_on = true;
 
