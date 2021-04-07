@@ -223,10 +223,9 @@ public class ConditionningRunner : MonoBehaviour
         private void ToggleFullScreenStim( bool On = false ) {
             if( !is_full_stim_on && On ) {
                 int rand_index = ( int )Mathf.Round( UnityEngine.Random.value );
-                arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), Stim_names[rand_index] );
+                arenaManager.ApplyTexture( BeeScreen.GetComponent<Renderer>(), PrepPhase_Stim );
                 is_full_stim_on = true;
 
-                PrepPhase_Stim = Stim_names[rand_index];
             } else if( !On ) {
                 BeeScreen.GetComponent<Renderer>().material.mainTexture = screenText;
                 is_full_stim_on = false;
@@ -287,8 +286,10 @@ public class ConditionningRunner : MonoBehaviour
                           Xpmanager.Experiment_data.USDuration[Line] ); // gets the amount of time to give the reward
 
             Stim_names = new string[2];
-            Stim_names[0] = Xpmanager.Experiment_data.Stims_one[Line] ;
+            Stim_names[0] = Xpmanager.Experiment_data.Stims_one[Line];
             Stim_names[1] = Xpmanager.Experiment_data.Stims_two[Line];
+
+            PrepPhase_Stim = Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1];
 
             if( startup ) {
                 Repetition = int.Parse(
@@ -354,9 +355,9 @@ public class ConditionningRunner : MonoBehaviour
 
                 Line += 1; // move to next line
 
-                Set_values( true );
-
                 a = 1;
+
+                Set_values( true );
 
                 Set_stims();
 
@@ -538,8 +539,6 @@ public class ConditionningRunner : MonoBehaviour
             Object_looked_at = "None";
             Edge_looked_at = null;
             ChoiceIsMade = false;
-
-            PrepPhase_Stim = "None";
         }
 
         private void OnTriggerEnter( Collider other ) { // when enter stimulus area
