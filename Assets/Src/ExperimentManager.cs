@@ -8,10 +8,12 @@ using System;
 public class Experiment : ScriptableObject
 {
         public string[] USDuration;//array Of duration to wait for US
+        public string[] PrepPhaseDuration;
         public string[] CSStart; // array of wait time before CS and Arena Apperanace
         public string[] CSStop; //  array of trial duration
         public string[] Repetition; // number of repetition of each line of instructions
         public List<string[]> Sequences; // list of the different sequences of stimulation
+        public List<string[]> SequencesPreStim; // list of the different sequences of Pre stimulation
         public string[] Stims_one;
         public string[] Stims_two;
         public bool is_2D = false; // is the experiment 2D only. Meaning only rotation is allowed
@@ -26,12 +28,20 @@ public class Experiment : ScriptableObject
 
 
         public string string_seq;
+        public string string_pre;
         public void OnAfterDeserialize() {
             Sequences = new List<string[]>();
+            SequencesPreStim = new List<string[]>();
             string[] All_seqs = string_seq.Split( new char[] { '[' }, StringSplitOptions.RemoveEmptyEntries );
             foreach( string item in All_seqs ) {
                 string[] seq = item.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
                 Sequences.Add( seq );
+            }
+            // TODO: encapsulate this to avoid repeating the code twice
+            string[] All_pres = string_pre.Split( new char[] { '[' }, StringSplitOptions.RemoveEmptyEntries );
+            foreach( string item in All_pres ) {
+                string[] pre = item.Split( new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries );
+                SequencesPreStim.Add( pre );
             }
         }
 
@@ -40,6 +50,14 @@ public class Experiment : ScriptableObject
                 string_seq += "[";
                 foreach( string str in item ) {
                     string_seq += str + ";";
+                }
+            }
+
+            //TODO: encapsulate to avoid code duplciation
+            foreach( string[] item in SequencesPreStim ) {
+                string_pre += "[";
+                foreach( string str in item ) {
+                    string_pre += str + ";";
                 }
             }
         }
@@ -121,6 +139,7 @@ public class ExperimentManager : MonoBehaviour
 
             Experiment_data.USDuration = new
             string[LineNb]; // initialize size of the arrays according to the number of line of instructions
+            Experiment_data.PrepPhaseDuration = new string[LineNb];
             Experiment_data.CSStart = new string[LineNb];
             Experiment_data.CSStop = new string[LineNb];
             Experiment_data.Repetition = new string[LineNb];
@@ -136,6 +155,7 @@ public class ExperimentManager : MonoBehaviour
 
             for( int i = 0; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = string.Empty; // initialize the textfields
+                Experiment_data.PrepPhaseDuration[i] = string.Empty; // initialize the textfields
                 Experiment_data.CSStart[i] = string.Empty; // initialize the textfields
                 Experiment_data.CSStop[i] = string.Empty; // initialize the textfields
 
@@ -154,6 +174,7 @@ public class ExperimentManager : MonoBehaviour
         public void Copy() { //Copies first line onto every lines
             for( int i = 1; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = Experiment_data.USDuration[0]; /// ith line = 0th line
+                Experiment_data.PrepPhaseDuration[i] = Experiment_data.PrepPhaseDuration[0];
                 Experiment_data.CSStart[i] = Experiment_data.CSStart[0];
                 Experiment_data.CSStop[i] = Experiment_data.CSStop[0];
             }
@@ -179,6 +200,7 @@ public class ExperimentManager : MonoBehaviour
             //Copies first line onto every lines
             for( int i = 1; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = Experiment_data.USDuration[0]; /// ith line = 0th line
+                Experiment_data.PrepPhaseDuration[i] = Experiment_data.PrepPhaseDuration[0];
                 Experiment_data.CSStart[i] = Experiment_data.CSStart[0];
                 Experiment_data.CSStop[i] = Experiment_data.CSStop[0];
                 Experiment_data.Repetition[i] = "1";
@@ -257,10 +279,13 @@ public class ExperimentManager : MonoBehaviour
 
         }
 
+        public void MakeSequences() {
+            SideSequence();
+            PreStimSequence();
+        }
 
 
-
-        public void SideSequence() {
+        private void SideSequence() {
 
             Experiment_data.Sequences = new List<string[]>(); // initilise list of sequences of stimuli
 
@@ -289,6 +314,46 @@ public class ExperimentManager : MonoBehaviour
 
             }
 
+        }
+
+        private void PreStimSequence() {
+
+            Experiment_data.SequencesPreStim = new
+            List<string[]>(); // initilise list of sequences of  pre stimuli
+
+            int Index = 0;
+            string[] Preseq;
+
+            for( int i = 0; i < LineNb; i++ ) {
+                // for each line of instruction
+                Preseq = new string[int.Parse( Experiment_data.Repetition[i] )]; // initialise the sequence
+
+                for( int j = 0; j < int.Parse( Experiment_data.Repetition[i] );
+                     j++ ) {
+                    // for each repetition of the line
+                    if( int.Parse( Experiment_data.PrepPhaseDuration[i] ) <= 0 ) {
+                        Preseq[j] = "None";
+                        continue;
+                    }
+                    if( j <= 1 || Preseq[j - 2] != Preseq[j - 1] ) {
+                        // for the 2 first repetition or when the two previous ones were different
+                        Index = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
+                        if( Index < 1 ) {
+                            Preseq[j] = Experiment_data.Stims_one[i];
+                        } else {
+                            Preseq[j] = Experiment_data.Stims_two[i];
+                        }
+                    } else {
+                        // if the 2 previous repetition were identical
+                        if( Index < 1 ) {
+                            Preseq[j] = Experiment_data.Stims_two[i];
+                        } else {
+                            Preseq[j] = Experiment_data.Stims_one[i];
+                        } // do the opposite
+                    }
+                }
+                Experiment_data.SequencesPreStim.Add( Preseq ); //add the sequence to the list
+            }
         }
 
         public void showsequences() {
@@ -320,6 +385,7 @@ public class ExperimentManager : MonoBehaviour
 
         private void WindowSeq( int windowID ) {
             GUILayout.BeginVertical();
+            GUILayout.BeginVertical();
             for( int k = 0; k < LineNb; k++ ) {
                 GUILayout.BeginHorizontal();
                 for( int l = 0; l < Experiment_data.Sequences[k].Length; l++ ) {
@@ -327,6 +393,19 @@ public class ExperimentManager : MonoBehaviour
                 }
                 GUILayout.EndHorizontal();
             }
+            GUILayout.EndVertical();
+
+            GUILayout.BeginVertical();
+            //Pre Stim Sequences
+            for( int k = 0; k < LineNb; k++ ) {
+                GUILayout.BeginHorizontal();
+                for( int l = 0; l < Experiment_data.SequencesPreStim[k].Length; l++ ) {
+                    GUILayout.Box( Experiment_data.SequencesPreStim[k][l] );
+                }
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.EndVertical();
+
             GUILayout.EndVertical();
             if( GUILayout.Button( "Hide" ) ) {
                 showseq = !showseq;
@@ -341,6 +420,7 @@ public class ExperimentManager : MonoBehaviour
             for( int i = 0; i < LineNb; i++ ) {
                 GUILayout.BeginHorizontal();
                 GUILayout.Box( "US Duration", GUILayout.Width( 90 ) );
+                GUILayout.Box( "Prep Duration", GUILayout.Width( 90 ) );
                 GUILayout.Box( "CS Start", GUILayout.Width( 90 ) );
                 GUILayout.Box( "CS Stop", GUILayout.Width( 90 ) );
                 GUILayout.Box( "Repetiton", GUILayout.Width( 90 ) );
@@ -353,6 +433,8 @@ public class ExperimentManager : MonoBehaviour
                 GUILayout.BeginHorizontal();
                 Experiment_data.USDuration[i] = GUILayout.TextField( Experiment_data.USDuration[i], 3,
                                                 GUILayout.Width( 90 ) );
+                Experiment_data.PrepPhaseDuration[i] = GUILayout.TextField( Experiment_data.PrepPhaseDuration[i], 3,
+                                                       GUILayout.Width( 90 ) );
                 Experiment_data.CSStart[i] = GUILayout.TextField( Experiment_data.CSStart[i], 3,
                                              GUILayout.Width( 90 ) );
                 Experiment_data.CSStop[i] = GUILayout.TextField( Experiment_data.CSStop[i], 3,

@@ -64,7 +64,7 @@ public class ExperimentRecorder : MonoBehaviour
             sw.WriteLine( "#" + Date.text + " " + DateTime.Now.ToString(
                               @"HH:mm:ss" ) ); // Header of the result file
             sw.WriteLine( "#" + "Bee" + ID.ToString() );
-            sw.WriteLine( "Line;Trial;Time(s);PositionX;PositionZ;Rotation;DistanceTotale;Speed;Choice;Side_Chosen;Test;Centered_Object;Looking_at;Edge;Edge_coord" );
+            sw.WriteLine( "Line;Trial;Time(s);PositionX;PositionZ;Rotation;DistanceTotale;Speed;PreStim;Choice;Side_Chosen;Test;Centered_Object;Looking_at;Edge;Edge_coord" );
             sw.Flush(); // need to flush to actually write in the file
 
 
@@ -101,7 +101,7 @@ public class ExperimentRecorder : MonoBehaviour
                               gameObject.transform.rotation.eulerAngles.y.ToString() + ";" +
                               Conditionner.Dist + ";" +
                               Conditionner.Speed +
-                              ";" + Conditionner.Choice + ";" +
+                              ";" + Conditionner.PrepPhase_Stim + ";" + Conditionner.Choice + ";" +
                               Conditionner.Side_Chosen + ";" +
                               Conditionner.what.text + ";" +
                               Conditionner.Centered_object + ";" +

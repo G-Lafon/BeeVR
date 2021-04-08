@@ -400,7 +400,6 @@ public class ArenaManager : MonoBehaviour
 
             }
 
-
             if( GameObject.FindGameObjectWithTag( side ).GetComponent<SpriteRenderer>() !=
                 null ) {
                 // same with Sprite  renderer
@@ -411,6 +410,17 @@ public class ArenaManager : MonoBehaviour
                                                        stm.width, stm.height ), new Vector2( 0.5f, 0.5f ),
                                                        float.Parse( INScale.text ) ); // create sprite from texture in www
                         rend.material.mainTexture = stm; // change texture with image
+                        break;
+                    }
+                }
+            }
+        }
+
+        public void ApplyTexture( Renderer Renderer_to_texture, string name ) {
+            if( Renderer_to_texture != null ) {
+                foreach( Texture stm in Stimulations ) {
+                    if( stm.name == name ) {
+                        Renderer_to_texture.material.mainTexture = stm; // change texture with image
                         break;
                     }
                 }
