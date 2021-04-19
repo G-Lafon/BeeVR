@@ -10,7 +10,6 @@ TagManager:
   - Cylinder
   - Flat
   - Sphere
-  - Centered
   - BackPlane
   - Stim_object
   - Wall

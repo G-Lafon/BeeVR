@@ -10,11 +10,8 @@ public class Stim_Manager : MonoBehaviour
         public InputField Scale_Y;
 
         private Vector3 scale;
-        private Vector3 scale_2D;
 
         private GameObject[] Stim_objects;
-        private GameObject[] Stim_centered;
-
 
         // Start is called before the first frame update
         void Start() {
@@ -25,7 +22,8 @@ public class Stim_Manager : MonoBehaviour
         }
 
         public void Update_scale() {
-            Stim_objects = GameObject.FindGameObjectsWithTag( "Stim_object" );
+            Stim_objects =
+                GameObject.FindGameObjectsWithTag( "Stim_object" ); // left and right are always the same size
             int num_of_object = Stim_objects.Length;
             if( num_of_object > 0 ) {
                 // here we look at the last object because the first one might be slated for destruction
@@ -46,30 +44,11 @@ public class Stim_Manager : MonoBehaviour
                                                       System.Globalization.CultureInfo.InvariantCulture.NumberFormat ), float.Parse( Scale_Z.text,
                                                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
 
-            scale_2D.x = scale.x;
-            scale_2D.y = scale.z;
-            scale_2D.z = scale.y;
-
             Stim_objects = GameObject.FindGameObjectsWithTag( "Stim_object" );
-            Stim_centered = GameObject.FindGameObjectsWithTag( "Centered" );
 
-            for( int i = 0; i < Stim_objects.Length; i++ ) {
-                if( Stim_objects[i].name.Split( ' ' )[0] == "Plane" ) {
-                    Stim_objects[i].transform.localScale = scale_2D;
-                } else {
-                    Stim_objects[i].transform.localScale = scale;
-                }
-
+            foreach( GameObject obj in Stim_objects ) {
+                obj.transform.localScale = scale;
             }
-            for( int i = 0; i < Stim_centered.Length; i++ ) {
-                if( Stim_objects[i].name.Split( ' ' )[0] == "Plane" ) {
-                    Stim_centered[i].transform.localScale = scale_2D;
-                } else {
-                    Stim_centered[i].transform.localScale = scale;
-                }
 
-            }
         }
-
-
 }
