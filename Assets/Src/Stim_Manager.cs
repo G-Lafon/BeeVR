@@ -30,9 +30,12 @@ public class Stim_Manager : MonoBehaviour
             if( num_of_object > 0 ) {
                 // here we look at the last object because the first one might be slated for destruction
                 // destroy() only happen at the end of the loop
-                Scale_X.text = Stim_objects[num_of_object - 1].transform.localScale.x.ToString();
-                Scale_Y.text = Stim_objects[num_of_object - 1].transform.localScale.y.ToString();
-                Scale_Z.text = Stim_objects[num_of_object - 1].transform.localScale.z.ToString();
+                Scale_X.text = Stim_objects[num_of_object - 1].transform.localScale.x.ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+                Scale_Y.text = Stim_objects[num_of_object - 1].transform.localScale.y.ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+                Scale_Z.text = Stim_objects[num_of_object - 1].transform.localScale.z.ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             }
         }
 

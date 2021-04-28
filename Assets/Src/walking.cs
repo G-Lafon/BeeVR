@@ -105,7 +105,8 @@ public class walking : MonoBehaviour
             BeeController = GetComponent<CharacterController>();
             BeeController.minMoveDistance = 0;
 
-            INBallRadius.text = 2.45.ToString(); // initialize ball radius to 5cm
+            INBallRadius.text = 2.45.ToString(
+                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
             INMouseDPI.text = 1000.ToString(); // initialize mouse DPI to 1000dpi
 
             INXsensitivity.text = ( -1 ).ToString(); // -1 because bee is on the other side of the screen
@@ -123,7 +124,9 @@ public class walking : MonoBehaviour
             if( gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
 
                 Move = transform.right * ( ( XDelta[1] + XDelta[0] ) / 2 ) *
-                       ( 2.54f / float.Parse( INMouseDPI.text ) ) * float.Parse( INXsensitivity.text );
+                       ( 2.54f / float.Parse( INMouseDPI.text,
+                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) ) * float.Parse(
+                           INXsensitivity.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Move = Move * 2 * dist / ( 2 * Mathf.PI * float.Parse( INBallRadius.text,
                                            System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
             } else {
@@ -145,7 +148,9 @@ public class walking : MonoBehaviour
                 // this probably should never be turned on as the bees can't walk sideways in the VR
                 if( SideMove == true ) {
                     Move += transform.right * ( -YDelta[0] + YDelta[1] ) * ( 2.54f / float.Parse(
-                                INMouseDPI.text ) ) * float.Parse( INYSensitivity.text ); // lateral movement
+                                INMouseDPI.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) ) * float.Parse(
+                                INYSensitivity.text,
+                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // lateral movement
                 }
             }
 
@@ -160,14 +165,16 @@ public class walking : MonoBehaviour
 
             if( testhead == true ) {
                 temphead += RotationY;
-                Heading.text = temphead.ToString();
+                Heading.text = temphead.ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             } else if( testdistance == true ) {
                 tempdist += Mathf.Sqrt( Mathf.Pow( Move.x, 2 ) + Mathf.Pow( Move.z, 2 ) );
-                Distance.text = ( tempdist ).ToString();
+                Distance.text = ( tempdist ).ToString(
+                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
 
             } else {
                 Position.text = ( transform.position * 100 ).ToString();
-                Heading.text = transform.rotation.eulerAngles.y.ToString();
+                Heading.text = transform.rotation.eulerAngles.y.ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             }
             //Raycasting and display of line of sight
             var layerMask = ~( ( 1 << 2 ) | ( 1 << 5 ) );
@@ -214,17 +221,19 @@ public class walking : MonoBehaviour
             if( testdistance == true ) {
                 GUILayout.BeginVertical();
                 GUILayout.Box( "Distance expected: " + ( float.Parse( INBallRadius.text,
-                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ).ToString() +
+                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ).ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) +
                                " cm" );
                 GUILayout.Box( "Xsensitivity should be :" + ( ( float.Parse( INBallRadius.text,
                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ) /
-                               tempdist ).ToString() );
+                               tempdist ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
                 GUILayout.EndVertical();
             }
             if( testhead == true ) {
                 GUILayout.BeginVertical();
                 GUILayout.Box( "Angle expected: 360°" );
-                GUILayout.Box( "Ysensitivity should be :" + ( Mathf.Abs( 360 / temphead ) ).ToString() );
+                GUILayout.Box( "Ysensitivity should be :" + ( Mathf.Abs( 360 / temphead ) ).ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
                 GUILayout.EndVertical();
             }
 
@@ -292,7 +301,8 @@ public class walking : MonoBehaviour
 
         public void position_teleporter() {
             if( gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
-                dist = 2 * Mathf.PI * float.Parse( INBallRadius.text );
+                dist = 2 * Mathf.PI * float.Parse( INBallRadius.text,
+                                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 if( GameObject.Find( "Teleporter Left(Clone)" ) != null &&
                     GameObject.Find( "Teleporter Right(Clone)" ) != null ) {
                     Teleporter_Left = GameObject.Find( "Teleporter Left(Clone)" );
