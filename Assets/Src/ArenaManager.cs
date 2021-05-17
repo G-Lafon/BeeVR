@@ -75,10 +75,11 @@ public class ArenaManager : MonoBehaviour
 
         public InputField INpathWall; // Inputfield with path to wall texture to load
         private Texture Wall; // www to get the wall texture
-
+        public List<Texture> Texture_Walls; // list of wall texture
 
         public InputField INpath_Floor; // Inputfield with path to floor texture to load
         private Texture Texture_Floor; // www to get the floor texture
+        public List<Texture> Texture_Floors; // list of wall texture
 
         private Renderer rend_Wall; // renderer of arena Wall
         private Renderer rend_Floor; // renderer of arena Wall
@@ -117,6 +118,8 @@ public class ArenaManager : MonoBehaviour
                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // default scale 10000pixel/m = 10 pix/mm
 
             Stimulations = new List<Texture> { };
+            Texture_Floors = new List<Texture> { };
+            Texture_Walls = new List<Texture> { };
         }
 
         public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
@@ -308,6 +311,23 @@ public class ArenaManager : MonoBehaviour
 
         }
 
+        //TODO: Unify Add_wall_to_list, Add_floor_to_list() and LoadToList
+        public void Add_wall_to_list() {
+            if( !Xpmanager.Experiment_data.PathWalls.Contains( INpathWall.text ) &&
+                INpathWall.text != string.Empty ) {
+                Xpmanager.Experiment_data.PathWalls.Add( INpathWall.text ); // add path to the list
+            }
+            StartCoroutine( Load_wall_texture() );
+        }
+        public void Add_floor_to_list() {
+            if( !Xpmanager.Experiment_data.PathFloors.Contains( INpath_Floor.text ) &&
+                INpath_Floor.text != string.Empty ) {
+                Xpmanager.Experiment_data.PathFloors.Add( INpath_Floor.text ); // add path to the list
+            }
+
+            StartCoroutine( Load_floor_texture() );
+        }
+
         public void LoadTolist() {
 
             if( !Xpmanager.Experiment_data.PathList.Contains( INpathPic.text ) &&
@@ -338,7 +358,6 @@ public class ArenaManager : MonoBehaviour
 
                 Name = path.Split( '\\' )[Path.Split( '\\' ).Length - 1]; // get the name of the file
 
-
                 foreach( var item in Stimulations ) { //search if the texture is already in the list
                     if( item.name == Name.Split( '.' )[0] ) { // check for names
                         duplicate = true; // there is already a texture with the same name
@@ -358,6 +377,81 @@ public class ArenaManager : MonoBehaviour
             }
 
         }
+
+        public void Load_textures_wall_and_floor() {
+            StartCoroutine( Load_wall_texture() );
+            StartCoroutine( Load_floor_texture() );
+        }
+
+        IEnumerator Load_wall_texture() {
+            foreach( var path in Xpmanager.Experiment_data.PathWalls ) {
+                Path = string.Concat( "File:///", path ); // add correct formatting at the beginning of path
+                using( UnityWebRequest uwr = UnityWebRequestTexture.GetTexture( Path ) ) {
+                    yield return uwr.SendWebRequest();
+                    if( uwr.isNetworkError || uwr.isHttpError ) {
+                        Debug.Log( uwr.error );
+                    } else {
+                        pic = DownloadHandlerTexture.GetContent( uwr );
+                    }
+                }
+
+                Name = path.Split( '\\' )[Path.Split( '\\' ).Length - 1]; // get the name of the file
+
+                foreach( var item in Texture_Walls ) {
+                    //search if the texture is already in the list
+                    if( item.name == Name.Split( '.' )[0] ) {
+                        // check for names
+                        duplicate = true; // there is already a texture with the same name
+                    }
+                }
+                if( duplicate == false ) {
+                    // if the texture is not already there
+                    Texture_Walls.Add( pic ); //add the texture
+
+                    Texture_Walls[Texture_Walls.Count - 1].name =
+                        Name.Split( '.' )[0]; // sets the name of the stimulation, use split to remove the extention
+
+                } else {
+                    duplicate = false; // reset the bool
+                }
+            }
+        }
+        IEnumerator Load_floor_texture() {
+            foreach( var path in Xpmanager.Experiment_data.PathFloors ) {
+                Path = string.Concat( "File:///", path ); // add correct formatting at the beginning of path
+                using( UnityWebRequest uwr = UnityWebRequestTexture.GetTexture( Path ) ) {
+                    yield return uwr.SendWebRequest();
+                    if( uwr.isNetworkError || uwr.isHttpError ) {
+                        Debug.Log( uwr.error );
+                    } else {
+                        pic = DownloadHandlerTexture.GetContent( uwr );
+                        if( !Texture_Floors.Contains( pic ) ) {
+                            Texture_Floors.Add( pic );
+                        }
+                    }
+                }
+                Name = path.Split( '\\' )[Path.Split( '\\' ).Length - 1]; // get the name of the file
+
+                foreach( var item in Texture_Floors ) {
+                    //search if the texture is already in the list
+                    if( item.name == Name.Split( '.' )[0] ) {
+                        // check for names
+                        duplicate = true; // there is already a texture with the same name
+                    }
+                }
+                if( duplicate == false ) {
+                    // if the texture is not already there
+                    Texture_Floors.Add( pic ); //add the texture
+
+                    Texture_Floors[Texture_Floors.Count - 1].name =
+                        Name.Split( '.' )[0]; // sets the name of the stimulation, use split to remove the extention
+
+                } else {
+                    duplicate = false; // reset the bool
+                }
+            }
+        }
+
         public void Add_to_ignore_list() {
             string tmp_name = INpathPic.text.Split( '\\' )[INpathPic.text.Split( '\\' ).Length -
                               1].Split( '.' )[0];
@@ -479,11 +573,34 @@ public class ArenaManager : MonoBehaviour
                     }
                     GUILayout.EndHorizontal();
                 }
-                GUILayout.EndVertical();
-
+                GUILayout.Box( "Walls:" );
+                foreach( Texture wall_text in Texture_Walls ) {
+                    int idx = 0;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Box( wall_text.name );
+                    if( GUILayout.Button( "Remove" ) ) {
+                        Texture_Walls.Remove( wall_text );
+                        Xpmanager.Experiment_data.PathWalls.Remove( Xpmanager.Experiment_data.PathWalls[idx] );
+                    }
+                    GUILayout.EndHorizontal();
+                    idx++;
+                }
+                GUILayout.Box( "Floors:" );
+                foreach( Texture wall_text in Texture_Floors ) {
+                    int idx = 0;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Box( wall_text.name );
+                    if( GUILayout.Button( "Remove" ) ) {
+                        Texture_Walls.Remove( wall_text );
+                        Xpmanager.Experiment_data.PathWalls.Remove( Xpmanager.Experiment_data.PathFloors[idx] );
+                    }
+                    GUILayout.EndHorizontal();
+                    idx++;
+                }
                 if( GUILayout.Button( "Hide" ) ) {
                     ShowList = false;
                 }
+                GUILayout.EndVertical();
             }
 
             if( Show ) {
@@ -536,29 +653,40 @@ public class ArenaManager : MonoBehaviour
                 yield return uwr.SendWebRequest();
                 Wall = DownloadHandlerTexture.GetContent( uwr );
             }
+            Paint_walls( Wall );
+        }
 
+        //TODO: Unify bot Paint_ function, probably by adding the Tag as a parameter
+        // Maybe unify with applyTexture too
+        public void Paint_walls( Texture paint ) {
             if( !Xpmanager.Experiment_data.is_2D ) {
                 foreach( GameObject Wall_Obj in GameObject.FindGameObjectsWithTag( "Wall" ) ) {
                     rend_Wall = Wall_Obj.GetComponentInChildren<Renderer>();
-                    rend_Wall.material.mainTexture = Wall;
+                    rend_Wall.material.mainTexture = paint;
                     if( Xpmanager.no_flow ) {
                         rend_Wall.material.shader = Shader.Find( "Custom/ScreenSpaceTextureShader" );
                     } else {
                         rend_Wall.material.shader = Shader.Find( "Standard" );
                     }
                 }
-
             } else {
                 if( GameObject.FindGameObjectWithTag( "BackPlane" ).GetComponentInChildren<Renderer>() != null ) {
                     Renderer rendBackPlane =
                         GameObject.FindGameObjectWithTag( "BackPlane" ).GetComponentInChildren<Renderer>();
-                    rendBackPlane.material.mainTexture = Wall;
+                    rendBackPlane.material.mainTexture = paint;
                     // rendBackPlane.material.shader = Shader.Find( "Transparent/Cutout/Diffuse" );
                     rendBackPlane.material.mainTextureScale = new Vector2( 40, 40 );
-
                 }
             }
-
+        }
+        public void Paint_floors( Texture paint ) {
+            if( !Xpmanager.Experiment_data.is_2D ) {
+                foreach( GameObject Wall_Obj in GameObject.FindGameObjectsWithTag( "Floor" ) ) {
+                    rend_Floor = Wall_Obj.GetComponentInChildren<Renderer>();
+                    rend_Floor.material.mainTexture = paint;
+                    //  rend_Floor.material.shader = Shader.Find( "Transparent/Cutout/Diffuse" );
+                }
+            }
         }
 
         public void Floor() {
@@ -577,14 +705,7 @@ public class ArenaManager : MonoBehaviour
                 yield return uwr.SendWebRequest();
                 Texture_Floor = DownloadHandlerTexture.GetContent( uwr );
             }
-
-            if( !Xpmanager.Experiment_data.is_2D ) {
-                foreach( GameObject Wall_Obj in GameObject.FindGameObjectsWithTag( "Floor" ) ) {
-                    rend_Floor = Wall_Obj.GetComponentInChildren<Renderer>();
-                    rend_Floor.material.mainTexture = Texture_Floor;
-                    //  rend_Floor.material.shader = Shader.Find( "Transparent/Cutout/Diffuse" );
-                }
-            }
+            Paint_floors( Texture_Floor );
         }
 
         public void Open_Anim_menu() {

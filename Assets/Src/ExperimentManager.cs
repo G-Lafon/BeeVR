@@ -22,8 +22,14 @@ public class Experiment : ScriptableObject
         public int[] selGridPreTest; // grid of two button to select if a line is a PreTest or Not
 
         public List<string> PathList;
+        public List<string> PathWalls;// list of string path to wall texture to load
+        public List<string> PathFloors;// list of string path to wall texture to load
+
+        string[] Wall_sequence;
+
         public string PathWall; // string path to wall texture to load
         public string Path_Floor; // string path to floor texture to load
+
         public List<string> Textures_to_ignore;
 
 
@@ -121,6 +127,8 @@ public class ExperimentManager : MonoBehaviour
 
             Experiment_data = ScriptableObject.CreateInstance<Experiment>();
             Experiment_data.PathList = new List<string>();
+            Experiment_data.PathWalls = new List<string>();
+            Experiment_data.PathFloors = new List<string>();
             Experiment_data.Textures_to_ignore = new List<string> { };
 
             sides = new string[2];
@@ -277,6 +285,8 @@ public class ExperimentManager : MonoBehaviour
             //Load wall texture to floor\\
             ArenaManager.Floor();
 
+            // list of wall and floor textures
+            ArenaManager.Load_textures_wall_and_floor();
         }
 
         public void MakeSequences() {
