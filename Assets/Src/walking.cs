@@ -4,11 +4,18 @@ using UnityEngine.UI;
 
 public class walking : MonoBehaviour
 {
+        //RawinputSharp is 32bit only it can't work in the unity editor
+#if !UNITY_EDITOR
         /// <summary>
         /// RawMouseDriver from :  Peter Brumblay
         /// http://www.jstookey.com/arcade/rawmouse/
         /// </summary>
+
         RawMouseDriver.RawMouseDriver mousedriver;
+        private RawMouse[] rawMice;
+        private RawMouseInput rawmouseinput;
+#endif
+        private int MiceCount = 0;
 
         //Mice Sensitivity
         public InputField INXsensitivity;// sensibility of the X axis of the mice : for rotations
@@ -21,15 +28,6 @@ public class walking : MonoBehaviour
         public InputField Heading; // display heading
         public InputField Position; // display Position
         public InputField Distance; // display total distance walked
-
-        //Declare the Raw Mice
-        //  private RawMouse mouse1;
-        //   private RawMouse mouse2;
-        //   private RawMouse mouse3;
-
-        private RawMouse[] rawMice;
-        private RawMouseInput rawmouseinput;
-        private int MiceCount;
 
         bool testhead = false;
         bool testdistance = false;
@@ -71,6 +69,14 @@ public class walking : MonoBehaviour
 
 
         void GetMice() {
+#if UNITY_EDITOR
+            //set detector 1
+            YDelta[0] = 0;
+            XDelta[0] = 0;
+            //set detector2
+            YDelta[1] = 0;
+            XDelta[1] = 0;
+#else
             MiceCount = rawmouseinput.Mice.Count;
             rawMice = new RawMouse[MiceCount];
             for( int i = 0; i < MiceCount; i++ ) {
@@ -83,6 +89,8 @@ public class walking : MonoBehaviour
             //set detector2
             YDelta[1] = rawMice[Dect2].YDelta;
             XDelta[1] = rawMice[Dect2].XDelta;
+
+#endif
         }
 
         public void SetMice() {
@@ -95,10 +103,10 @@ public class walking : MonoBehaviour
             SideMove = false;
 
             line.enabled = true;
-
+#if !UNITY_EDITOR
             rawmouseinput = new RawMouseInput();
             mousedriver = new RawMouseDriver.RawMouseDriver();
-
+#endif
             YDelta = new float[2];
             XDelta = new float[2];
 
@@ -248,6 +256,7 @@ public class walking : MonoBehaviour
             // each button assigns the corresponding mouse to the role of detector 1
             GUILayout.BeginVertical();//Begins detector 1 selection
             GUILayout.Box( "Detector 1" );
+#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
                 if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
                     Dect1 = i;
@@ -264,7 +273,7 @@ public class walking : MonoBehaviour
                 }
             }
             GUILayout.EndVertical();//ends detector 2 selection
-
+#endif
             GUILayout.EndHorizontal();// ends detector selection
 
             GUILayout.BeginVertical();// begins detectors feddback display
@@ -284,9 +293,11 @@ public class walking : MonoBehaviour
 
 
         void OnApplicationQuit() {
+#if !UNITY_EDITOR
             if( mousedriver != null ) {
                 mousedriver.Dispose();
             }
+#endif
         }
 
         private void OnTriggerEnter( Collider other ) {
