@@ -26,6 +26,7 @@ public class Experiment : ScriptableObject
         public string Path_Floor; // string path to floor texture to load
         public List<string> Textures_to_ignore;
 
+        public bool[] Wall_on;
 
         public string string_seq;
         public string string_pre;
@@ -150,7 +151,7 @@ public class ExperimentManager : MonoBehaviour
             Experiment_data.selGridTest = new int[LineNb];
             Experiment_data.selGridPreTest = new int[LineNb];
 
-
+            Experiment_data.Wall_on = new bool[LineNb];
 
 
             for( int i = 0; i < LineNb; i++ ) {
@@ -160,6 +161,8 @@ public class ExperimentManager : MonoBehaviour
                 Experiment_data.CSStop[i] = string.Empty; // initialize the textfields
 
                 Experiment_data.Repetition[i] = string.Empty;
+
+                Experiment_data.Wall_on[i] = false;
             }
 
             WindowON = true;
@@ -177,6 +180,7 @@ public class ExperimentManager : MonoBehaviour
                 Experiment_data.PrepPhaseDuration[i] = Experiment_data.PrepPhaseDuration[0];
                 Experiment_data.CSStart[i] = Experiment_data.CSStart[0];
                 Experiment_data.CSStop[i] = Experiment_data.CSStop[0];
+                Experiment_data.Wall_on[i] = Experiment_data.Wall_on[0];
             }
         }
 
@@ -451,6 +455,7 @@ public class ExperimentManager : MonoBehaviour
                                                  GUILayout.Width( 90 ) );
                 Experiment_data.selGridPreTest[i] = GUILayout.SelectionGrid( Experiment_data.selGridPreTest[i],
                                                     YeNo, 2, GUILayout.Width( 90 ) );
+                Experiment_data.Wall_on[i] = GUILayout.Toggle( Experiment_data.Wall_on[i], "Wall On ?" );
                 GUILayout.EndHorizontal();
 
             }
