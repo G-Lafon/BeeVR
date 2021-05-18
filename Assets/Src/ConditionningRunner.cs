@@ -257,10 +257,15 @@ public class ConditionningRunner : MonoBehaviour
             }
 
             if( !Xpmanager.Experiment_data.is_2D ) {
-                foreach( string flag in env_flag ) {
+                foreach( string flag in env_flag ) {// Enable wall and floor renderer
                     Renderer rend_env = GameObject.FindGameObjectWithTag( flag ).GetComponentInChildren<Renderer>();
                     if( rend_env != null ) {
-                        rend_env.enabled = show;
+                        //TODO: differentiate between wall and floor
+                        if( Xpmanager.Experiment_data.Wall_on != null ) {
+                            rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line];
+                        } else {
+                            rend_env.enabled = show;
+                        }
                     }
                 }
             } else {
