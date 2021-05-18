@@ -127,28 +127,30 @@ public class walking : MonoBehaviour
                 Move = Move * 2 * dist / ( 2 * Mathf.PI * float.Parse( INBallRadius.text,
                                            System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
             } else {
-                RotationY = ( XDelta[1] + XDelta[0] ) * ( ( 180 * 2.54f ) / ( 2 * Mathf.PI * float.Parse(
-                                INBallRadius.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * int.Parse(
-                                INMouseDPI.text ) ) );
-                //Old Code : Move = GetComponent<Camera>().transform.forward * (YDelta1 + YDelta[1]) * (2.54f / int.Parse(INMouseDPI.text)) * Mathf.Cos(45) * float.Parse(INYSensitivity.text);  //forward movement
-                //cos is not needed because it's already handled in GetComponent<Camera>().transform.right
-                Move = transform.forward * ( YDelta[0] + YDelta[1] ) * ( 2.54f / float.Parse(
-                            INMouseDPI.text ) ) * float.Parse( INYSensitivity.text ); //forward movement
+                float dpi_to_cm = 2.54f / float.Parse( INMouseDPI.text );
 
+                float recorded_ball_rotation = ( XDelta[1] + XDelta[0] ) * dpi_to_cm / 2;
+                float radius = float.Parse(
+                                   INBallRadius.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+
+                RotationY =  recorded_ball_rotation * 180 / ( Mathf.PI * radius );
+
+
+                float recored_ball_movement = Mathf.Sqrt( Mathf.Pow( YDelta[0], 2 ) + Mathf.Pow( YDelta[1], 2 ) );
+
+
+                Move = transform.forward * recored_ball_movement * dpi_to_cm * float.Parse(
+                           INYSensitivity.text ); //forward movement
+
+                // this probably should never be turned on as the bees can't walk sideways in the VR
                 if( SideMove == true ) {
-                    //Old code : Move += GetComponent<Camera>().transform.right * (-YDelta1 + YDelta[1]) * (2.54f / int.Parse(INMouseDPI.text)) * Mathf.Sin(45) * float.Parse(INYSensitivity.text);// lateral movement
-                    //sin is not needed because it's already handled in GetComponent<Camera>().transform.right
                     Move += transform.right * ( -YDelta[0] + YDelta[1] ) * ( 2.54f / float.Parse(
                                 INMouseDPI.text ) ) * float.Parse( INYSensitivity.text ); // lateral movement
                 }
             }
 
             if( BeeController.enabled == true ) {
-                //if (!gameObject.GetComponent<ExperimentManager>().is_2D)
-                //{
-                // BeeController.SimpleMove(Move);
                 BeeController.Move( Move * 0.01f );
-                //}
 
                 if( !gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
                     transform.Rotate( 0, RotationY * float.Parse( INXsensitivity.text ), 0 );
