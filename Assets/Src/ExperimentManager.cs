@@ -200,15 +200,6 @@ public class ExperimentManager : MonoBehaviour
             }
         }
 
-        public void Toggle_wall() {
-            Renderer rend_Wall;
-            foreach( GameObject Wall_Obj in GameObject.FindGameObjectsWithTag( "Wall" ) ) {
-                rend_Wall = Wall_Obj.GetComponentInChildren<Renderer>();
-                rend_Wall.enabled = !rend_Wall.enabled;
-            }
-
-        }
-
         public void Make_Template() {
             //Copies first line onto every lines
             for( int i = 1; i < LineNb; i++ ) {
