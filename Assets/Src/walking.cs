@@ -166,7 +166,7 @@ public class walking : MonoBehaviour
                 Distance.text = ( tempdist ).ToString();
 
             } else {
-                Position.text = ( transform.position * 10 ).ToString();
+                Position.text = ( transform.position * 100 ).ToString();
                 Heading.text = transform.rotation.eulerAngles.y.ToString();
             }
             //Raycasting and display of line of sight
