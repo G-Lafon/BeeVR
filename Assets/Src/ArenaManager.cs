@@ -134,7 +134,7 @@ public class ArenaManager : MonoBehaviour
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
                     gameObject.GetComponent<Stim_Manager>().Update_scale();
 
-                    get_Animate( "Wall" );
+                    Get_Animate( "Wall" );
                     break;
                 case 2:
                     Clear_arena();
@@ -145,13 +145,13 @@ public class ArenaManager : MonoBehaviour
                         Instantiate<GameObject>( Stimulus2DRight );
                         Instantiate<GameObject>( Teleporter_Left );
                         Instantiate<GameObject>( Teleporter_Right );
-                        get_Animate( "BackPlane" );
+                        Get_Animate( "BackPlane" );
                     } else {
                         Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
                         Instantiate<GameObject>( OpenArena_Floor );
 
                         Spawn_shape();
-                        get_Animate( "Wall" );
+                        Get_Animate( "Wall" );
                     }
                     //if (concept == true)
                     //{
@@ -172,7 +172,7 @@ public class ArenaManager : MonoBehaviour
                     Instantiate<GameObject>( SquareArena_Wall );
                     Instantiate<GameObject>( SquareArena_Floor );
                     Spawn_shape();
-                    get_Animate( "Wall" );
+                    Get_Animate( "Wall" );
 
                     //if (concept == true)
                     //{
@@ -193,7 +193,7 @@ public class ArenaManager : MonoBehaviour
                     Instantiate<GameObject>( OpenArena_Wall_Smooth );
                     Instantiate<GameObject>( OpenArena_Floor_Smooth );
                     Spawn_shape();
-                    get_Animate( "Wall" );
+                    Get_Animate( "Wall" );
 
                     //if (concept == true)
                     //{
@@ -220,7 +220,7 @@ public class ArenaManager : MonoBehaviour
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
                     gameObject.GetComponent<Stim_Manager>().Update_scale();
 
-                    get_Animate( "Wall" );
+                    Get_Animate( "Wall" );
                     break;
 
                 default:
@@ -266,15 +266,17 @@ public class ArenaManager : MonoBehaviour
             CubeManager Current_cube_left =
                 GameObject.FindGameObjectWithTag( "Left" ).GetComponentInChildren<CubeManager>();
             if( Current_cube_left != null && Current_cube_right != null ) {
-                Current_cube_left.Edges_scale = float.Parse( Edge_Scale.text );
+                Current_cube_left.Edges_scale = float.Parse( Edge_Scale.text,
+                                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Current_cube_left.Set_edges();
-                Current_cube_right.Edges_scale = float.Parse( Edge_Scale.text );
+                Current_cube_right.Edges_scale = float.Parse( Edge_Scale.text,
+                                                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Current_cube_right.Set_edges();
 
             }
         }
 
-        void get_Animate( string target ) {
+        void Get_Animate( string target ) {
             // Animate.Initialize();
             Animate = GameObject.FindGameObjectWithTag( target ).GetComponentInChildren<AnimateTiledTexture>();
         }
@@ -298,14 +300,15 @@ public class ArenaManager : MonoBehaviour
         BrowsePicture() { // find programme file to load https://github.com/yasirkula/UnitySimpleFileBrowser/blob/master/README.md
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpathPic.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpathPic.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
-
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" );// file browser to find file to load
         }
 
         public void LoadTolist() {
@@ -329,7 +332,9 @@ public class ArenaManager : MonoBehaviour
                 Path = string.Concat( "File:///", path ); // add correct formatting at the beginning of path
                 using( UnityWebRequest uwr = UnityWebRequestTexture.GetTexture( Path ) ) {
                     yield return uwr.SendWebRequest();
-                    if( uwr.isNetworkError || uwr.isHttpError ) {
+                    bool v = uwr.result == UnityWebRequest.Result.ConnectionError ||
+                             uwr.result == UnityWebRequest.Result.ProtocolError;
+                    if( v ) {
                         Debug.Log( uwr.error );
                     } else {
                         pic = DownloadHandlerTexture.GetContent( uwr );
@@ -497,26 +502,29 @@ public class ArenaManager : MonoBehaviour
         public void BrowseWall() {
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpathWall.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpathWall.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" ); // file browser to find file to load
 
         }
         public void BrowseFloor() {
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpath_Floor.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpath_Floor.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
-
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" ); // file browser to find file to load
         }
 
 

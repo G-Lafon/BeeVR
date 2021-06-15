@@ -36,14 +36,14 @@ public class ExperimentRecorder : MonoBehaviour
 
         public void Browse() {
 
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                Path.text = path;
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                Path.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            true, null, "Select Folder", "Select" ); // file browser to get save folder
-
+            FileBrowser.PickMode.Folders, false, null, null, "Select Folder",
+            "Select" );// file browser to get save folder
         }
 
 

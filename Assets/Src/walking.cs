@@ -4,11 +4,19 @@ using UnityEngine.UI;
 
 public class walking : MonoBehaviour
 {
+        //RawinputSharp is 32bit only it can't work in the unity editor
+#if !UNITY_EDITOR
         /// <summary>
         /// RawMouseDriver from :  Peter Brumblay
         /// http://www.jstookey.com/arcade/rawmouse/
         /// </summary>
+
         RawMouseDriver.RawMouseDriver mousedriver;
+        private RawMouse[] rawMice;
+        private RawMouseInput rawmouseinput;
+
+        private int MiceCount = 0;
+#endif
 
         //Mice Sensitivity
         public InputField INXsensitivity;// sensibility of the X axis of the mice : for rotations
@@ -21,15 +29,6 @@ public class walking : MonoBehaviour
         public InputField Heading; // display heading
         public InputField Position; // display Position
         public InputField Distance; // display total distance walked
-
-        //Declare the Raw Mice
-        //  private RawMouse mouse1;
-        //   private RawMouse mouse2;
-        //   private RawMouse mouse3;
-
-        private RawMouse[] rawMice;
-        private RawMouseInput rawmouseinput;
-        private int MiceCount;
 
         bool testhead = false;
         bool testdistance = false;
@@ -45,10 +44,10 @@ public class walking : MonoBehaviour
 
         public float RotationY; // angle to rotate on y axis
         public Vector3 Move; // movement vector
-
+#if !UNITY_EDITOR
         private int Dect1 = 0; // mouse index of detector 1
         private int Dect2 = 0; // mouse index of detector 2
-
+#endif
         private bool Show_Mice_Select_Window = true; // display or not window to select detectors
 
         private CharacterController BeeController;
@@ -71,6 +70,14 @@ public class walking : MonoBehaviour
 
 
         void GetMice() {
+#if UNITY_EDITOR
+            //set detector 1
+            YDelta[0] = 0;
+            XDelta[0] = 0;
+            //set detector2
+            YDelta[1] = 0;
+            XDelta[1] = 0;
+#else
             MiceCount = rawmouseinput.Mice.Count;
             rawMice = new RawMouse[MiceCount];
             for( int i = 0; i < MiceCount; i++ ) {
@@ -83,6 +90,8 @@ public class walking : MonoBehaviour
             //set detector2
             YDelta[1] = rawMice[Dect2].YDelta;
             XDelta[1] = rawMice[Dect2].XDelta;
+
+#endif
         }
 
         public void SetMice() {
@@ -95,17 +104,18 @@ public class walking : MonoBehaviour
             SideMove = false;
 
             line.enabled = true;
-
+#if !UNITY_EDITOR
             rawmouseinput = new RawMouseInput();
             mousedriver = new RawMouseDriver.RawMouseDriver();
-
+#endif
             YDelta = new float[2];
             XDelta = new float[2];
 
             BeeController = GetComponent<CharacterController>();
             BeeController.minMoveDistance = 0;
 
-            INBallRadius.text = 2.45.ToString(); // initialize ball radius to 5cm
+            INBallRadius.text = 2.45.ToString(
+                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
             INMouseDPI.text = 1000.ToString(); // initialize mouse DPI to 1000dpi
 
             INXsensitivity.text = ( -1 ).ToString(); // -1 because bee is on the other side of the screen
@@ -123,7 +133,9 @@ public class walking : MonoBehaviour
             if( gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
 
                 Move = transform.right * ( ( XDelta[1] + XDelta[0] ) / 2 ) *
-                       ( 2.54f / float.Parse( INMouseDPI.text ) ) * float.Parse( INXsensitivity.text );
+                       ( 2.54f / float.Parse( INMouseDPI.text,
+                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) ) * float.Parse(
+                           INXsensitivity.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Move = Move * 2 * dist / ( 2 * Mathf.PI * float.Parse( INBallRadius.text,
                                            System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
             } else {
@@ -136,7 +148,8 @@ public class walking : MonoBehaviour
                 RotationY =  recorded_ball_rotation * 180 / ( Mathf.PI * radius );
 
 
-                float recored_ball_movement = Mathf.Sqrt( Mathf.Pow( YDelta[0], 2 ) + Mathf.Pow( YDelta[1], 2 ) );
+                float recored_ball_movement = Mathf.Sqrt( Mathf.Pow( YDelta[0], 2 ) + Mathf.Pow( YDelta[1],
+                                              2 ) ) * Mathf.Sign( YDelta[0] + YDelta[1] );
 
 
                 Move = transform.forward * recored_ball_movement * dpi_to_cm * float.Parse(
@@ -145,7 +158,9 @@ public class walking : MonoBehaviour
                 // this probably should never be turned on as the bees can't walk sideways in the VR
                 if( SideMove == true ) {
                     Move += transform.right * ( -YDelta[0] + YDelta[1] ) * ( 2.54f / float.Parse(
-                                INMouseDPI.text ) ) * float.Parse( INYSensitivity.text ); // lateral movement
+                                INMouseDPI.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) ) * float.Parse(
+                                INYSensitivity.text,
+                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // lateral movement
                 }
             }
 
@@ -160,14 +175,16 @@ public class walking : MonoBehaviour
 
             if( testhead == true ) {
                 temphead += RotationY;
-                Heading.text = temphead.ToString();
+                Heading.text = temphead.ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             } else if( testdistance == true ) {
                 tempdist += Mathf.Sqrt( Mathf.Pow( Move.x, 2 ) + Mathf.Pow( Move.z, 2 ) );
-                Distance.text = ( tempdist ).ToString();
+                Distance.text = ( tempdist ).ToString(
+                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
 
             } else {
                 Position.text = ( transform.position * 100 ).ToString();
-                Heading.text = transform.rotation.eulerAngles.y.ToString();
+                Heading.text = transform.rotation.eulerAngles.y.ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             }
             //Raycasting and display of line of sight
             var layerMask = ~( ( 1 << 2 ) | ( 1 << 5 ) );
@@ -214,17 +231,19 @@ public class walking : MonoBehaviour
             if( testdistance == true ) {
                 GUILayout.BeginVertical();
                 GUILayout.Box( "Distance expected: " + ( float.Parse( INBallRadius.text,
-                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ).ToString() +
+                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ).ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) +
                                " cm" );
                 GUILayout.Box( "Xsensitivity should be :" + ( ( float.Parse( INBallRadius.text,
                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) * 2 * Mathf.PI ) /
-                               tempdist ).ToString() );
+                               tempdist ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
                 GUILayout.EndVertical();
             }
             if( testhead == true ) {
                 GUILayout.BeginVertical();
                 GUILayout.Box( "Angle expected: 360°" );
-                GUILayout.Box( "Ysensitivity should be :" + ( Mathf.Abs( 360 / temphead ) ).ToString() );
+                GUILayout.Box( "Ysensitivity should be :" + ( Mathf.Abs( 360 / temphead ) ).ToString(
+                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
                 GUILayout.EndVertical();
             }
 
@@ -234,26 +253,32 @@ public class walking : MonoBehaviour
 
         // Make the contents of the window
         void WindowDetector1( int windowID ) {
-
             GUILayout.BeginHorizontal();//Begins detectors selection
+
             // each button assigns the corresponding mouse to the role of detector 1
             GUILayout.BeginVertical();//Begins detector 1 selection
             GUILayout.Box( "Detector 1" );
+
+#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
                 if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
                     Dect1 = i;
                 }
             }
+#endif
             GUILayout.EndVertical();//ends detector 1 selection
 
             // each button assigns the corresponding mouse to the role of detector 2
             GUILayout.BeginVertical();// begins detector 2 selection
             GUILayout.Box( "Detector 2" );
+
+#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
                 if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
                     Dect2 = i;
                 }
             }
+#endif
             GUILayout.EndVertical();//ends detector 2 selection
 
             GUILayout.EndHorizontal();// ends detector selection
@@ -275,9 +300,11 @@ public class walking : MonoBehaviour
 
 
         void OnApplicationQuit() {
+#if !UNITY_EDITOR
             if( mousedriver != null ) {
                 mousedriver.Dispose();
             }
+#endif
         }
 
         private void OnTriggerEnter( Collider other ) {
@@ -292,7 +319,8 @@ public class walking : MonoBehaviour
 
         public void position_teleporter() {
             if( gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
-                dist = 2 * Mathf.PI * float.Parse( INBallRadius.text );
+                dist = 2 * Mathf.PI * float.Parse( INBallRadius.text,
+                                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 if( GameObject.Find( "Teleporter Left(Clone)" ) != null &&
                     GameObject.Find( "Teleporter Right(Clone)" ) != null ) {
                     Teleporter_Left = GameObject.Find( "Teleporter Left(Clone)" );
