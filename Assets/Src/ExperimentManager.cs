@@ -30,6 +30,9 @@ public class Experiment : ScriptableObject
 
         public string string_seq;
         public string string_pre;
+
+        public List<string> YokeList;
+
         public void OnAfterDeserialize() {
             Sequences = new List<string[]>();
             SequencesPreStim = new List<string[]>();
@@ -71,6 +74,8 @@ public class ExperimentManager : MonoBehaviour
         public InputField INSavePath; // InputField for path to prgm save file
         public InputField INPrgName; // Name of saved prgm
         public InputField INLoadPath; // InputField for path to file to load
+
+        public InputField INLoadPathYoke; // InputField for path to yoke folder
 
         public ArenaManager ArenaManager;
 
@@ -238,6 +243,43 @@ public class ExperimentManager : MonoBehaviour
             FileBrowser.PickMode.Files, false, null, null, "Select Folder",
             "Select" ); // file browser to find file to load
 
+        }
+
+        //TODO: Unify those browse functions
+        public void BrowseLoadYoke() {
+            // find folder containing the Yoke files
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INLoadPathYoke.text = paths[0];
+            },
+            () => {
+                Debug.Log( "Canceled" );
+            },
+            FileBrowser.PickMode.Folders, false, null, null, "Select Folder",
+            "Select" ); // file browser to get save folder
+        }
+
+        public void LoadYokes() {
+            DirectoryInfo Dir = new DirectoryInfo( INLoadPathYoke.text );
+            if( Dir.Exists ) {
+                foreach( FileInfo file in Dir.GetFiles() ) {
+
+                }
+            }
+        }
+
+        private bool Check_yoke( FileInfo file ) {
+            if( file.Exists ) {
+
+                using( StreamReader sr = file.OpenText() ) {
+                    string s;
+                    while( ( s = sr.ReadLine() ) != null ) {
+                        string[] row = s.Split( new char[] { ';' } );
+
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void
