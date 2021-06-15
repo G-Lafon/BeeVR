@@ -6,8 +6,8 @@ namespace SimpleFileBrowser
 	public class FileBrowserMovement : MonoBehaviour
 	{
 		#region Variables
-		[SerializeField]
-		private Canvas canvas;
+#pragma warning disable 0649
+		private FileBrowser fileBrowser;
 		private RectTransform canvasTR;
 		private Camera canvasCam;
 
@@ -15,19 +15,18 @@ namespace SimpleFileBrowser
 		private RectTransform window;
 
 		[SerializeField]
-		private FileBrowser fileBrowser;
-
-		[SerializeField]
 		private RecycledListView listView;
+#pragma warning restore 0649
 
 		private Vector2 initialTouchPos = Vector2.zero;
 		private Vector2 initialAnchoredPos, initialSizeDelta;
 		#endregion
 
-		#region Messages
-		private void Awake()
+		#region Initialization Functions
+		public void Initialize( FileBrowser fileBrowser )
 		{
-			canvasTR = canvas.GetComponent<RectTransform>();
+			this.fileBrowser = fileBrowser;
+			canvasTR = fileBrowser.GetComponent<RectTransform>();
 		}
 		#endregion
 
@@ -49,6 +48,11 @@ namespace SimpleFileBrowser
 			window.anchoredPosition += touchPos - initialTouchPos;
 		}
 
+		public void OnEndDrag( BaseEventData data )
+		{
+			fileBrowser.EnsureWindowIsWithinBounds();
+		}
+
 		public void OnResizeStarted( BaseEventData data )
 		{
 			PointerEventData pointer = (PointerEventData) data;
@@ -68,9 +72,13 @@ namespace SimpleFileBrowser
 
 			Vector2 delta = touchPos - initialTouchPos;
 			Vector2 newSize = initialSizeDelta + new Vector2( delta.x, -delta.y );
+			Vector2 canvasSize = canvasTR.sizeDelta;
 
 			if( newSize.x < fileBrowser.minWidth ) newSize.x = fileBrowser.minWidth;
 			if( newSize.y < fileBrowser.minHeight ) newSize.y = fileBrowser.minHeight;
+
+			if( newSize.x > canvasSize.x ) newSize.x = canvasSize.x;
+			if( newSize.y > canvasSize.y ) newSize.y = canvasSize.y;
 
 			newSize.x = (int) newSize.x;
 			newSize.y = (int) newSize.y;
@@ -78,9 +86,19 @@ namespace SimpleFileBrowser
 			delta = newSize - initialSizeDelta;
 
 			window.anchoredPosition = initialAnchoredPos + new Vector2( delta.x * 0.5f, delta.y * -0.5f );
-			window.sizeDelta = newSize;
+
+			if( window.sizeDelta != newSize )
+			{
+				window.sizeDelta = newSize;
+				fileBrowser.OnWindowDimensionsChanged( newSize );
+			}
 
 			listView.OnViewportDimensionsChanged();
+		}
+
+		public void OnEndResize( BaseEventData data )
+		{
+			fileBrowser.EnsureWindowIsWithinBounds();
 		}
 		#endregion
 	}

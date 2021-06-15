@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace SimpleFileBrowser
 {
-	public class FileBrowserQuickLink : FileBrowserItem, IPointerClickHandler
+	public class FileBrowserQuickLink : FileBrowserItem
 	{
 		#region Properties
 		private string m_targetPath;
@@ -18,16 +16,6 @@ namespace SimpleFileBrowser
 
 			m_targetPath = targetPath;
 		}
-		#endregion
-
-		#region Pointer Events
-		public new void OnPointerClick( PointerEventData eventData )
-		{
-			fileBrowser.OnQuickLinkSelected( this );
-		}
-		#endregion
-
-		#region Other Events
 		#endregion
 	}
 }

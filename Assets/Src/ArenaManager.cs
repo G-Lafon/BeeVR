@@ -266,9 +266,11 @@ public class ArenaManager : MonoBehaviour
             CubeManager Current_cube_left =
                 GameObject.FindGameObjectWithTag( "Left" ).GetComponentInChildren<CubeManager>();
             if( Current_cube_left != null && Current_cube_right != null ) {
-                Current_cube_left.Edges_scale = float.Parse( Edge_Scale.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                Current_cube_left.Edges_scale = float.Parse( Edge_Scale.text,
+                                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Current_cube_left.Set_edges();
-                Current_cube_right.Edges_scale = float.Parse( Edge_Scale.text, System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                Current_cube_right.Edges_scale = float.Parse( Edge_Scale.text,
+                                                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
                 Current_cube_right.Set_edges();
 
             }
@@ -298,14 +300,15 @@ public class ArenaManager : MonoBehaviour
         BrowsePicture() { // find programme file to load https://github.com/yasirkula/UnitySimpleFileBrowser/blob/master/README.md
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpathPic.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpathPic.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
-
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" );// file browser to find file to load
         }
 
         public void LoadTolist() {
@@ -329,9 +332,9 @@ public class ArenaManager : MonoBehaviour
                 Path = string.Concat( "File:///", path ); // add correct formatting at the beginning of path
                 using( UnityWebRequest uwr = UnityWebRequestTexture.GetTexture( Path ) ) {
                     yield return uwr.SendWebRequest();
-                bool v = uwr.result == UnityWebRequest.Result.ConnectionError || uwr.result == UnityWebRequest.Result.ProtocolError;
-                if (v)
-                {
+                    bool v = uwr.result == UnityWebRequest.Result.ConnectionError ||
+                             uwr.result == UnityWebRequest.Result.ProtocolError;
+                    if( v ) {
                         Debug.Log( uwr.error );
                     } else {
                         pic = DownloadHandlerTexture.GetContent( uwr );
@@ -499,26 +502,29 @@ public class ArenaManager : MonoBehaviour
         public void BrowseWall() {
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpathWall.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpathWall.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" ); // file browser to find file to load
 
         }
         public void BrowseFloor() {
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Image", ".png", ".jpg" ) );
             FileBrowser.SetDefaultFilter( ".png" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INpath_Floor.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INpath_Floor.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
-
+            FileBrowser.PickMode.Files, false, null, null, "Select File",
+            "Select" ); // file browser to find file to load
         }
 
 

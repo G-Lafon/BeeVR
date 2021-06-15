@@ -1,28 +1,41 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace SimpleFileBrowser
 {
 	[RequireComponent( typeof( ScrollRect ) )]
 	public class RecycledListView : MonoBehaviour
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WSA || UNITY_WSA_10_0
+		, IPointerClickHandler
+#endif
 	{
+#pragma warning disable 0649
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WSA || UNITY_WSA_10_0
+		[SerializeField]
+		private FileBrowser fileBrowser;
+#endif
+
 		// Cached components
-		public RectTransform viewportTransform;
-		public RectTransform contentTransform;
+		[SerializeField]
+		private RectTransform viewportTransform;
+		[SerializeField]
+		private RectTransform contentTransform;
+#pragma warning restore 0649
 
 		private float itemHeight, _1OverItemHeight;
 		private float viewportHeight;
 
-		private Dictionary<int, ListItem> items = new Dictionary<int, ListItem>();
-		private Stack<ListItem> pooledItems = new Stack<ListItem>();
+		private readonly Dictionary<int, ListItem> items = new Dictionary<int, ListItem>();
+		private readonly Stack<ListItem> pooledItems = new Stack<ListItem>();
 
 		IListViewAdapter adapter = null;
 
 		// Current indices of items shown on screen
 		private int currentTopIndex = -1, currentBottomIndex = -1;
 
-		void Start()
+		private void Start()
 		{
 			viewportHeight = viewportTransform.rect.height;
 			GetComponent<ScrollRect>().onValueChanged.AddListener( ( pos ) => UpdateItemsInTheList() );
@@ -60,7 +73,7 @@ namespace SimpleFileBrowser
 			if( adapter.Count > 0 )
 			{
 				float contentPos = contentTransform.anchoredPosition.y - 1f;
-				
+
 				int newTopIndex = (int) ( contentPos * _1OverItemHeight );
 				int newBottomIndex = (int) ( ( contentPos + viewportHeight + 2f ) * _1OverItemHeight );
 
@@ -208,5 +221,18 @@ namespace SimpleFileBrowser
 				adapter.SetItemContent( item );
 			}
 		}
+
+#if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WSA || UNITY_WSA_10_0
+		// When free space inside ScrollRect is clicked:
+		// Left click: deselect selected file(s)
+		// Right click: show context menu
+		public void OnPointerClick( PointerEventData eventData )
+		{
+			if( eventData.button == PointerEventData.InputButton.Left )
+				fileBrowser.DeselectAllFiles();
+			else if( eventData.button == PointerEventData.InputButton.Right )
+				fileBrowser.OnContextMenuTriggered( eventData.position );
+		}
+#endif
 	}
 }

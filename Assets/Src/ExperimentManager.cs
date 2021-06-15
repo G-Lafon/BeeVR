@@ -214,27 +214,29 @@ public class ExperimentManager : MonoBehaviour
         public void BrowseSave() {
             // find folder to save programme to
 
-
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INSavePath.text = path;
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INSavePath.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            true, null, "Select Folder", "Select" ); // file browser to get save folder
+            FileBrowser.PickMode.Folders, false, null, null, "Select Folder",
+            "Select" ); // file browser to get save folder
 
 
         }
         public void BrowseLoad() { // find programme file to load
             FileBrowser.SetFilters( true, new FileBrowser.Filter( "Text Files", ".txt", ".pdf" ) );
             FileBrowser.SetDefaultFilter( ".txt" );
-            FileBrowser.ShowLoadDialog( ( path ) => {
-                INLoadPath.text = path;
+
+            FileBrowser.ShowLoadDialog( ( paths ) => {
+                INLoadPath.text = paths[0];
             },
             () => {
                 Debug.Log( "Canceled" );
             },
-            false, null, "Select File", "Select" ); // file browser to find file to load
+            FileBrowser.PickMode.Files, false, null, null, "Select Folder",
+            "Select" ); // file browser to find file to load
 
         }
 
