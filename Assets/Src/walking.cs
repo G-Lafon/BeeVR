@@ -148,7 +148,8 @@ public class walking : MonoBehaviour
                 RotationY =  recorded_ball_rotation * 180 / ( Mathf.PI * radius );
 
 
-                float recored_ball_movement = Mathf.Sqrt( Mathf.Pow( YDelta[0], 2 ) + Mathf.Pow( YDelta[1], 2 ) );
+                float recored_ball_movement = Mathf.Sqrt( Mathf.Pow( YDelta[0], 2 ) + Mathf.Pow( YDelta[1],
+                                              2 ) ) * Mathf.Sign( YDelta[0] + YDelta[1] );
 
 
                 Move = transform.forward * recored_ball_movement * dpi_to_cm * float.Parse(
