@@ -79,7 +79,8 @@ public class ExperimentRecorder : MonoBehaviour
 
             process_chrono();
 
-            if( TimeStep >= float.Parse( INTimeStep.text ) ) {
+            if( TimeStep >= float.Parse( INTimeStep.text,
+                                         System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) ) {
                 // if over DeltaTime, Conditionning underway and under number of trial
                 Record_data_point();
             }
@@ -93,14 +94,19 @@ public class ExperimentRecorder : MonoBehaviour
 
         public void Record_data_point() {
             if( sw != null ) {
+                System.Globalization.CultureInfo Inv_C = System.Globalization.CultureInfo.InvariantCulture;
 
-                sw.WriteLine( Conditionner.Line.ToString() + ";" +
-                              Conditionner.a + ";" + Chrono.ToString() + ";" +
-                              gameObject.transform.position.x
-                              + ";" + gameObject.transform.position.z + ";" +
-                              gameObject.transform.rotation.eulerAngles.y.ToString() + ";" +
-                              Conditionner.Dist + ";" +
-                              Conditionner.Speed +
+                sw.WriteLine( Conditionner.Line.ToString( Inv_C ) + ";"
+                              +
+                              Conditionner.a.ToString( Inv_C ) + ";" +
+                              Chrono.ToString( Inv_C ) + ";" +
+                              gameObject.transform.position.x.ToString( Inv_C )
+                              + ";" + gameObject.transform.position.z.ToString(
+                                  Inv_C ) + ";" +
+                              gameObject.transform.rotation.eulerAngles.y.ToString(
+                                  Inv_C ) + ";" +
+                              Conditionner.Dist.ToString( Inv_C ) + ";" +
+                              Conditionner.Speed.ToString( Inv_C ) +
                               ";" + Conditionner.PrepPhase_Stim + ";" + Conditionner.Choice + ";" +
                               Conditionner.Side_Chosen + ";" +
                               Conditionner.what.text + ";" +
