@@ -14,8 +14,9 @@ public class walking : MonoBehaviour
         RawMouseDriver.RawMouseDriver mousedriver;
         private RawMouse[] rawMice;
         private RawMouseInput rawmouseinput;
-#endif
+
         private int MiceCount = 0;
+#endif
 
         //Mice Sensitivity
         public InputField INXsensitivity;// sensibility of the X axis of the mice : for rotations
@@ -43,10 +44,10 @@ public class walking : MonoBehaviour
 
         public float RotationY; // angle to rotate on y axis
         public Vector3 Move; // movement vector
-
+#if !UNITY_EDITOR
         private int Dect1 = 0; // mouse index of detector 1
         private int Dect2 = 0; // mouse index of detector 2
-
+#endif
         private bool Show_Mice_Select_Window = true; // display or not window to select detectors
 
         private CharacterController BeeController;
@@ -251,29 +252,34 @@ public class walking : MonoBehaviour
 
         // Make the contents of the window
         void WindowDetector1( int windowID ) {
-
             GUILayout.BeginHorizontal();//Begins detectors selection
+
             // each button assigns the corresponding mouse to the role of detector 1
             GUILayout.BeginVertical();//Begins detector 1 selection
             GUILayout.Box( "Detector 1" );
+
 #if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
                 if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
                     Dect1 = i;
                 }
             }
+#endif
             GUILayout.EndVertical();//ends detector 1 selection
 
             // each button assigns the corresponding mouse to the role of detector 2
             GUILayout.BeginVertical();// begins detector 2 selection
             GUILayout.Box( "Detector 2" );
+
+#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
                 if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
                     Dect2 = i;
                 }
             }
-            GUILayout.EndVertical();//ends detector 2 selection
 #endif
+            GUILayout.EndVertical();//ends detector 2 selection
+
             GUILayout.EndHorizontal();// ends detector selection
 
             GUILayout.BeginVertical();// begins detectors feddback display
