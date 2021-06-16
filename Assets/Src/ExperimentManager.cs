@@ -31,7 +31,9 @@ public class Experiment : ScriptableObject
         public string string_seq;
         public string string_pre;
 
-        public List<string> YokeList;
+        public List<FileInfo> YokeList;
+
+        public List<float> pos_z_vector;
 
         public void OnAfterDeserialize() {
             Sequences = new List<string[]>();
@@ -128,6 +130,7 @@ public class ExperimentManager : MonoBehaviour
             Experiment_data = ScriptableObject.CreateInstance<Experiment>();
             Experiment_data.PathList = new List<string>();
             Experiment_data.Textures_to_ignore = new List<string> { };
+            Experiment_data.YokeList = new List<FileInfo>();
 
             sides = new string[2];
             sides[0] = "Left";
@@ -262,24 +265,27 @@ public class ExperimentManager : MonoBehaviour
             DirectoryInfo Dir = new DirectoryInfo( INLoadPathYoke.text );
             if( Dir.Exists ) {
                 foreach( FileInfo file in Dir.GetFiles() ) {
-
+                    if( Check_yoke( file ) ) {
+                        Debug.Log( file.Name + " is added." );
+                        Experiment_data.YokeList.Add( file );
+                    }
                 }
             }
         }
 
         private bool Check_yoke( FileInfo file ) {
-            if( file.Exists ) {
+            if( !file.Exists ) {
+                return false;
+            }
+            using( StreamReader sr = file.OpenText() ) {
+                string s;
+                while( ( s = sr.ReadLine() ) != null ) {
+                    string[] row = s.Split( new char[] { ';' } );
 
-                using( StreamReader sr = file.OpenText() ) {
-                    string s;
-                    while( ( s = sr.ReadLine() ) != null ) {
-                        string[] row = s.Split( new char[] { ';' } );
-
-                    }
                 }
             }
 
-            return false;
+            return true;
         }
 
         public void

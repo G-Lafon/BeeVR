@@ -15860,8 +15860,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1993972322}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Load
+        m_TargetAssemblyTypeName: ExperimentManager, Assembly-CSharp
+        m_MethodName: LoadYokes
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -102,6 +102,8 @@ public class ConditionningRunner : MonoBehaviour
         private ExperimentRecorder Recorder;
         private ExperimentManager Xpmanager;
 
+        System.IO.StreamReader Yoke_reader;
+
         // Use this for initialization
         void Start() {
             nbr = -1;
@@ -118,10 +120,26 @@ public class ConditionningRunner : MonoBehaviour
 
             Recorder = gameObject.GetComponent<ExperimentRecorder>();
             Xpmanager = gameObject.GetComponent<ExperimentManager>();
+
         }
 
         public bool bee_can_move() {
             return gameObject.GetComponent<CharacterController>().enabled;
+        }
+
+        private void do_yoke_line() {
+            string[] row = Yoke_reader.ReadLine().Split( new char[] { ';' } );
+            float pos_x = float.Parse( row[3], System.Globalization.CultureInfo.InvariantCulture );
+            float pos_z = float.Parse( row[4], System.Globalization.CultureInfo.InvariantCulture );
+            float rot = float.Parse( row[5], System.Globalization.CultureInfo.InvariantCulture );
+
+            Debug.Log( "pos_z: " + pos_z.ToString() );
+            Vector3 newpos = new Vector3( pos_x, transform.position.y, pos_z );
+            Vector3 newrot = new Vector3( transform.rotation.eulerAngles.x, rot,
+                                          transform.rotation.eulerAngles.z );
+            transform.position = newpos;
+
+            Debug.Log( "actual z: " + transform.position.z.ToString() );
         }
 
         // Update is called once per frame
@@ -141,6 +159,12 @@ public class ConditionningRunner : MonoBehaviour
             }
 
             if( Go == true ) { // runs the experiment
+
+                if( Xpmanager.Experiment_data.YokeList.Count != 0 ) {
+                    do_yoke_line();
+                    return;
+                }
+
                 if( CSTimer > 0 ) { // if Csstart Timer not finished
                     CSTimer -= Time.deltaTime; // decrement
 
@@ -467,6 +491,14 @@ public class ConditionningRunner : MonoBehaviour
 
             Set_stims();
             Ping( "1" );
+
+            if( Xpmanager.Experiment_data.YokeList.Count != 0 ) {
+                gameObject.GetComponent<CharacterController>().enabled = true;
+                Yoke_reader = Xpmanager.Experiment_data.YokeList[0].OpenText();
+                for( int i = 0; i < 4; i++ ) {
+                    Yoke_reader.ReadLine();
+                }
+            }
         }
 
         private void Looking_Timer2D() {
