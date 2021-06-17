@@ -279,12 +279,60 @@ public class ExperimentManager : MonoBehaviour
             }
             using( StreamReader sr = file.OpenText() ) {
                 string s;
+                int line_index = 0;
                 while( ( s = sr.ReadLine() ) != null ) {
+                    line_index++;
+                    if( line_index <= 4 ) {
+                        continue;
+                    }
                     string[] row = s.Split( new char[] { ';' } );
+                    int curr_line;
+                    if( !int.TryParse( row[0], out curr_line ) ) {
+                        Debug.Log( file.Name + " can't parse row 0" );
+                        return false;
+                    }
+                    if( curr_line > Experiment_data.Repetition.Length ) {
+                        Debug.Log( file.Name + " too many lines" );
+                        return false;
+                    }
 
+                    int curr_repetition;
+                    if( !int.TryParse( Experiment_data.Repetition[curr_line], out curr_repetition ) ) {
+                        Debug.Log( file.Name + " can't parse lines" );
+                        return false;
+                    }
+
+                    int in_file_repetition;
+                    if( !int.TryParse( row[1], out in_file_repetition ) ) {
+                        Debug.Log( file.Name + " can't parse row 1" );
+                        return false;
+                    }
+                    if( curr_repetition < in_file_repetition ) {
+                        Debug.Log( file.Name + " too many repetition" );
+                        return false;
+                    }
+
+                    float trial_duration;
+                    if( !float.TryParse( Experiment_data.CSStop[curr_line], out trial_duration ) ) {
+                        Debug.Log( file.Name + " can't parse CSSTop" );
+                        return false;
+                    }
+
+                    float US_duration;
+                    if( !float.TryParse( Experiment_data.USDuration[curr_line], out US_duration ) ) {
+                        Debug.Log( file.Name + " can't aprse US duration" );
+                        return false;
+                    }
+
+                    float in_file_duration = float.Parse( row[2], System.Globalization.CultureInfo.InvariantCulture );
+
+                    if( trial_duration + US_duration < in_file_duration || ( trial_duration < in_file_duration &&
+                            row[8] != "None" ) ) {
+                        Debug.Log( file.Name + " trial duration too long" );
+                        return false;
+                    }
                 }
             }
-
             return true;
         }
 
