@@ -103,6 +103,11 @@ public class ConditionningRunner : MonoBehaviour
         private ExperimentManager Xpmanager;
 
         private bool Playback = false;
+        private Trajectory Current_trajectory;
+
+        public Trajectory Get_current_trajectory() {
+            return Current_trajectory;
+        }
 
         // Use this for initialization
         void Start() {
@@ -128,7 +133,7 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void do_yoke_line() {
-            float[] step = Xpmanager.Experiment_data.Trajectories[0].Do_step();
+            float[] step = Current_trajectory.Do_step();
             transform.position = new Vector3( step[0], transform.position.y, step[1] );
             transform.rotation =  Quaternion.Euler( transform.rotation.x, step[2], transform.rotation.z );
         }
@@ -488,7 +493,8 @@ public class ConditionningRunner : MonoBehaviour
             Set_stims();
             Ping( "1" );
 
-            if( Xpmanager.Experiment_data.Trajectories.Count != 0 ) {
+            if( Xpmanager.Experiment_data.Is_yoke ) {
+                Current_trajectory = Xpmanager.Experiment_data.Get_a_trajectory();
                 gameObject.GetComponent<CharacterController>().enabled = false;
             }
         }
@@ -534,8 +540,8 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Check_choice() {
-            if( Playback && Xpmanager.Experiment_data.Trajectories[0].is_choice_made() ) {
-                Make_Choice( Xpmanager.Experiment_data.Trajectories[0].Get_choice_side() );
+            if( Xpmanager.Experiment_data.Is_yoke && Current_trajectory.is_choice_made() ) {
+                Make_Choice( Current_trajectory.Get_choice_side() );
                 return;
             }
 

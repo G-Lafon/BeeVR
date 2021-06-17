@@ -34,6 +34,10 @@ public class Trajectory
             traj_indx = 0;
         }
 
+        public string Get_id() {
+            return Id;
+        }
+
         public bool Is_empty() {
             return Id == string.Empty;
         }
@@ -105,6 +109,8 @@ public class Experiment : ScriptableObject
         public string string_pre;
 
         public List<Trajectory> Trajectories;
+        public bool Is_yoke = false;
+        private List<int> Traj_indexes;
 
         public void OnAfterDeserialize() {
             Sequences = new List<string[]>();
@@ -136,6 +142,24 @@ public class Experiment : ScriptableObject
                 foreach( string str in item ) {
                     string_pre += str + ";";
                 }
+            }
+        }
+        public Trajectory Get_a_trajectory( ) {
+            if( Traj_indexes.Count == 0 ) {
+                Initialize_traj_indexes();
+            }
+
+            int indx = Traj_indexes[( int )Mathf.Round( UnityEngine.Random.Range( 0,
+                                                        Traj_indexes.Count - 1 ) )];
+            Trajectory Trajectory_to_return = Trajectories[indx];
+            Traj_indexes.Remove( indx );
+            return Trajectory_to_return;
+        }
+
+        public void Initialize_traj_indexes() {
+            Traj_indexes = new List<int>();
+            for( int i = 0; i < Trajectories.Count; i++ ) {
+                Traj_indexes.Add( i );
             }
         }
 }
@@ -333,6 +357,7 @@ public class ExperimentManager : MonoBehaviour
         }
 
         public void LoadYokes() {
+            Experiment_data.Is_yoke = true;
             DirectoryInfo Dir = new DirectoryInfo( INLoadPathYoke.text );
             if( Dir.Exists ) {
                 foreach( FileInfo file in Dir.GetFiles() ) {
@@ -343,6 +368,7 @@ public class ExperimentManager : MonoBehaviour
                     }
                 }
             }
+            Experiment_data.Initialize_traj_indexes();
         }
 
         private Trajectory Check_yoke( FileInfo file ) {

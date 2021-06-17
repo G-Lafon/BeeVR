@@ -64,7 +64,7 @@ public class ExperimentRecorder : MonoBehaviour
             sw.WriteLine( "#" + Date.text + " " + DateTime.Now.ToString(
                               @"HH:mm:ss" ) ); // Header of the result file
             sw.WriteLine( "#" + "Bee" + ID.ToString() );
-            sw.WriteLine( "Line;Trial;Time(s);PositionX;PositionZ;Rotation;DistanceTotale;Speed;PreStim;Choice;Side_Chosen;Test;Centered_Object;Looking_at;Edge;Edge_coord" );
+            sw.WriteLine( "Line;Trial;Time(s);PositionX;PositionZ;Rotation;DistanceTotale;Speed;PreStim;Choice;Side_Chosen;Test;Centered_Object;Looking_at;Edge;Edge_coord;Bee_Leader" );
             sw.Flush(); // need to flush to actually write in the file
 
 
@@ -95,7 +95,10 @@ public class ExperimentRecorder : MonoBehaviour
         public void Record_data_point() {
             if( sw != null ) {
                 System.Globalization.CultureInfo Inv_C = System.Globalization.CultureInfo.InvariantCulture;
-
+                string bee_leader = "Na";
+                if( Conditionner.Get_current_trajectory() != null ) {
+                    bee_leader = Conditionner.Get_current_trajectory().Get_id();
+                }
                 sw.WriteLine( Conditionner.Line.ToString( Inv_C ) + ";"
                               +
                               Conditionner.a.ToString( Inv_C ) + ";" +
@@ -112,7 +115,7 @@ public class ExperimentRecorder : MonoBehaviour
                               Conditionner.what.text + ";" +
                               Conditionner.Centered_object + ";" +
                               Conditionner.Object_looked_at + ";" +
-                              Conditionner.Get_edge_data() ); // write the data
+                              Conditionner.Get_edge_data() + ";" + bee_leader ); // write the data
                 sw.Flush();
 
                 TimeStep = 0f; // reset timer
