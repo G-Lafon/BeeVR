@@ -102,7 +102,7 @@ public class ConditionningRunner : MonoBehaviour
         private ExperimentRecorder Recorder;
         private ExperimentManager Xpmanager;
 
-        System.IO.StreamReader Yoke_reader;
+        private bool Playback = false;
 
         // Use this for initialization
         void Start() {
@@ -128,18 +128,9 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void do_yoke_line() {
-            string[] row = Yoke_reader.ReadLine().Split( new char[] { ';' } );
-            float pos_x = float.Parse( row[3], System.Globalization.CultureInfo.InvariantCulture );
-            float pos_z = float.Parse( row[4], System.Globalization.CultureInfo.InvariantCulture );
-            float rot = float.Parse( row[5], System.Globalization.CultureInfo.InvariantCulture );
-
-            Debug.Log( "pos_z: " + pos_z.ToString() );
-            Vector3 newpos = new Vector3( pos_x, transform.position.y, pos_z );
-            Vector3 newrot = new Vector3( transform.rotation.eulerAngles.x, rot,
-                                          transform.rotation.eulerAngles.z );
-            transform.position = newpos;
-
-            Debug.Log( "actual z: " + transform.position.z.ToString() );
+            float[] step = Xpmanager.Experiment_data.Trajectories[0].Do_step();
+            transform.position = new Vector3( step[0], transform.position.y, step[1] );
+            transform.rotation =  Quaternion.Euler( transform.rotation.x, step[2], transform.rotation.z );
         }
 
         // Update is called once per frame
@@ -160,11 +151,6 @@ public class ConditionningRunner : MonoBehaviour
 
             if( Go == true ) { // runs the experiment
 
-                if( Xpmanager.Experiment_data.YokeList.Count != 0 ) {
-                    do_yoke_line();
-                    return;
-                }
-
                 if( CSTimer > 0 ) { // if Csstart Timer not finished
                     CSTimer -= Time.deltaTime; // decrement
 
@@ -183,9 +169,17 @@ public class ConditionningRunner : MonoBehaviour
                     // CS start timer finished
                     ToggleFullScreenStim(); // Turn Off
                     Stim( true );
-                    gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+
+                    if( Xpmanager.Experiment_data.Trajectories.Count != 0 ) {
+                        Playback = true;
+                    } else {
+                        gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+                    }
                 }
 
+                if( Playback ) {
+                    do_yoke_line();
+                }
 
                 if( ChoiceIsMade == true && USTimer > 0 && Test != 1 &&
                     PreTest !=
@@ -195,6 +189,7 @@ public class ConditionningRunner : MonoBehaviour
                     UpdateText();
 
                     gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+                    Playback = false; // pause playback
                     transform.position = Stay; // stuck position
 
                 } else if( TrialTimer > 0 ) {  // CS stop timer is not finished
@@ -251,6 +246,7 @@ public class ConditionningRunner : MonoBehaviour
             transform.rotation = look; // stuck to initial rotation
 
             gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+            Playback = false; // pause playback
         }
 
         private void ToggleFullScreenStim( bool On = false ) {
@@ -492,12 +488,8 @@ public class ConditionningRunner : MonoBehaviour
             Set_stims();
             Ping( "1" );
 
-            if( Xpmanager.Experiment_data.YokeList.Count != 0 ) {
-                gameObject.GetComponent<CharacterController>().enabled = true;
-                Yoke_reader = Xpmanager.Experiment_data.YokeList[0].OpenText();
-                for( int i = 0; i < 4; i++ ) {
-                    Yoke_reader.ReadLine();
-                }
+            if( Xpmanager.Experiment_data.Trajectories.Count != 0 ) {
+                gameObject.GetComponent<CharacterController>().enabled = false;
             }
         }
 
@@ -542,6 +534,11 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Check_choice() {
+            if( Playback && Xpmanager.Experiment_data.Trajectories[0].is_choice_made() ) {
+                Make_Choice( Xpmanager.Experiment_data.Trajectories[0].Get_choice_side() );
+                return;
+            }
+
             bool is_ignored = false;
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {

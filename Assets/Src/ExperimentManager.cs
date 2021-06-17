@@ -5,6 +5,79 @@ using System.IO;
 using SimpleFileBrowser;
 using System;
 
+public class Trajectory
+{
+        private string Id;
+        private List<Vector2> Positions;
+        private List<float> Rotations;
+        private List<string> Choice_sides;
+        private List<bool> Choice_made;
+
+        private int traj_indx;
+
+        public Trajectory() {
+            Id = string.Empty;
+            Positions = new List<Vector2>();
+            Rotations = new List<float>();
+            Choice_sides = new List<string>();
+            Choice_made = new List<bool>();
+
+            traj_indx = 0;
+        }
+        public Trajectory( string id ) {
+            Id = id;
+            Positions = new List<Vector2>();
+            Rotations = new List<float>();
+            Choice_sides = new List<string>();
+            Choice_made = new List<bool>();
+
+            traj_indx = 0;
+        }
+
+        public bool Is_empty() {
+            return Id == string.Empty;
+        }
+
+        public float[] Do_step() {
+            float[] step = new float[3];
+            step[0] = Positions[traj_indx].x;
+            step[1] = Positions[traj_indx].y;
+            step[2] = Rotations[traj_indx];
+            traj_indx++;
+
+            //Reset the index to the begining if we reach the end
+            if( traj_indx == Positions.Count ) {
+                Reset_indx();
+            }
+            return step;
+        }
+
+        public void Reset_indx() {
+            traj_indx = 0;
+        }
+
+        public void Add_position( Vector2 pos ) {
+            Positions.Add( pos );
+        }
+
+        public void Add_rotation( float rot ) {
+            Rotations.Add( rot );
+        }
+
+        public void Add_choice_side( string side ) {
+            Choice_sides.Add( side );
+            Choice_made.Add( side != "None" );
+        }
+
+        public string Get_choice_side() {
+            return Choice_sides[traj_indx];
+        }
+
+        public bool is_choice_made() {
+            return Choice_made[traj_indx];
+        }
+}
+
 public class Experiment : ScriptableObject
 {
         public string[] USDuration;//array Of duration to wait for US
@@ -31,9 +104,7 @@ public class Experiment : ScriptableObject
         public string string_seq;
         public string string_pre;
 
-        public List<FileInfo> YokeList;
-
-        public List<float> pos_z_vector;
+        public List<Trajectory> Trajectories;
 
         public void OnAfterDeserialize() {
             Sequences = new List<string[]>();
@@ -130,7 +201,7 @@ public class ExperimentManager : MonoBehaviour
             Experiment_data = ScriptableObject.CreateInstance<Experiment>();
             Experiment_data.PathList = new List<string>();
             Experiment_data.Textures_to_ignore = new List<string> { };
-            Experiment_data.YokeList = new List<FileInfo>();
+            Experiment_data.Trajectories = new List<Trajectory>();
 
             sides = new string[2];
             sides[0] = "Left";
@@ -265,17 +336,19 @@ public class ExperimentManager : MonoBehaviour
             DirectoryInfo Dir = new DirectoryInfo( INLoadPathYoke.text );
             if( Dir.Exists ) {
                 foreach( FileInfo file in Dir.GetFiles() ) {
-                    if( Check_yoke( file ) ) {
-                        Debug.Log( file.Name + " is added." );
-                        Experiment_data.YokeList.Add( file );
+                    Trajectory new_traj = Check_yoke( file );
+                    if( !new_traj.Is_empty() ) {
+                        Experiment_data.Trajectories.Add( new_traj );
+                        Debug.Log( file.Name + " added." );
                     }
                 }
             }
         }
 
-        private bool Check_yoke( FileInfo file ) {
+        private Trajectory Check_yoke( FileInfo file ) {
+            Trajectory temp_traj = new Trajectory( file.Name );
             if( !file.Exists ) {
-                return false;
+                return new Trajectory();
             }
             using( StreamReader sr = file.OpenText() ) {
                 string s;
@@ -289,39 +362,39 @@ public class ExperimentManager : MonoBehaviour
                     int curr_line;
                     if( !int.TryParse( row[0], out curr_line ) ) {
                         Debug.Log( file.Name + " can't parse row 0" );
-                        return false;
+                        return new Trajectory();
                     }
                     if( curr_line > Experiment_data.Repetition.Length ) {
                         Debug.Log( file.Name + " too many lines" );
-                        return false;
+                        return new Trajectory();
                     }
 
                     int curr_repetition;
                     if( !int.TryParse( Experiment_data.Repetition[curr_line], out curr_repetition ) ) {
                         Debug.Log( file.Name + " can't parse lines" );
-                        return false;
+                        return new Trajectory();
                     }
 
                     int in_file_repetition;
                     if( !int.TryParse( row[1], out in_file_repetition ) ) {
                         Debug.Log( file.Name + " can't parse row 1" );
-                        return false;
+                        return new Trajectory();
                     }
                     if( curr_repetition < in_file_repetition ) {
                         Debug.Log( file.Name + " too many repetition" );
-                        return false;
+                        return new Trajectory();
                     }
 
                     float trial_duration;
                     if( !float.TryParse( Experiment_data.CSStop[curr_line], out trial_duration ) ) {
                         Debug.Log( file.Name + " can't parse CSSTop" );
-                        return false;
+                        return new Trajectory();
                     }
 
                     float US_duration;
                     if( !float.TryParse( Experiment_data.USDuration[curr_line], out US_duration ) ) {
                         Debug.Log( file.Name + " can't aprse US duration" );
-                        return false;
+                        return new Trajectory();
                     }
 
                     float in_file_duration = float.Parse( row[2], System.Globalization.CultureInfo.InvariantCulture );
@@ -329,11 +402,19 @@ public class ExperimentManager : MonoBehaviour
                     if( trial_duration + US_duration < in_file_duration || ( trial_duration < in_file_duration &&
                             row[8] != "None" ) ) {
                         Debug.Log( file.Name + " trial duration too long" );
-                        return false;
+                        return new Trajectory();
                     }
+
+                    float pos_x = float.Parse( row[3], System.Globalization.CultureInfo.InvariantCulture );
+                    float pos_z = float.Parse( row[4], System.Globalization.CultureInfo.InvariantCulture );
+                    float rot = float.Parse( row[5], System.Globalization.CultureInfo.InvariantCulture );
+
+                    temp_traj.Add_position( new Vector2( pos_x, pos_z ) );
+                    temp_traj.Add_rotation( rot );
+                    temp_traj.Add_choice_side( row[9] );
                 }
             }
-            return true;
+            return temp_traj;
         }
 
         public void
