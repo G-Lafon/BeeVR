@@ -12,35 +12,37 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
+<!-- TODO: Add shields
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![GPL3.0 License][license-shield]][license-url]
-
+-->
 
 
 
 <!-- PROJECT LOGO -->
+
+<!-- TODO add a logo
 <br />
 <p align="center">
   <a href="https://github.com/G-Lafon/G-Lafon/BeeVR">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-
+-->
   <h3 align="center">BeeVR</h3>
 
   <p align="center">
-    The goal of this project is to providea ready-to-use software for animal behaviour experiments in Virtual Reality
+    The goal of this project is to provide a ready-to-use software for animal behaviour experiments in Virtual Reality
     <br />
-    <a href="https://github.com/G-Lafon/G-Lafon/BeeVR"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/G-Lafon/BeeVR/tree/readme/Doc"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/G-Lafon/G-Lafon/BeeVR">View Demo</a>
+    <a href="https://github.com/G-Lafon/BeeVR/issues/new">Report Bug</a>
     ·
-    <a href="https://github.com/G-Lafon/G-Lafon/BeeVR/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/G-Lafon/G-Lafon/BeeVR/issues">Request Feature</a>
+    <a href="https://github.com/G-Lafon/BeeVR/issues/new?assignees=&labels=&template=feature_request.md">Request Feature</a>
   </p>
 </p>
 
@@ -77,6 +79,10 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
+BeeVR was developed by Gregory Lafon as a tool to perfom visual conditionning of Honeybees (*Apis mellifera*) under Virtual Reality conditions. It is designed to be easy to use and adaptable to a variety a conditionning protocole.
+The source code is made available here in the hope of facilitating progress in the field of visual learning in insects by providing a simple software to run and record VR experiments.
+The software is already useable as is but there's still room for a lot of improvement.
+
 <!--
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 -->
@@ -90,10 +96,6 @@ Here's a blank template to get started:
 ### Built With
 
 * Game Engine: [Unity](https://unity.com/)
-* Multi-Mouse detection Library: [Unity_RawMouseDriver]( https://github.com/robidev/Unity_RawMouseDriver)
-* File browser: [UnitySimpleFileBrowser](https://github.com/yasirkula/UnitySimpleFileBrowser/)
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -156,7 +158,7 @@ Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 When using BeeVR in your work please consider citing our original work: <!--Insert publication and proper citation format with DOI here -->
 * DOI: [TBD]
 
-*How to cite:
+* How to cite:
 ```
 [TBD]
 ```
@@ -173,6 +175,13 @@ Grégory Lafon - gregory.lafon@univ-tlse3.fr
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
 
+* [Université Toulouse III Paul Sabatier](https://www.univ-tlse3.fr/)
+* [CBI-CRCA](https://crca.cbi-toulouse.fr/en/home/)
+* [EXPLAIN team](https://cbi-toulouse.fr/eng/equipe-giurfa-devaud)
+
+
+<!-- DEPENDENCIES -->
+## Dependencies
 * Multi-Mouse detection Library: [Unity_RawMouseDriver]( https://github.com/robidev/Unity_RawMouseDriver)
 * File browser: [UnitySimpleFileBrowser](https://github.com/yasirkula/UnitySimpleFileBrowser/)
 * README-Template: [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
@@ -183,7 +192,7 @@ Grégory Lafon - gregory.lafon@univ-tlse3.fr
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/G-Lafon/repo.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/G-Lafon/BeeVR.svg?style=for-the-badge
 [contributors-url]: https://github.com/G-Lafon/repo/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/G-Lafon/repo.svg?style=for-the-badge
 [forks-url]: https://github.com/G-Lafon/repo/network/members
@@ -191,6 +200,6 @@ Grégory Lafon - gregory.lafon@univ-tlse3.fr
 [stars-url]: https://github.com/G-Lafon/repo/stargazers
 [issues-shield]: https://img.shields.io/github/issues/G-Lafon/repo.svg?style=for-the-badge
 [issues-url]: https://github.com/G-Lafon/repo/issues
-[license-shield]: https://img.shields.io/github/license/G-Lafon/repo.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/G-Lafon/BeeVR.svg?style=for-the-badge
 [license-url]: https://github.com/G-Lafon/repo/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
