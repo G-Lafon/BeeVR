@@ -108,6 +108,7 @@ To get a local copy up and running follow these simple steps.
 *	Cylindrical or semi-spherical screen
 *	Video projector
 *	Computer running windows with at least 62 Mo of disc space
+*	You can get `stl` files to print the treadmill yoursefl there [3D Printed Assets](https://github.com/G-Lafon/BeeVR/tree/3dprint/3D_Printed_Assets)
 
 
 ### Installation
