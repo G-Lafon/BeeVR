@@ -274,7 +274,13 @@ public class ConditionningRunner : MonoBehaviour
                 Renderer rend_back =
                     GameObject.FindGameObjectWithTag( "BackPlane" ).GetComponentInChildren<Renderer>();
                 if( rend_back != null ) {
-                    rend_back.enabled = show;
+                    if (Xpmanager.Experiment_data.Wall_on != null) {
+                        // if show = false then we want the thing to be off
+                        // if show = true then we want to follow Wall_on instruction
+                        rend_back.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
+                    } else {
+                        rend_back.enabled = show;
+                    }
                 }
             }
 
