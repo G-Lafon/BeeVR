@@ -192,14 +192,11 @@ public class walking : MonoBehaviour
 
 
             Physics.Raycast( transform.position, transform.forward, out hit, 50, layerMask );
-            Physics.Raycast( transform.position, transform.forward, out looking, 50 );
+            Physics.Raycast( transform.position, transform.forward, out looking, 50,
+                             LayerMask.GetMask( "Ignore Raycast" ) );
             Physics.Raycast( transform.position, transform.forward, out edge_ray, 50,
-                             LayerMask.GetMask( "Edge", "Ignore Raycast" ) );
-            /*  if( hit.collider != null ) {
-                  raycast_line_dist = hit.distance;
-              } else {
-                  raycast_line_dist = 50;
-              }*/
+                             LayerMask.GetMask( "Edge" ) );
+
             if( edge_ray.collider != null ) {
                 raycast_line_dist = edge_ray.distance;
             } else {

@@ -153,11 +153,6 @@ public class ArenaManager : MonoBehaviour
                         Spawn_shape();
                         Get_Animate( "Wall" );
                     }
-                    //if (concept == true)
-                    //{
-                    //  Instantiate<GameObject>(Stimulus3DCenter);
-                    //}
-
 
                     bee.transform.position = pos_O; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball

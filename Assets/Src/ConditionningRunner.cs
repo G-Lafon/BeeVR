@@ -11,9 +11,10 @@ public class ConditionningRunner : MonoBehaviour
         public string Choice; // choice made by the bee, gets wrote down in the txt file results
         public string Side_Chosen;
         public string Side;
-        private string Side_looked_at;
+        private string Side_Centered;
         public string Centered_object;
         public string Object_looked_at;
+        public string Side_looked_at;
         public GameObject Edge_looked_at;
         private bool bell_notif = false; // did we played the bell yet ?
 
@@ -74,6 +75,10 @@ public class ConditionningRunner : MonoBehaviour
         public Button Butt_Power;
 
         private bool TrialSummaryDisp = false;
+
+        private float TimerLeft2D = 0.0f;
+        private float TimerRight2D = 0.0f;
+
 
         private float TimerLeft = 0;
         private float TimerRight = 0;
@@ -183,6 +188,10 @@ public class ConditionningRunner : MonoBehaviour
                     Tmp_X = gameObject.transform.position.x;
                     Tmp_Z = gameObject.transform.position.z;
                     Check_choice();
+
+                    if( Xpmanager.Experiment_data.is_2D ) {
+                        Looking_Timer2D();
+                    }
                 }
 
 
@@ -274,7 +283,7 @@ public class ConditionningRunner : MonoBehaviour
                 Renderer rend_back =
                     GameObject.FindGameObjectWithTag( "BackPlane" ).GetComponentInChildren<Renderer>();
                 if( rend_back != null ) {
-                    if (Xpmanager.Experiment_data.Wall_on != null) {
+                    if( Xpmanager.Experiment_data.Wall_on != null ) {
                         // if show = false then we want the thing to be off
                         // if show = true then we want to follow Wall_on instruction
                         rend_back.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
@@ -460,8 +469,27 @@ public class ConditionningRunner : MonoBehaviour
             Ping( "1" );
         }
 
-        private void ChoiceTimer( string side, bool done ) {
+        private void Looking_Timer2D() {
+            if( Side_looked_at == "Left" ) {
+                TimerLeft2D += Time.deltaTime;
+            } else if( Side_looked_at == "Right" ) {
+                TimerRight2D += Time.deltaTime;
+            } else { // We only want continuous time, if something elese is centered the time is reset
+                TimerRight2D = 0.0f;
+                TimerLeft2D = 0.0f;
+            }
+        }
 
+        private float get_Looking_Time2D( string side ) {
+            if( side == "Left" ) {
+                return TimerLeft2D;
+            } else if( side == "Right" ) {
+                return TimerRight2D;
+            }
+            return 0.0f;
+        }
+
+        private void ChoiceTimer( string side, bool done ) {
 
             if( side == "Left" ) {
                 TimerLeft += Time.deltaTime;
@@ -485,18 +513,21 @@ public class ConditionningRunner : MonoBehaviour
             bool is_ignored = false;
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {
-                Side_looked_at = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' )[1];
-                Centered_object = FindName( Side_looked_at );
+                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' )[1];
+                Centered_object = FindName( Side_Centered );
                 is_ignored = Xpmanager.Experiment_data.Textures_to_ignore.Contains( Centered_object );
-            } else {// never happens
-                Side_looked_at = "Wall";
+            } else {
+                Side_Centered = "Wall";
                 Centered_object = "Wall";
             }
 
             if( gameObject.GetComponent<walking>().looking.collider != null &&
                 gameObject.GetComponent<walking>().looking.collider.name.Split( ' ' ).Length > 1 ) {
-                Object_looked_at = FindName(
-                                       gameObject.GetComponent<walking>().looking.collider.name.Split( ' ' )[1] );
+                Side_looked_at = gameObject.GetComponent<walking>().looking.collider.name.Split( ' ' )[1];
+                Object_looked_at = FindName( Side_looked_at );
+            } else {
+                Side_looked_at = "None";
+                Object_looked_at = "None";
             }
 
             if( gameObject.GetComponent<walking>().edge_ray.collider != null &&
@@ -509,10 +540,10 @@ public class ConditionningRunner : MonoBehaviour
             if( ( Side != null && Side != "None" ) ||
                 Xpmanager.Experiment_data.is_2D ) {
                 if( Xpmanager.Experiment_data.is_2D ) {
-                    if( Side_looked_at != "Wall" ) {
+                    if( get_Looking_Time2D( Side_looked_at ) > 1.0 ) {
                         Make_Choice( Side_looked_at, is_ignored );
                     }
-                } else if( Side_looked_at == Side ) {
+                } else if( Side_Centered == Side ) {
                     Make_Choice( Side, is_ignored );
                 } else {
                     Choice = "None";
@@ -526,7 +557,7 @@ public class ConditionningRunner : MonoBehaviour
             Stay = transform.position; // get position of the bee on entry of the Area
             ChoiceIsMade = !is_ignored; // choice is made
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
-                transform.LookAt( gameObject.GetComponent<walking>().hit.collider.transform.position );
+                transform.LookAt( GameObject.FindGameObjectWithTag( side_chosen ).transform.position );
             }
 
             if( PreTest == 0 && !bell_notif && !is_ignored ) {
@@ -537,7 +568,8 @@ public class ConditionningRunner : MonoBehaviour
             Side_Chosen = side_chosen;
 
             // If the timestep is not 0 we might miss the choice
-            if( float.Parse( Recorder.INTimeStep.text ) != 0.0f ) {
+            if( float.Parse( Recorder.INTimeStep.text,
+                             System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) != 0.0f ) {
                 Recorder.Record_data_point();
             }
         }
@@ -546,8 +578,9 @@ public class ConditionningRunner : MonoBehaviour
             Side = "None";
             Choice = "None"; // reset the choice to none
             Side_Chosen = "None";
-            Side_looked_at = "Wall";
+            Side_Centered = "Wall";
             Centered_object = "Wall";
+            Side_looked_at = "None";
             Object_looked_at = "None";
             Edge_looked_at = null;
             ChoiceIsMade = false;
