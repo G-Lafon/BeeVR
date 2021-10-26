@@ -124,7 +124,10 @@ To get a local copy up and running follow these simple steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-For an exemple of what can be done with this software see: `Honey bee visual learning in virtual-reality: the influence of motion cues from the background` *Gregory Lafon, Scarlett Howard, Benjamin Paffhausen, Aurore Avarguès-Weber and Martin Giurfa* (publication pending) 
+For an exemple of what can be done with this software see: https://doi.org/10.1038/s41598-021-00630-x
+```
+Lafon, G., Howard, S.R., Paffhausen, B.H. et al. Motion cues from the background influence associative color learning of honey bees in a virtual-reality scenario. Sci Rep 11, 21127 (2021).
+```
 
 Here's the [documentation](https://github.com/G-Lafon/BeeVR/tree/main/Doc) for more information on how to run the software.
 
@@ -156,12 +159,12 @@ If you need a new feature to run your own experiments or have ideas to improve t
 
 Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 
-When using BeeVR in your work please consider citing our original work: <!--Insert publication and proper citation format with DOI here -->
-* DOI: [TBD]
+When using BeeVR in your work please consider citing our original work:
+* DOI: https://doi.org/10.1038/s41598-021-00630-x
 
 * How to cite:
 ```
-[TBD]
+Lafon, G., Howard, S.R., Paffhausen, B.H. et al. Motion cues from the background influence associative color learning of honey bees in a virtual-reality scenario. Sci Rep 11, 21127 (2021).
 ```
 
 
