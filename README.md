@@ -124,14 +124,10 @@ To get a local copy up and running follow these simple steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-For an exemple of what can be done with this software see: https://doi.org/10.1038/s41598-021-00630-x
-```
-Lafon, G., Howard, S.R., Paffhausen, B.H. et al. Motion cues from the background influence associative color learning of honey bees in a virtual-reality scenario. Sci Rep 11, 21127 (2021).
-```
+For an exemple of what can be done with this software see: 
+[Lafon, G. *et al.* (2021)](https://doi.org/10.1038/s41598-021-00630-x)
 
 Here's the [documentation](https://github.com/G-Lafon/BeeVR/tree/main/Doc) for more information on how to run the software.
-
-
 
 <!-- ROADMAP -->
 ## Roadmap
