@@ -49,6 +49,5 @@ public class Stim_Manager : MonoBehaviour
             foreach( GameObject obj in Stim_objects ) {
                 obj.transform.localScale = scale;
             }
-
         }
 }
