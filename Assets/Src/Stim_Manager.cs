@@ -62,7 +62,7 @@ public class Stim_Manager : MonoBehaviour
 
             }
             for( int i = 0; i < Stim_centered.Length; i++ ) {
-                if( Stim_objects[i].name.Split( ' ' )[0] == "Plane" ) {
+                if( Stim_centered[i].name.Split( ' ' )[0] == "Plane" ) {
                     Stim_centered[i].transform.localScale = scale_2D;
                 } else {
                     Stim_centered[i].transform.localScale = scale;
