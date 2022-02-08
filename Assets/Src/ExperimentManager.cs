@@ -372,6 +372,12 @@ public class ExperimentManager : MonoBehaviour
                         }
 
                     }
+
+                    if( seq[repetition] == Preseq[repetition] ) {
+                        side[repetition] = "Right";
+                    } else {
+                        side[repetition] = "Left";
+                    }
                 }
                 Experiment_data.SequencesPreStim.Add( Preseq ); //add the sequence to the list
                 if( seq[0] != null ) {
