@@ -70,15 +70,6 @@ public class Experiment : ScriptableObject
                 return Stims_one[index];
             }
         }
-
-        public string pick_rand_stim( int index ) {
-            int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
-            if( coin_flip < 1 ) {
-                return Stims_one[index];
-            } else {
-                return Stims_two[index];
-            }
-        }
 }
 
 public class ExperimentManager : MonoBehaviour
@@ -309,13 +300,7 @@ public class ExperimentManager : MonoBehaviour
             }
         }
 
-        private string pick_opposite_stim( string stim, int index ) {
-            if( stim == Experiment_data.Stims_one[index] ) {
-                return Experiment_data.Stims_two[index];
-            } else {
-                return Experiment_data.Stims_one[index];
-            }
-        }
+
 
         private void SideSequence() {
 
@@ -331,7 +316,7 @@ public class ExperimentManager : MonoBehaviour
 
                     if( repetition > 1 ) {
                         if( seq[repetition - 2] == seq[repetition - 1] ) {
-                            seq[repetition] = pick_opposite_stim( seq[repetition - 1], line );
+                            seq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition - 1], line );
                         }
 
                     }
@@ -369,20 +354,20 @@ public class ExperimentManager : MonoBehaviour
                     if( repetition > 1 ) {
 
                         if( Preseq[repetition - 1] == seq[repetition - 1] && seq[repetition] == Preseq[repetition] ) {
-                            Preseq[repetition] = pick_opposite_stim( seq[repetition], line );
+                            Preseq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition], line );
                         }
 
                         if( Preseq[repetition - 2] == Preseq[repetition - 1] ) {
-                            Preseq[repetition] = pick_opposite_stim( Preseq[repetition - 1], line );
+                            Preseq[repetition] = Experiment_data.pick_opposite_stim( Preseq[repetition - 1], line );
                         }
 
                         if( seq[repetition - 2] == seq[repetition - 1] ) {
-                            seq[repetition] = pick_opposite_stim( seq[repetition - 1], line );
+                            seq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition - 1], line );
                         }
 
                         if( side[repetition - 1] == side[repetition - 2] ) {
                             if( side[repetition - 1] == "Right" && Preseq[repetition] == seq[repetition] ) {
-                                seq[repetition] = pick_opposite_stim( Preseq[repetition], line );
+                                seq[repetition] = Experiment_data.pick_opposite_stim( Preseq[repetition], line );
                             } else if( side[repetition - 1] == "Left" && Preseq[repetition] != seq[repetition] ) {
                                 Preseq[repetition] = seq[repetition];
                             }
@@ -391,7 +376,9 @@ public class ExperimentManager : MonoBehaviour
                     }
                 }
                 Experiment_data.SequencesPreStim.Add( Preseq ); //add the sequence to the list
-                Experiment_data.Sequences[line] = seq; //replace previous sequence
+                if( seq[0] != null ) {
+                    Experiment_data.Sequences[line] = seq; //replace previous sequence
+                }
             }
         }
 
