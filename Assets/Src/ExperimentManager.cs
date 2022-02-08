@@ -300,6 +300,23 @@ public class ExperimentManager : MonoBehaviour
             PreStimSequence();
         }
 
+        private string pick_rand_stim( int index ) {
+            int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
+            if( coin_flip < 1 ) {
+                return Experiment_data.Stims_one[index];
+            } else {
+                return Experiment_data.Stims_two[index];
+            }
+        }
+
+        private string pick_opposite_stim( string stim, int index ) {
+            if( stim == Experiment_data.Stims_one[index] ) {
+                return Experiment_data.Stims_two[index];
+            } else {
+                return Experiment_data.Stims_one[index];
+            }
+        }
+
         private void SideSequence() {
 
             Experiment_data.Sequences = new List<string[]>(); // initilise list of sequences of stimuli
@@ -310,11 +327,11 @@ public class ExperimentManager : MonoBehaviour
                 for( int repetition = 0; repetition < int.Parse( Experiment_data.Repetition[line] );
                      repetition++ ) { // for each repetition of the line
 
-                    seq[repetition] = Experiment_data.pick_rand_stim( line );
+                    seq[repetition] = pick_rand_stim( line );
 
                     if( repetition > 1 ) {
                         if( seq[repetition - 2] == seq[repetition - 1] ) {
-                            seq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition - 1], line );
+                            seq[repetition] = pick_opposite_stim( seq[repetition - 1], line );
                         }
 
                     }
@@ -346,43 +363,35 @@ public class ExperimentManager : MonoBehaviour
                         continue;
                     }
 
-                    Preseq[repetition] = Experiment_data.pick_rand_stim( line );
-                    seq[repetition] = Experiment_data.pick_rand_stim( line );
+                    Preseq[repetition] = pick_rand_stim( line );
+                    seq[repetition] = pick_rand_stim( line );
 
                     if( repetition > 1 ) {
 
                         if( Preseq[repetition - 1] == seq[repetition - 1] && seq[repetition] == Preseq[repetition] ) {
-                            Preseq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition], line );
+                            Preseq[repetition] = pick_opposite_stim( seq[repetition], line );
                         }
 
                         if( Preseq[repetition - 2] == Preseq[repetition - 1] ) {
-                            Preseq[repetition] = Experiment_data.pick_opposite_stim( Preseq[repetition - 1], line );
+                            Preseq[repetition] = pick_opposite_stim( Preseq[repetition - 1], line );
                         }
 
                         if( seq[repetition - 2] == seq[repetition - 1] ) {
-                            seq[repetition] = Experiment_data.pick_opposite_stim( seq[repetition - 1], line );
+                            seq[repetition] = pick_opposite_stim( seq[repetition - 1], line );
                         }
 
                         if( side[repetition - 1] == side[repetition - 2] ) {
                             if( side[repetition - 1] == "Right" && Preseq[repetition] == seq[repetition] ) {
-                                seq[repetition] = Experiment_data.pick_opposite_stim( Preseq[repetition], line );
+                                seq[repetition] = pick_opposite_stim( Preseq[repetition], line );
                             } else if( side[repetition - 1] == "Left" && Preseq[repetition] != seq[repetition] ) {
                                 Preseq[repetition] = seq[repetition];
                             }
                         }
 
                     }
-
-                    if( seq[repetition] == Preseq[repetition] ) {
-                        side[repetition] = "Right";
-                    } else {
-                        side[repetition] = "Left";
-                    }
                 }
                 Experiment_data.SequencesPreStim.Add( Preseq ); //add the sequence to the list
-                if( seq[0] != null ) {
-                    Experiment_data.Sequences[line] = seq; //replace previous sequence
-                }
+                Experiment_data.Sequences[line] = seq; //replace previous sequence
             }
         }
 
