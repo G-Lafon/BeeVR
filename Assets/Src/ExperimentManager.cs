@@ -70,6 +70,15 @@ public class Experiment : ScriptableObject
                 return Stims_one[index];
             }
         }
+
+        public string pick_rand_stim( int index ) {
+            int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
+            if( coin_flip < 1 ) {
+                return Stims_one[index];
+            } else {
+                return Stims_two[index];
+            }
+        }
 }
 
 public class ExperimentManager : MonoBehaviour
@@ -291,17 +300,6 @@ public class ExperimentManager : MonoBehaviour
             PreStimSequence();
         }
 
-        private string pick_rand_stim( int index ) {
-            int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
-            if( coin_flip < 1 ) {
-                return Experiment_data.Stims_one[index];
-            } else {
-                return Experiment_data.Stims_two[index];
-            }
-        }
-
-
-
         private void SideSequence() {
 
             Experiment_data.Sequences = new List<string[]>(); // initilise list of sequences of stimuli
@@ -312,7 +310,7 @@ public class ExperimentManager : MonoBehaviour
                 for( int repetition = 0; repetition < int.Parse( Experiment_data.Repetition[line] );
                      repetition++ ) { // for each repetition of the line
 
-                    seq[repetition] = pick_rand_stim( line );
+                    seq[repetition] = Experiment_data.pick_rand_stim( line );
 
                     if( repetition > 1 ) {
                         if( seq[repetition - 2] == seq[repetition - 1] ) {
@@ -348,8 +346,8 @@ public class ExperimentManager : MonoBehaviour
                         continue;
                     }
 
-                    Preseq[repetition] = pick_rand_stim( line );
-                    seq[repetition] = pick_rand_stim( line );
+                    Preseq[repetition] = Experiment_data.pick_rand_stim( line );
+                    seq[repetition] = Experiment_data.pick_rand_stim( line );
 
                     if( repetition > 1 ) {
 
