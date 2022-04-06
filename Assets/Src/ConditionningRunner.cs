@@ -30,7 +30,6 @@ public class ConditionningRunner : MonoBehaviour
         private float USTimer; // Amount of time to give the US
         private float TrialTimer; // duration of the trial
         private float CSTimer;// duration before the CS appearance
-        private string[] Stim_names;// names of the pair of stims for this trial
         private bool Stim_On = false;
         private int Repetition; // numbre of repetition of the line
         private int Test; // Is the line a test or not
@@ -306,10 +305,6 @@ public class ConditionningRunner : MonoBehaviour
             USTimer = float.Parse(
                           Xpmanager.Experiment_data.USDuration[Line] ); // gets the amount of time to give the reward
 
-            Stim_names = new string[2];
-            Stim_names[0] = Xpmanager.Experiment_data.Stims_one[Line];
-            Stim_names[1] = Xpmanager.Experiment_data.Stims_two[Line];
-
             PrepPhase_Stim = Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1];
 
             if( startup ) {
@@ -322,21 +317,9 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Set_stims() {
             //updates sides of the stimuli\\
-            if( Stim_names[0] == string.Empty || Stim_names[1] == string.Empty ) {
-                arenaManager.ApplyTexture(
-                    Xpmanager.Experiment_data.Sequences[Line][a - 1].Split( '/' )[0],
-                    0 );
-                arenaManager.ApplyTexture(
-                    Xpmanager.Experiment_data.Sequences[Line][a - 1].Split( '/' )[1],
-                    1 );
-            } else {
-                arenaManager.ApplyTexture(
-                    Xpmanager.Experiment_data.Sequences[Line][a - 1].Split( '/' )[0],
-                    Stim_names[0] );
-                arenaManager.ApplyTexture(
-                    Xpmanager.Experiment_data.Sequences[Line][a - 1].Split( '/' )[1],
-                    Stim_names[1] );
-            }
+            string stim_one = Xpmanager.Experiment_data.Sequences[Line][a - 1];
+            arenaManager.ApplyTexture( "Right", stim_one );
+            arenaManager.ApplyTexture( "Left", Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
         }
 
         private void NextTrial() {
