@@ -337,7 +337,7 @@ public class ExperimentManager : MonoBehaviour
                                         Experiment_data.Repetition[line] )]; // initialise the sequence of pre stims
                 seq = new string[int.Parse( Experiment_data.Repetition[line] )]; // initialise the sequence of stims
                 side = new string[int.Parse(
-                                      Experiment_data.Repetition[line] )]; // initialise the sequence of stims
+                                      Experiment_data.Repetition[line] )]; // initialise the sequence of sides
 
                 for( int repetition = 0; repetition < int.Parse( Experiment_data.Repetition[line] );
                      repetition++ ) { // for each repetition of the line
