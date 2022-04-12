@@ -558,9 +558,9 @@ public class ConditionningRunner : MonoBehaviour
             Side_Chosen = side_chosen;
 
             if( Choice == CSp.text ) {
-                Ping( "CS+" );
+                Ping( "+" );
             } else {
-                Ping( "CS-" );
+                Ping( "-" );
             }
 
             // If the timestep is not 0 we might miss the choice
@@ -712,12 +712,10 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Ping( string to_ping = "1" ) {
             if( serial_port != null ) {
-                serial_port.Open();
                 if( serial_port.IsOpen ) {
                     serial_port.WriteLine( to_ping );
                     serial_port.BaseStream.Flush();
                     Debug.Log( to_ping );
-                    serial_port.Close();
                 }
             }
         }
