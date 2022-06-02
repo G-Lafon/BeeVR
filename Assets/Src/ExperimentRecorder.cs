@@ -63,7 +63,7 @@ public class ExperimentRecorder : MonoBehaviour
             sw.WriteLine( "#" + Ex_Name.text );
             sw.WriteLine( "#" + Date.text + " " + DateTime.Now.ToString(
                               @"HH:mm:ss" ) ); // Header of the result file
-            sw.WriteLine( "#" + "Bee" + ID.ToString() );
+            sw.WriteLine( "#" + "Bee" + ID.ToString() + " CS+ " + Conditionner.CSp.text );
             sw.WriteLine( "Line;Trial;Time(s);PositionX;PositionZ;Rotation;DistanceTotale;Speed;PreStim;Choice;Side_Chosen;Test;Centered_Object;Looking_at;Edge;Edge_coord" );
             sw.Flush(); // need to flush to actually write in the file
 

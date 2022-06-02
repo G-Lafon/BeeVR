@@ -63,6 +63,7 @@ public class ConditionningRunner : MonoBehaviour
         public InputField US; // inputfield to display duration of US
         public InputField where; // display number of current line and current repetition
         public InputField what; // display if test or not
+        public InputField CSp; // name of the rewarded stimulus
 
 
         private AudioSource Speaker; // Audio source
@@ -85,7 +86,6 @@ public class ConditionningRunner : MonoBehaviour
 
         public GameObject BeeScreen; //Screen diplaying stuff to the bee
         public RenderTexture screenText;
-        private int nbr;
 
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
@@ -103,7 +103,6 @@ public class ConditionningRunner : MonoBehaviour
 
         // Use this for initialization
         void Start() {
-            nbr = -1;
 
             Reset_Choice();
             latency = 10;
@@ -322,6 +321,19 @@ public class ConditionningRunner : MonoBehaviour
             arenaManager.ApplyTexture( "Left", Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
         }
 
+        private void Set_CSp( int index ) {
+            if( CSp.text == string.Empty ) {
+                int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
+                if( coin_flip < 1 ) {
+                    CSp.text = Xpmanager.Experiment_data.Stims_one[index];
+                } else {
+                    CSp.text = Xpmanager.Experiment_data.Stims_two[index];
+                }
+            } else {
+                CSp.text = Xpmanager.Experiment_data.pick_opposite_stim( CSp.text, index );
+            }
+        }
+
         private void NextTrial() {
             Speaker.PlayOneShot( Reload, 0.5f ); // play Reload sound once
 
@@ -419,12 +431,7 @@ public class ConditionningRunner : MonoBehaviour
             a = 1;
             Dist = 0;
 
-            if( nbr <= 10 ) {
-                nbr += 1; // hacky way to alternate color at start when absolute = true
-            } else {
-                nbr = 0;
-            }
-
+            Set_CSp( a - 1 );
 
             Butt_Power.interactable =
                 false;// Power button is engaged, can't be re-click while experiment is running
@@ -550,6 +557,12 @@ public class ConditionningRunner : MonoBehaviour
             Choice = FindName( side_chosen );
             Side_Chosen = side_chosen;
 
+            if( Choice == CSp.text ) {
+                Ping( "+" );
+            } else {
+                Ping( "-" );
+            }
+
             // If the timestep is not 0 we might miss the choice
             if( float.Parse( Recorder.INTimeStep.text,
                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) != 0.0f ) {
@@ -639,6 +652,7 @@ public class ConditionningRunner : MonoBehaviour
             Recorder.BeeID.text = BeeID.ToString();
             Line = 0;
             a = 1;
+            Set_CSp( a - 1 );
         }
 
         public string Get_edge_data( ) {
@@ -698,12 +712,10 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Ping( string to_ping = "1" ) {
             if( serial_port != null ) {
-                serial_port.Open();
                 if( serial_port.IsOpen ) {
                     serial_port.WriteLine( to_ping );
                     serial_port.BaseStream.Flush();
                     Debug.Log( to_ping );
-                    serial_port.Close();
                 }
             }
         }
