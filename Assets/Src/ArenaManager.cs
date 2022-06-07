@@ -34,6 +34,7 @@ public class ArenaManager : MonoBehaviour
         public GameObject Stimulus3DRight_Cylinder;
 
         public GameObject Stimulus3DCenter;
+        public GameObject Stimulus3DCenter_Cylinder;
 
         public GameObject Stimulus2DLeft; // The 2D stimulus with the detection area attached to it
         public GameObject Stimulus2DRight;// same but on the right

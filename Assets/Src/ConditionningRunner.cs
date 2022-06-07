@@ -147,15 +147,18 @@ public class ConditionningRunner : MonoBehaviour
 
                 } else if( PrepPhaseTimer >
                            0 ) { // CS start timer is finished but there is a PrepPhase to go through before really starting
+                    if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
+                        Central_Stim( true );
+                    } else {
+                        Stick_the_bee();// stick bee to initial position
+                        ToggleFullScreenStim( true ); // Turn On
+                    }
                     PrepPhaseTimer -= Time.deltaTime;
                     UpdateText();
-
-                    Stick_the_bee();// stick bee to initial position
-
-                    ToggleFullScreenStim( true ); // Turn On
                 } else if( Stim_On == false ) {
                     // CS start timer finished
                     ToggleFullScreenStim(); // Turn Off
+                    Central_Stim( false );
                     Stim( true );
                     gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
                 }
@@ -247,6 +250,23 @@ public class ConditionningRunner : MonoBehaviour
             where.text = ( Line.ToString() + " : " + a.ToString() );
             what.text =
                 Xpmanager.Experiment_data.selGridTest[Line].ToString();
+        }
+
+        private void Central_Stim( bool show ) {
+            GameObject central_stim = GameObject.FindGameObjectWithTag( "Center" );
+            if( show ) {
+                if( central_stim ) {
+                    central_stim.GetComponentInChildren<Renderer>().enabled = true;
+                    arenaManager.ApplyTexture( central_stim.GetComponentInChildren<Renderer>(), PrepPhase_Stim );
+                } else {
+                    Instantiate( arenaManager.Stimulus3DCenter_Cylinder );
+                    arenaManager.ApplyTexture(
+                        GameObject.FindGameObjectWithTag( "Center" ).GetComponentInChildren<Renderer>(), PrepPhase_Stim );
+                }
+                arenaManager.GetComponentInParent<Stim_Manager>().Update_scale();
+            } else if( central_stim ) {
+                Destroy( central_stim );
+            }
         }
 
         public void Stim( bool show ) {
@@ -405,9 +425,10 @@ public class ConditionningRunner : MonoBehaviour
                 transform.position = Stand; // move position to initial
                 transform.rotation = look; // rotate to initial orientation
 
+                ToggleFullScreenStim( false );
                 Stim( false );
+                Central_Stim( false );
                 Reset_Choice();
-                Ping( "0" );
             }
         }
 

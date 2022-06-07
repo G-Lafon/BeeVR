@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7227,6 +7227,8 @@ MonoBehaviour:
   Stimulus3DRight_Cylinder: {fileID: 4460565912299603383, guid: 7e96c1a05e101ec4da967fb4e0a932c2,
     type: 3}
   Stimulus3DCenter: {fileID: 1846297859548226, guid: 02cba1fa16002e247beff4e81f8c37ad,
+    type: 3}
+  Stimulus3DCenter_Cylinder: {fileID: 28458718089223676, guid: 903d141cc615ba049836a38d6b96e07c,
     type: 3}
   Stimulus2DLeft: {fileID: 7229617801181163220, guid: d0890fc731f1ad147ad3b828d2456806,
     type: 3}
