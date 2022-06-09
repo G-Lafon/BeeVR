@@ -3,6 +3,64 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
+public class Timer
+{
+        private float total_time = 0.0f;
+        private float curr_time = 0.0f;
+
+        private InputField display;
+
+        private bool is_on = false;
+
+        private void Update_display() {
+            display.text = Mathf.Round( curr_time ).ToString();
+        }
+
+        public Timer( InputField disp, float time = 0.0f ) {
+            total_time = time;
+            display = disp;
+            display.text = total_time.ToString();
+        }
+
+        public void Set_total_time( float time ) {
+            total_time = time;
+            Reset_timer();
+        }
+
+        public void Start() {
+            is_on = true;
+            Reset_timer();
+        }
+
+        public void Stop() {
+            is_on = false;
+        }
+
+        private void Mod_curr_time( float time ) {
+            curr_time += time;
+            Update_display();
+        }
+
+        public void Reset_timer() {
+            curr_time = total_time;
+            Update_display();
+        }
+
+        public bool Run_timer( float delta_time, System.Action action_on, System.Action action_off ) {
+            if( !is_on ) {
+                return false;
+            }
+            Mod_curr_time( -delta_time );
+            action_on();
+            if( curr_time <= 0.0f ) {
+                action_off();
+                Stop();
+                return true;
+            }
+            return false;
+        }
+}
+
 public class ConditionningRunner : MonoBehaviour
 {
 
@@ -25,11 +83,12 @@ public class ConditionningRunner : MonoBehaviour
 
         public string PrepPhase_Stim; // What stimulus was shown during the prep phase
 
-        private float
-        PrepPhaseTimer; // Duration of the pre trial phase, between the inter trial interval and the actual trial
-        private float USTimer; // Amount of time to give the US
-        private float TrialTimer; // duration of the trial
-        private float CSTimer;// duration before the CS appearance
+        private Timer
+        Prep_phase_timer;// Duration of the pre trial phase, between the inter trial interval and the actual trial
+        private Timer CS_timer;// duration before the CS appearance
+        private Timer Trial_timer;// duration of the trial
+        private Timer US_Timer;// Amount of time to give the US
+
         private bool Stim_On = false;
         private int Repetition; // numbre of repetition of the line
         private int Test; // Is the line a test or not
@@ -116,10 +175,63 @@ public class ConditionningRunner : MonoBehaviour
 
             Recorder = gameObject.GetComponent<ExperimentRecorder>();
             Xpmanager = gameObject.GetComponent<ExperimentManager>();
+
+            Prep_phase_timer = new Timer( PREPTIME );
+            CS_timer = new Timer( CSSTART );
+            US_Timer = new Timer( US );
+            Trial_timer = new Timer( CSSTOP );
         }
 
         public bool bee_can_move() {
             return gameObject.GetComponent<CharacterController>().enabled;
+        }
+
+        private void Prep_phase_action_on() {
+            if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
+                Central_Stim( true );
+            } else {
+                Stick_the_bee();// stick bee to initial position
+                ToggleFullScreenStim( true ); // Turn On
+            }
+        }
+        private void Prep_phase_action_off() {
+            //TODO: Reset position and stuff here
+            ToggleFullScreenStim(); // Turn Off
+            Central_Stim( false );
+            Trial_timer.Start();
+            Stim( true );
+            gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+        }
+
+        private void CS_action_on() {
+            Stick_the_bee();// stick bee to initial position
+        }
+        private void CS_action_off() {
+            // CS start timer finished
+            Prep_phase_timer.Start();
+        }
+
+        private void US_action_on() {
+            gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+            transform.position = Stay; // stuck position
+        }
+
+        private void Trial_action_on() {
+            Dist += Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
+                                           2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) );
+
+            Speed = Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
+                                           2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) ) / Time.deltaTime;
+
+            gameObject.GetComponent<walking>().Distance.text = ( Dist * 100 ).ToString();
+
+            Tmp_X = gameObject.transform.position.x;
+            Tmp_Z = gameObject.transform.position.z;
+            Check_choice();
+
+            if( Xpmanager.Experiment_data.is_2D ) {
+                Looking_Timer2D();
+            }
         }
 
         // Update is called once per frame
@@ -131,6 +243,7 @@ public class ConditionningRunner : MonoBehaviour
                 } else if( Tmp_latency <= 0 ) {
                     Go = true;
                     Waiting = false;
+                    CS_timer.Start();
 
                     if( Recorder.Path.text != string.Empty ) {
                         Recorder.Start_Record();
@@ -139,75 +252,15 @@ public class ConditionningRunner : MonoBehaviour
             }
 
             if( Go == true ) { // runs the experiment
-                if( CSTimer > 0 ) { // if Csstart Timer not finished
-                    CSTimer -= Time.deltaTime; // decrement
+                CS_timer.Run_timer( Time.deltaTime, CS_action_on, CS_action_off );
+                Prep_phase_timer.Run_timer( Time.deltaTime, Prep_phase_action_on, Prep_phase_action_off );
 
-                    UpdateText(); // display current time
-                    Stick_the_bee();// stick bee to initial position
+                US_Timer.Run_timer( Time.deltaTime, US_action_on, NextTrial );
 
-                } else if( PrepPhaseTimer >
-                           0 ) { // CS start timer is finished but there is a PrepPhase to go through before really starting
-                    if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
-                        Central_Stim( true );
-                    } else {
-                        Stick_the_bee();// stick bee to initial position
-                        ToggleFullScreenStim( true ); // Turn On
-                    }
-                    PrepPhaseTimer -= Time.deltaTime;
-                    UpdateText();
-                } else if( Stim_On == false ) {
-                    // CS start timer finished
-                    ToggleFullScreenStim(); // Turn Off
-                    Central_Stim( false );
-                    Stim( true );
-                    gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
-                }
-
-
-                if( ChoiceIsMade == true && USTimer > 0 && Test != 1 &&
-                    PreTest !=
-                    1 ) {
-                    // if choice is made AND Cs start timer finished AND Cs Stop timer NOT finished AND US Timer NOT finished
-                    USTimer -= Time.deltaTime; // update timer
-                    UpdateText();
-
-                    gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
-                    transform.position = Stay; // stuck position
-
-                } else if( TrialTimer > 0 ) {  // CS stop timer is not finished
-                    Dist += Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
-                                                   2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) );
-
-                    Speed = Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
-                                                   2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) ) / Time.deltaTime;
-
-                    TrialTimer -= Time.deltaTime; // decrement
-                    UpdateText(); //display
-
-                    gameObject.GetComponent<walking>().Distance.text = ( Dist * 100 ).ToString();
-
-                    Tmp_X = gameObject.transform.position.x;
-                    Tmp_Z = gameObject.transform.position.z;
-                    Check_choice();
-
-                    if( Xpmanager.Experiment_data.is_2D ) {
-                        Looking_Timer2D();
-                    }
-                }
-
+                Trial_timer.Run_timer( Time.deltaTime, Trial_action_on, NextTrial );
 
                 if( ChoiceIsMade == true && PreTest == 1 ) {
                     ChoiceTimer( Side, false );
-                }
-
-                if( TrialTimer <= 0 ) { // trial is finished
-                    NextTrial(); // start next trial
-
-                }
-
-                if( USTimer <= 0f && ChoiceIsMade == true && Test != 1 &&
-                    PreTest != 1 ) { // if choice made and countdown finished
-                    NextTrial(); // start next trial
                 }
 
                 if( Line >= int.Parse( Xpmanager.INTestNb.text ) - 1 &&
@@ -242,11 +295,6 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void UpdateText() {
-            PREPTIME.text = ( Mathf.Round( PrepPhaseTimer ) ).ToString();
-            CSSTART.text = ( Mathf.Round( CSTimer ) ).ToString();
-            CSSTOP.text = ( Mathf.Round( TrialTimer ) ).ToString();
-            US.text = ( Mathf.Round( USTimer ) ).ToString();
-
             where.text = ( Line.ToString() + " : " + a.ToString() );
             what.text =
                 Xpmanager.Experiment_data.selGridTest[Line].ToString();
@@ -315,14 +363,14 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Set_values( bool startup = false ) {
-            PrepPhaseTimer = float.Parse(
-                                 Xpmanager.Experiment_data.PrepPhaseDuration[Line] ); // gets the trial duration
-            TrialTimer = float.Parse(
-                             Xpmanager.Experiment_data.CSStop[Line] ); // gets the trial duration
-            CSTimer = float.Parse(
-                          Xpmanager.Experiment_data.CSStart[Line] ); // gets the delay before CS
-            USTimer = float.Parse(
-                          Xpmanager.Experiment_data.USDuration[Line] ); // gets the amount of time to give the reward
+            Prep_phase_timer.Set_total_time( float.Parse(
+                                                 Xpmanager.Experiment_data.PrepPhaseDuration[Line] ) );
+            Trial_timer.Set_total_time( float.Parse(
+                                            Xpmanager.Experiment_data.CSStop[Line] ) ); // gets the trial duration
+            CS_timer.Set_total_time( float.Parse(
+                                         Xpmanager.Experiment_data.CSStart[Line] ) );
+            US_Timer.Set_total_time( float.Parse(
+                                         Xpmanager.Experiment_data.USDuration[Line] ) ); // gets the amount of time to give the reward
 
             PrepPhase_Stim = Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1];
 
@@ -405,6 +453,7 @@ public class ConditionningRunner : MonoBehaviour
             TimerLeft = 0;
             TimerRight = 0;
 
+            CS_timer.Start();
         }
 
 
@@ -569,6 +618,8 @@ public class ConditionningRunner : MonoBehaviour
             ChoiceIsMade = !is_ignored; // choice is made
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
                 transform.LookAt( GameObject.FindGameObjectWithTag( side_chosen ).transform.position );
+                US_Timer.Start();
+                Trial_timer.Stop();
             }
 
             if( PreTest == 0 && !bell_notif && !is_ignored ) {
