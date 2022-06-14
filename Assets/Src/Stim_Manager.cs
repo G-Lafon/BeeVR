@@ -18,17 +18,36 @@ public class Stim_Manager : MonoBehaviour
 
         // Start is called before the first frame update
         void Start() {
-            scale = new Vector3( 0.05f, 0.05f, 0.05f );
-            Scale_X.text = ( 0.05f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-            Scale_Y.text = ( 0.05f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-            Scale_Z.text = ( 0.05f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+            Scale_X.text = ( 0.0f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+            Scale_Y.text = ( 0.0f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+            Scale_Z.text = ( 0.0f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+        }
+
+        private void Update_scale() {
+            Stim_objects = GameObject.FindGameObjectsWithTag( "Stim_object" );
+            int num_of_object = Stim_objects.Length;
+            if( num_of_object > 0 ) {
+                // here we look at the last object because the first one might be slated for destruction
+                // destroy() only happen at the end of the loop
+                scale.x = Stim_objects[num_of_object - 1].transform.localScale.x;
+                scale.y = Stim_objects[num_of_object - 1].transform.localScale.y;
+                scale.z = Stim_objects[num_of_object - 1].transform.localScale.z;
+            }
         }
 
         public void On_scale_change() {
-            scale = new Vector3( float.Parse( Scale_X.text,
+
+            Update_scale();
+
+            Vector3 temp_scale = new Vector3( float.Parse( Scale_X.text,
                                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ), float.Parse( Scale_Y.text,
                                                       System.Globalization.CultureInfo.InvariantCulture.NumberFormat ), float.Parse( Scale_Z.text,
                                                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ) );
+
+
+            scale.x = temp_scale.x != 0.0f ? temp_scale.x : scale.x;
+            scale.y = temp_scale.y != 0.0f ? temp_scale.y : scale.y;
+            scale.z = temp_scale.z != 0.0f ? temp_scale.z : scale.z;
 
             scale_2D.x = scale.x;
             scale_2D.y = scale.z;

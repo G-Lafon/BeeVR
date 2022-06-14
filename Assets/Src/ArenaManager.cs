@@ -142,8 +142,6 @@ public class ArenaManager : MonoBehaviour
 
                     if( Xpmanager.Experiment_data.is_2D ) {
                         Instantiate<GameObject>( Plane_BackGround );
-                        Instantiate<GameObject>( Stimulus2DLeft );
-                        Instantiate<GameObject>( Stimulus2DRight );
                         Instantiate<GameObject>( Teleporter_Left );
                         Instantiate<GameObject>( Teleporter_Right );
                         Get_Animate( "BackPlane" );
@@ -212,6 +210,12 @@ public class ArenaManager : MonoBehaviour
         }
 
         public void Spawn_shape() {
+
+            if( Xpmanager.Experiment_data.is_2D ) {
+                Instantiate<GameObject>( Stimulus2DLeft );
+                Instantiate<GameObject>( Stimulus2DRight );
+                return;
+            }
 
             switch( ChooseShape.value ) {
                 case 0://cube
