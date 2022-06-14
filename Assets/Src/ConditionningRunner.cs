@@ -189,15 +189,24 @@ public class ConditionningRunner : MonoBehaviour
         private void Prep_phase_action_on() {
             if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
                 Central_Stim( true );
+                gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+                if( Check_choice() ) {
+                    Reset_Choice();
+                    Prep_phase_action_off();
+                    Prep_phase_timer.Stop();
+                }
             } else {
                 Stick_the_bee();// stick bee to initial position
                 ToggleFullScreenStim( true ); // Turn On
             }
+
         }
         private void Prep_phase_action_off() {
-            //TODO: Reset position and stuff here
+            Stick_the_bee(); // Reset position
+
             ToggleFullScreenStim(); // Turn Off
             Central_Stim( false );
+
             Trial_timer.Start();
             Stim( true );
             gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
@@ -227,7 +236,16 @@ public class ConditionningRunner : MonoBehaviour
 
             Tmp_X = gameObject.transform.position.x;
             Tmp_Z = gameObject.transform.position.z;
-            Check_choice();
+
+            if( Check_choice() ) {
+                bool is_ignored = Xpmanager.Experiment_data.Textures_to_ignore.Contains( Centered_object );
+                if( Xpmanager.Experiment_data.is_2D ) {
+                    Make_Choice( Side_looked_at, is_ignored );
+                } else {
+                    Make_Choice( Side, is_ignored );
+                }
+            }
+
 
             if( Xpmanager.Experiment_data.is_2D ) {
                 Looking_Timer2D();
@@ -569,13 +587,11 @@ public class ConditionningRunner : MonoBehaviour
 
         }
 
-        private void Check_choice() {
-            bool is_ignored = false;
+        private bool Check_choice() {
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {
                 Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' )[1];
                 Centered_object = FindName( Side_Centered );
-                is_ignored = Xpmanager.Experiment_data.Textures_to_ignore.Contains( Centered_object );
             } else {
                 Side_Centered = "Wall";
                 Centered_object = "Wall";
@@ -601,16 +617,17 @@ public class ConditionningRunner : MonoBehaviour
                 Xpmanager.Experiment_data.is_2D ) {
                 if( Xpmanager.Experiment_data.is_2D ) {
                     if( get_Looking_Time2D( Side_looked_at ) > 1.0 ) {
-                        Make_Choice( Side_looked_at, is_ignored );
+                        return true;
                     }
                 } else if( Side_Centered == Side ) {
-                    Make_Choice( Side, is_ignored );
+                    return true;
                 } else {
                     Choice = "None";
                     Side_Chosen = "None";
                     ChoiceIsMade = false;
                 }
             }
+            return false;
         }
 
         private void Make_Choice( string side_chosen, bool is_ignored = false ) {
