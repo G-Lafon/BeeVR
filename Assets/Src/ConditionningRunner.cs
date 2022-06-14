@@ -149,6 +149,7 @@ public class ConditionningRunner : MonoBehaviour
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
         private string[] stim_flag = { "Left", "Right" };
+        private string[] all_stim_flag = {"Left", "Right", "Center"};
         private string[] env_flag = { "Wall", "Floor" };
 
         private SerialPort serial_port;
@@ -188,7 +189,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Prep_phase_action_on() {
             if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
-                Central_Stim( true );
+                Spawn_Stim( true, "Center" );
                 gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
                 if( Check_choice() ) {
                     Reset_Choice();
@@ -205,10 +206,10 @@ public class ConditionningRunner : MonoBehaviour
             Stick_the_bee(); // Reset position
 
             ToggleFullScreenStim(); // Turn Off
-            Central_Stim( false );
+            Spawn_Stim( false, "Center" );
 
             Trial_timer.Start();
-            Stim( true );
+            Spawn_Stim( true, stim_flag );
             gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
         }
 
@@ -318,48 +319,71 @@ public class ConditionningRunner : MonoBehaviour
                 Xpmanager.Experiment_data.selGridTest[Line].ToString();
         }
 
-        private void Central_Stim( bool show ) {
-            GameObject central_stim = GameObject.FindGameObjectWithTag( "Center" );
-            if( show ) {
-                if( central_stim ) {
-                    central_stim.GetComponentInChildren<Renderer>().enabled = true;
-                    arenaManager.ApplyTexture( central_stim.GetComponentInChildren<Renderer>(), PrepPhase_Stim );
+        private void Spawn_Stim( bool spawn, string flg ) {
+            GameObject flg_stim = GameObject.FindGameObjectWithTag( flg );
+            if( spawn ) {
+                if( flg_stim ) {
+                    flg_stim.GetComponentInChildren<Renderer>().enabled = true;
                 } else {
-                    Instantiate( arenaManager.Stimulus3DCenter_Cylinder );
-                    arenaManager.ApplyTexture(
-                        GameObject.FindGameObjectWithTag( "Center" ).GetComponentInChildren<Renderer>(), PrepPhase_Stim );
+
+                    switch( flg ) {
+                        case "Center":
+                            Instantiate( arenaManager.Stimulus3DCenter_Cylinder );
+                            break;
+                        case "Left":
+                        case "Right":
+                            arenaManager.Spawn_shape();
+                            break;
+                        default:
+                            break;
+                    }
+
                 }
-                arenaManager.GetComponentInParent<Stim_Manager>().Update_scale();
-            } else if( central_stim ) {
-                Destroy( central_stim );
+                Set_stims();
+                arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+                Stim( true );
+            } else if( flg_stim ) {
+                Destroy( flg_stim );
+            }
+        }
+
+        public void Spawn_Stim( bool spawn, string[] flag ) {
+            foreach( string flg in flag ) {
+                Spawn_Stim( spawn, flg );
             }
         }
 
         public void Stim( bool show ) {
 
             foreach( string flag in stim_flag ) {
-                Renderer rend_3D = GameObject.FindGameObjectWithTag( flag ).GetComponentInChildren<Renderer>();
-                SpriteRenderer rend_2D = GameObject.FindGameObjectWithTag( flag ).GetComponent<SpriteRenderer>();
+                GameObject obj = GameObject.FindGameObjectWithTag( flag );
+                if( obj ) {
+                    Renderer rend_3D = obj.GetComponentInChildren<Renderer>();
+                    SpriteRenderer rend_2D = obj.GetComponent<SpriteRenderer>();
 
-                if( rend_3D != null ) {
-                    rend_3D.enabled = show;
-                }
-                if( rend_2D != null ) {
-                    rend_2D.enabled = show;
+                    if( rend_3D != null ) {
+                        rend_3D.enabled = show;
+                    }
+                    if( rend_2D != null ) {
+                        rend_2D.enabled = show;
+                    }
                 }
             }
 
             if( !Xpmanager.Experiment_data.is_2D ) {
                 foreach( string flag in env_flag ) {// Enable wall and floor renderer
-                    Renderer rend_env = GameObject.FindGameObjectWithTag( flag ).GetComponentInChildren<Renderer>();
-                    if( rend_env != null ) {
-                        //TODO: differentiate between wall and floor
-                        if( Xpmanager.Experiment_data.Wall_on != null ) {
-                            // if show = false then we want the thing to be off
-                            // if show = true then we want to follow Wall_on instruction
-                            rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
-                        } else {
-                            rend_env.enabled = show;
+                    GameObject obj = GameObject.FindGameObjectWithTag( flag );
+                    if( obj ) {
+                        Renderer rend_env = obj.GetComponentInChildren<Renderer>();
+                        if( rend_env != null ) {
+                            //TODO: differentiate between wall and floor
+                            if( Xpmanager.Experiment_data.Wall_on != null ) {
+                                // if show = false then we want the thing to be off
+                                // if show = true then we want to follow Wall_on instruction
+                                rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
+                            } else {
+                                rend_env.enabled = show;
+                            }
                         }
                     }
                 }
@@ -403,6 +427,7 @@ public class ConditionningRunner : MonoBehaviour
         private void Set_stims() {
             //updates sides of the stimuli\\
             string stim_one = Xpmanager.Experiment_data.Sequences[Line][a - 1];
+            arenaManager.ApplyTexture( "Center", PrepPhase_Stim );
             arenaManager.ApplyTexture( "Right", stim_one );
             arenaManager.ApplyTexture( "Left", Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
         }
@@ -435,8 +460,8 @@ public class ConditionningRunner : MonoBehaviour
 
             Recorder.reset_chrono();
 
-            // makes CS invisible\\
-            Stim( false );
+            // Despawn CS
+            Spawn_Stim( false, stim_flag );
 
             transform.position = Stand; // move position to initial
             transform.rotation = look; // rotate to initial orientation
@@ -451,7 +476,6 @@ public class ConditionningRunner : MonoBehaviour
                 a += 1;
                 Set_values();
 
-                Set_stims();
             } else if( Line < int.Parse( Xpmanager.INTestNb.text ) - 1 &&
                        a >= Repetition ) { // if Line < number of lines and current line is finished /!\ Line can get out of range !! /!\
 
@@ -460,8 +484,6 @@ public class ConditionningRunner : MonoBehaviour
                 a = 1;
 
                 Set_values( true );
-
-                Set_stims();
 
             } else if( Line == int.Parse( Xpmanager.INTestNb.text ) - 1 &&
                        a == Repetition ) { // we do the last repetition, go overboard and stop
@@ -493,8 +515,7 @@ public class ConditionningRunner : MonoBehaviour
                 transform.rotation = look; // rotate to initial orientation
 
                 ToggleFullScreenStim( false );
-                Stim( false );
-                Central_Stim( false );
+                Spawn_Stim( false, all_stim_flag );
                 Reset_Choice();
             }
         }
@@ -543,7 +564,6 @@ public class ConditionningRunner : MonoBehaviour
             Tmp_X = gameObject.transform.position.x;
             Tmp_Z = gameObject.transform.position.z;
 
-            Set_stims();
             Ping( "1" );
         }
 

@@ -133,7 +133,7 @@ public class ArenaManager : MonoBehaviour
 
                     bee.transform.position = pos_Y; // place the bbe at the start
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-                    gameObject.GetComponent<Stim_Manager>().Update_scale();
+
 
                     Get_Animate( "Wall" );
                     break;
@@ -151,14 +151,11 @@ public class ArenaManager : MonoBehaviour
                         Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
                         Instantiate<GameObject>( OpenArena_Floor );
 
-                        Spawn_shape();
                         Get_Animate( "Wall" );
                     }
 
                     bee.transform.position = pos_O; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-                    gameObject.GetComponent<Stim_Manager>().Update_scale();
-
 
                     break;
                 case 3:
@@ -167,19 +164,12 @@ public class ArenaManager : MonoBehaviour
 
                     Instantiate<GameObject>( SquareArena_Wall );
                     Instantiate<GameObject>( SquareArena_Floor );
-                    Spawn_shape();
-                    Get_Animate( "Wall" );
 
-                    //if (concept == true)
-                    //{
-                    //  Instantiate<GameObject>(Stimulus3DCenter);
-                    //}
+                    Get_Animate( "Wall" );
 
 
                     bee.transform.position = pos_O; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-                    gameObject.GetComponent<Stim_Manager>().Update_scale();
-
 
                     break;
                 case 4:
@@ -188,19 +178,11 @@ public class ArenaManager : MonoBehaviour
 
                     Instantiate<GameObject>( OpenArena_Wall_Smooth );
                     Instantiate<GameObject>( OpenArena_Floor_Smooth );
-                    Spawn_shape();
+
                     Get_Animate( "Wall" );
-
-                    //if (concept == true)
-                    //{
-                    //  Instantiate<GameObject>(Stimulus3DCenter);
-                    //}
-
 
                     bee.transform.position = pos_O; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-                    gameObject.GetComponent<Stim_Manager>().Update_scale();
-
 
                     break;
                 case 5:
@@ -214,7 +196,6 @@ public class ArenaManager : MonoBehaviour
 
                     bee.transform.position = pos_C; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-                    gameObject.GetComponent<Stim_Manager>().Update_scale();
 
                     Get_Animate( "Wall" );
                     break;
@@ -253,7 +234,6 @@ public class ArenaManager : MonoBehaviour
                 default:
                     break;
             }
-            gameObject.GetComponent<Stim_Manager>().Update_scale();
         }
 
         public void Set_edge_scale() {
@@ -280,6 +260,7 @@ public class ArenaManager : MonoBehaviour
         void Clear_Shape() {
             Destroy( GameObject.FindGameObjectWithTag( "Left" ) );
             Destroy( GameObject.FindGameObjectWithTag( "Right" ) );
+            Destroy( GameObject.FindGameObjectWithTag( "Center" ) );
         }
         void Clear_arena() {
             Destroy( GameObject.FindGameObjectWithTag( "Wall" ) );
@@ -388,30 +369,33 @@ public class ArenaManager : MonoBehaviour
         }
 
         public void ApplyTexture( string side, string name ) {
-            if( GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<Renderer>() !=
-                null ) {
+            GameObject obj = GameObject.FindGameObjectWithTag( side );
+            if( obj ) {
+
+                rend = obj.GetComponentInChildren<Renderer>(); // find renderer
+                rend2D = obj.GetComponent<SpriteRenderer>(); // find renderer
+
                 // if renderer exist
-                rend = GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<Renderer>(); // find renderer
-                foreach( Texture stm in Stimulations ) {
-                    if( stm.name == name ) {
-                        rend.material.mainTexture = stm; // change texture with image
-                        break;
+                if( rend != null ) {
+                    foreach( Texture stm in Stimulations ) {
+                        if( stm.name == name ) {
+                            rend.material.mainTexture = stm; // change texture with image
+                            break;
+                        }
                     }
                 }
 
-            }
-
-            if( GameObject.FindGameObjectWithTag( side ).GetComponent<SpriteRenderer>() !=
-                null ) {
-                // same with Sprite  renderer
-                rend2D = GameObject.FindGameObjectWithTag( side ).GetComponent<SpriteRenderer>(); // find renderer
-                foreach( Texture stm in Stimulations ) {
-                    if( stm.name == name ) {
-                        rend2D.sprite = Sprite.Create( ( Texture2D )stm, new Rect( 0, 0,
-                                                       stm.width, stm.height ), new Vector2( 0.5f, 0.5f ),
-                                                       float.Parse( INScale.text ) ); // create sprite from texture in www
-                        rend.material.mainTexture = stm; // change texture with image
-                        break;
+                // if Sprite  renderer exist
+                if( rend2D != null ) {
+                    // same with Sprite renderer
+                    foreach( Texture stm in Stimulations ) {
+                        if( stm.name == name ) {
+                            rend2D.sprite = Sprite.Create( ( Texture2D )stm, new Rect( 0, 0,
+                                                           stm.width, stm.height ), new Vector2( 0.5f, 0.5f ),
+                                                           float.Parse( INScale.text ) ); // create sprite from texture in www
+                            rend.material.mainTexture = stm; // change texture with image
+                            break;
+                        }
                     }
                 }
             }
@@ -438,11 +422,18 @@ public class ArenaManager : MonoBehaviour
         }
 
         public void Preview() {
-            ApplyTexture( "Left", 0 );
-            ApplyTexture( "Right", 1 );
+
             prev = !prev;
             ShowList = !ShowList;
-            bee.GetComponent<ConditionningRunner>().Stim( prev ); // show stim
+            if( prev ) {
+                Spawn_shape();
+                ApplyTexture( "Left", 0 );
+                ApplyTexture( "Right", 1 );
+                bee.GetComponent<ConditionningRunner>().Stim( prev ); // show stim
+            } else {
+                Clear_Shape();
+            }
+
         }
 
         private void OnGUI() {

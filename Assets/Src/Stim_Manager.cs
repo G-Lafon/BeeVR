@@ -24,22 +24,6 @@ public class Stim_Manager : MonoBehaviour
             Scale_Z.text = ( 0.05f ).ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
         }
 
-        public void Update_scale() {
-            Stim_objects = GameObject.FindGameObjectsWithTag( "Stim_object" );
-            int num_of_object = Stim_objects.Length;
-            if( num_of_object > 0 ) {
-                // here we look at the last object because the first one might be slated for destruction
-                // destroy() only happen at the end of the loop
-                Scale_X.text = Stim_objects[num_of_object - 1].transform.localScale.x.ToString(
-                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-                Scale_Y.text = Stim_objects[num_of_object - 1].transform.localScale.y.ToString(
-                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-                Scale_Z.text = Stim_objects[num_of_object - 1].transform.localScale.z.ToString(
-                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-            }
-        }
-
-
         public void On_scale_change() {
             scale = new Vector3( float.Parse( Scale_X.text,
                                               System.Globalization.CultureInfo.InvariantCulture.NumberFormat ), float.Parse( Scale_Y.text,
