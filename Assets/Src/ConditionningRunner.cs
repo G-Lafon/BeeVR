@@ -416,12 +416,17 @@ public class ConditionningRunner : MonoBehaviour
 
             PrepPhase_Stim = Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1];
 
+            if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
+                Set_CSp( Line );
+            }
+
             if( startup ) {
                 Repetition = int.Parse(
                                  Xpmanager.Experiment_data.Repetition[Line] );
                 Test = Xpmanager.Experiment_data.selGridTest[Line];
                 PreTest = Xpmanager.Experiment_data.selGridPreTest[Line];
             }
+
         }
 
         private void Set_stims() {
@@ -433,6 +438,20 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Set_CSp( int index ) {
+            int concept = Xpmanager.Experiment_data.selGridConcept[index];
+            switch( concept ) {
+                case 1:
+                    CSp.text = Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1];
+                    return;
+                case 2:
+                    CSp.text = Xpmanager.Experiment_data.pick_opposite_stim(
+                                   Xpmanager.Experiment_data.SequencesPreStim[Line][a - 1], index );
+                    return;
+                default:
+                    break;
+            }
+
+
             if( CSp.text == string.Empty ) {
                 int coin_flip = ( int )Mathf.Round( UnityEngine.Random.value ); //flip a coin
                 if( coin_flip < 1 ) {
