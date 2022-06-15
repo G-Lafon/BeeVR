@@ -7226,7 +7226,7 @@ MonoBehaviour:
     type: 3}
   Stimulus3DRight_Cylinder: {fileID: 4460565912299603383, guid: 7e96c1a05e101ec4da967fb4e0a932c2,
     type: 3}
-  Stimulus3DCenter: {fileID: 1846297859548226, guid: 02cba1fa16002e247beff4e81f8c37ad,
+  Stimulus3DCenter: {fileID: 4707376792450533710, guid: 314674760aac84047bce4f2d42dcae4d,
     type: 3}
   Stimulus3DCenter_Cylinder: {fileID: 28458718089223676, guid: 903d141cc615ba049836a38d6b96e07c,
     type: 3}
@@ -7237,6 +7237,8 @@ MonoBehaviour:
   StimulusSpriteLeft: {fileID: 2014832224913581918, guid: 73482185736aa8343ab1341f5dd99571,
     type: 3}
   StimulusSpriteRight: {fileID: 1601638631575655520, guid: 5579f97269a07734482b584006462874,
+    type: 3}
+  StimulusSpriteCenter: {fileID: 2456833516840300646, guid: 705b1a5fd6bfb9442848e636c35054d6,
     type: 3}
   Teleporter_Left: {fileID: 7123910882606171637, guid: e2bc8564f2519d140afada6b4b255c85,
     type: 3}

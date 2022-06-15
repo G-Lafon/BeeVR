@@ -328,7 +328,7 @@ public class ConditionningRunner : MonoBehaviour
 
                     switch( flg ) {
                         case "Center":
-                            Instantiate( arenaManager.Stimulus3DCenter_Cylinder );
+                            arenaManager.Spawn_shape( true );
                             break;
                         case "Left":
                         case "Right":

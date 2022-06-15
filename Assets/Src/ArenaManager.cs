@@ -41,7 +41,8 @@ public class ArenaManager : MonoBehaviour
 
         /** The 2D stimulus with the camera tracking script with the detection area attached to it*/
         public GameObject StimulusSpriteLeft;
-        public GameObject StimulusSpriteRight;// same but on the right
+        public GameObject StimulusSpriteRight;
+        public GameObject StimulusSpriteCenter;
 
         public GameObject Teleporter_Left;
         public GameObject Teleporter_Right;
@@ -209,7 +210,7 @@ public class ArenaManager : MonoBehaviour
 
         }
 
-        public void Spawn_shape() {
+        public void Spawn_shape( bool center = false ) {
 
             if( Xpmanager.Experiment_data.is_2D ) {
                 Instantiate<GameObject>( Stimulus2DLeft );
@@ -220,20 +221,33 @@ public class ArenaManager : MonoBehaviour
             switch( ChooseShape.value ) {
                 case 0://cube
                     Clear_Shape();
-                    Instantiate<GameObject>( Stimulus3DLeft );
-                    Instantiate<GameObject>( Stimulus3DRight );
-                    Set_edge_scale();
+                    if( center ) {
+                        Instantiate<GameObject>( Stimulus3DCenter );
+                    } else {
+
+
+                        Instantiate<GameObject>( Stimulus3DLeft );
+                        Instantiate<GameObject>( Stimulus3DRight );
+                        Set_edge_scale();
+                    }
                     break;
                 case 1://cylinder
                     Clear_Shape();
-                    Instantiate<GameObject>( Stimulus3DLeft_Cylinder );
-                    Instantiate<GameObject>( Stimulus3DRight_Cylinder );
+                    if( center ) {
+                        Instantiate<GameObject>( Stimulus3DCenter_Cylinder );
+                    } else {
+                        Instantiate<GameObject>( Stimulus3DLeft_Cylinder );
+                        Instantiate<GameObject>( Stimulus3DRight_Cylinder );
+                    }
                     break;
                 case 2://sprite
                     Clear_Shape();
-                    Instantiate<GameObject>( StimulusSpriteLeft );
-                    Instantiate<GameObject>( StimulusSpriteRight );
-
+                    if( center ) {
+                        Instantiate<GameObject>( StimulusSpriteCenter );
+                    } else {
+                        Instantiate<GameObject>( StimulusSpriteLeft );
+                        Instantiate<GameObject>( StimulusSpriteRight );
+                    }
                     break;
                 default:
                     break;
