@@ -21,6 +21,8 @@ public class Experiment : ScriptableObject
         public int[] selGridTest; // grid of two button to select if a line is a Test or Not
         public int[] selGridPreTest; // grid of two button to select if a line is a PreTest or Not
 
+        public int[] selGridConcept;
+
         public List<string> PathList;
         public string PathWall; // string path to wall texture to load
         public string Path_Floor; // string path to floor texture to load
@@ -108,7 +110,7 @@ public class ExperimentManager : MonoBehaviour
         private bool showseq = false;
 
         private string[] YeNo; // = ["Yes","No"] used to convert selgridInt into words
-
+        private string[] Concepts;
 
         private int LineNb = 0; // number of trial in prgm
 
@@ -142,6 +144,11 @@ public class ExperimentManager : MonoBehaviour
             YeNo[0] = "No";
             YeNo[1] = "Yes";
 
+            Concepts = new string[3];
+            Concepts[0] = "none";
+            Concepts[1] = "same";
+            Concepts[2] = "diff";
+
         }
 
         public void Enter() { // when the button 'Enter' is pressed
@@ -160,6 +167,8 @@ public class ExperimentManager : MonoBehaviour
 
             Experiment_data.selGridTest = new int[LineNb];
             Experiment_data.selGridPreTest = new int[LineNb];
+
+            Experiment_data.selGridConcept = new int[LineNb];
 
             Experiment_data.Wall_on = new bool[LineNb];
 
@@ -458,6 +467,7 @@ public class ExperimentManager : MonoBehaviour
                 GUILayout.Box( "Stim 2", GUILayout.Width( 90 ) );
                 GUILayout.Box( "Test ?" + YeNo[Experiment_data.selGridTest[i]], GUILayout.Width( 90 ) );
                 GUILayout.Box( "PreTest ?" + YeNo[Experiment_data.selGridPreTest[i]], GUILayout.Width( 90 ) );
+                GUILayout.Box( "Concept ?" + Concepts[Experiment_data.selGridPreTest[i]], GUILayout.Width( 180 ) );
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
@@ -481,7 +491,11 @@ public class ExperimentManager : MonoBehaviour
                                                  GUILayout.Width( 90 ) );
                 Experiment_data.selGridPreTest[i] = GUILayout.SelectionGrid( Experiment_data.selGridPreTest[i],
                                                     YeNo, 2, GUILayout.Width( 90 ) );
+                Experiment_data.selGridConcept[i] = GUILayout.SelectionGrid( Experiment_data.selGridConcept[i],
+                                                    Concepts, 3, GUILayout.Width( 180 ) );
+
                 Experiment_data.Wall_on[i] = GUILayout.Toggle( Experiment_data.Wall_on[i], "Wall On ?" );
+
                 GUILayout.EndHorizontal();
 
             }
