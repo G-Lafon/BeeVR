@@ -11,22 +11,11 @@ public class ArenaManager : MonoBehaviour
         public Dropdown ChooseArena; // dropdown list to choose Arena
         public Dropdown ChooseShape; // dropdown list to choose stim shape
 
-
-        public GameObject Ymaze; // The 3D object YMaze
         public GameObject StimulusLeft; // The 2D stimulus with the detection area attached to it
         public GameObject StimulusRight;// same but on the right
 
-        public GameObject Corridor_Wall; // The 3D object Corridor Wall
-        public GameObject Corridor_Floor; // The 3D object Corridor Floor
-
         public GameObject OpenArena_Wall; // The 3D object OpenArena Wall
         public GameObject OpenArena_Floor; // The 3D object OpenArena Floor
-
-        public GameObject OpenArena_Wall_Smooth; // The 3D object OpenArena Wall
-        public GameObject OpenArena_Floor_Smooth; // The 3D object OpenArena Floor
-
-        public GameObject SquareArena_Wall; // The 3D object SquareArena Wall
-        public GameObject SquareArena_Floor; // The 3D object SquareArena Floor
 
         public GameObject Stimulus3DLeft; // 3D stimulus and area attached to it
         public GameObject Stimulus3DRight;
@@ -128,19 +117,6 @@ public class ArenaManager : MonoBehaviour
                 case 1:
                     Clear_arena();
 
-                    Instantiate<GameObject>( Ymaze ); // instantiate Ymaze
-                    Instantiate<GameObject>( StimulusLeft );
-                    Instantiate<GameObject>( StimulusRight );
-
-                    bee.transform.position = pos_Y; // place the bbe at the start
-                    bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-
-
-                    Get_Animate( "Wall" );
-                    break;
-                case 2:
-                    Clear_arena();
-
                     if( Xpmanager.Experiment_data.is_2D ) {
                         Instantiate<GameObject>( Plane_BackGround );
                         Instantiate<GameObject>( Teleporter_Left );
@@ -156,47 +132,6 @@ public class ArenaManager : MonoBehaviour
                     bee.transform.position = pos_O; // place the bee
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
 
-                    break;
-                case 3:
-                    Clear_arena();
-
-
-                    Instantiate<GameObject>( SquareArena_Wall );
-                    Instantiate<GameObject>( SquareArena_Floor );
-
-                    Get_Animate( "Wall" );
-
-
-                    bee.transform.position = pos_O; // place the bee
-                    bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-
-                    break;
-                case 4:
-                    Clear_arena();
-
-
-                    Instantiate<GameObject>( OpenArena_Wall_Smooth );
-                    Instantiate<GameObject>( OpenArena_Floor_Smooth );
-
-                    Get_Animate( "Wall" );
-
-                    bee.transform.position = pos_O; // place the bee
-                    bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-
-                    break;
-                case 5:
-                    Clear_arena();
-
-                    Instantiate<GameObject>( Corridor_Floor );
-                    Instantiate<GameObject>( Corridor_Wall );
-
-                    Instantiate<GameObject>( Stimulus3DLeft );
-                    Instantiate<GameObject>( Stimulus3DRight );
-
-                    bee.transform.position = pos_C; // place the bee
-                    bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
-
-                    Get_Animate( "Wall" );
                     break;
 
                 default:
