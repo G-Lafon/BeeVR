@@ -1,22 +1,16 @@
 ﻿using UnityEngine;
-using RawInputSharp;
+using ManyMouseUnity;
 using UnityEngine.UI;
 
 public class walking : MonoBehaviour
 {
-        //RawinputSharp is 32bit only it can't work in the unity editor
-#if !UNITY_EDITOR
-        /// <summary>
-        /// RawMouseDriver from :  Peter Brumblay
-        /// http://www.jstookey.com/arcade/rawmouse/
-        /// </summary>
 
-        RawMouseDriver.RawMouseDriver mousedriver;
-        private RawMouse[] rawMice;
-        private RawMouseInput rawmouseinput;
+        // ManyMouseUnity from :
+        // https://github.com/jackyyang09/Many-Mouse-Unity
 
+        private ManyMouse[] rawMice;
         private int MiceCount = 0;
-#endif
+
 
         //Mice Sensitivity
         public InputField INXsensitivity;// sensibility of the X axis of the mice : for rotations
@@ -44,10 +38,10 @@ public class walking : MonoBehaviour
 
         public float RotationY; // angle to rotate on y axis
         public Vector3 Move; // movement vector
-#if !UNITY_EDITOR
+
         private int Dect1 = 0; // mouse index of detector 1
         private int Dect2 = 0; // mouse index of detector 2
-#endif
+
         private bool Show_Mice_Select_Window = true; // display or not window to select detectors
 
         private CharacterController BeeController;
@@ -70,31 +64,23 @@ public class walking : MonoBehaviour
 
 
         void GetMice() {
-#if UNITY_EDITOR
             //set detector 1
-            YDelta[0] = 0;
-            XDelta[0] = 0;
+            YDelta[0] = -rawMice[Dect1].Delta.y;
+            XDelta[0] = -rawMice[Dect1].Delta.x;
             //set detector2
-            YDelta[1] = 0;
-            XDelta[1] = 0;
-#else
-            MiceCount = rawmouseinput.Mice.Count;
-            rawMice = new RawMouse[MiceCount];
-            for( int i = 0; i < MiceCount; i++ ) {
-                mousedriver.GetMouse( i, ref rawMice[i] );
-            }
+            YDelta[1] = -rawMice[Dect2].Delta.y;
+            XDelta[1] = -rawMice[Dect2].Delta.x;
 
-            //set detector 1
-            YDelta[0] = rawMice[Dect1].YDelta;
-            XDelta[0] = rawMice[Dect1].XDelta;
-            //set detector2
-            YDelta[1] = rawMice[Dect2].YDelta;
-            XDelta[1] = rawMice[Dect2].XDelta;
-
-#endif
         }
 
         public void SetMice() {
+            MiceCount = ManyMouseWrapper.MouseCount;
+            rawMice = new ManyMouse[MiceCount];
+
+            for( int i = 0; i < MiceCount; i++ ) {
+                rawMice[i] = ManyMouseWrapper.GetMouseByID( i );
+            }
+
             Show_Mice_Select_Window = true;
         }
 
@@ -104,10 +90,7 @@ public class walking : MonoBehaviour
             SideMove = false;
 
             line.enabled = true;
-#if !UNITY_EDITOR
-            rawmouseinput = new RawMouseInput();
-            mousedriver = new RawMouseDriver.RawMouseDriver();
-#endif
+
             YDelta = new float[2];
             XDelta = new float[2];
 
@@ -123,6 +106,7 @@ public class walking : MonoBehaviour
 
             position_teleporter();
 
+            SetMice();
         }
 
 
@@ -256,26 +240,26 @@ public class walking : MonoBehaviour
             GUILayout.BeginVertical();//Begins detector 1 selection
             GUILayout.Box( "Detector 1" );
 
-#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
-                if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
+                if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].Position.x + ";" +
+                                      rawMice[i].Position.y ) ) {
                     Dect1 = i;
                 }
             }
-#endif
+
             GUILayout.EndVertical();//ends detector 1 selection
 
             // each button assigns the corresponding mouse to the role of detector 2
             GUILayout.BeginVertical();// begins detector 2 selection
             GUILayout.Box( "Detector 2" );
 
-#if !UNITY_EDITOR
             for( int i = 0; i < MiceCount; i++ ) {
-                if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].X + ";" + rawMice[i].Y ) ) {
+                if( GUILayout.Button( "Mouse " + i + ": " + rawMice[i].Position.x + ";" +
+                                      rawMice[i].Position.y ) ) {
                     Dect2 = i;
                 }
             }
-#endif
+
             GUILayout.EndVertical();//ends detector 2 selection
 
             GUILayout.EndHorizontal();// ends detector selection
@@ -297,11 +281,7 @@ public class walking : MonoBehaviour
 
 
         void OnApplicationQuit() {
-#if !UNITY_EDITOR
-            if( mousedriver != null ) {
-                mousedriver.Dispose();
-            }
-#endif
+
         }
 
         private void OnTriggerEnter( Collider other ) {
