@@ -672,23 +672,24 @@ public class ConditionningRunner : MonoBehaviour
         private void Make_Choice( string side_chosen, bool is_ignored = false ) {
             Stay = transform.position; // get position of the bee on entry of the Area
             ChoiceIsMade = !is_ignored; // choice is made
+
+            Choice = FindName( side_chosen );
+            Side_Chosen = side_chosen;
+
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
                 transform.LookAt( GameObject.FindGameObjectWithTag( side_chosen ).transform.position );
                 US_Timer.Start();
                 Trial_timer.Stop();
+                if( Choice == CSp.text ) {
+                    Ping( "+" );
+                } else {
+                    Ping( "-" );
+                }
             }
 
             if( PreTest == 0 && !bell_notif && !is_ignored ) {
                 Speaker.PlayOneShot( bell, 0.5f ); // play DoorBell sound once
                 bell_notif = true;
-            }
-            Choice = FindName( side_chosen );
-            Side_Chosen = side_chosen;
-
-            if( Choice == CSp.text ) {
-                Ping( "+" );
-            } else {
-                Ping( "-" );
             }
 
             // If the timestep is not 0 we might miss the choice
