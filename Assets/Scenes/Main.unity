@@ -2087,15 +2087,7 @@ MonoBehaviour:
     m_Options:
     - m_Text: Chose Arena
       m_Image: {fileID: 0}
-    - m_Text: Y Maze
-      m_Image: {fileID: 0}
     - m_Text: Open Arena
-      m_Image: {fileID: 0}
-    - m_Text: Square Arena
-      m_Image: {fileID: 0}
-    - m_Text: Smooth Arena
-      m_Image: {fileID: 0}
-    - m_Text: Corridor
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7088,7 +7080,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.017183196}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.100098, y: -7.9749756}
+  m_AnchoredPosition: {x: 10.100098, y: -7.974945}
   m_SizeDelta: {x: 2.8000488, y: 15.950012}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &650751960
@@ -7197,26 +7189,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChooseArena: {fileID: 197633763}
   ChooseShape: {fileID: 912714909}
-  Ymaze: {fileID: 1484680254593126, guid: afcb9b2a8cf7ab34ca3812860f1c9dea, type: 3}
   StimulusLeft: {fileID: 1245081151797930, guid: ac4994093c28b4e408bb3ec70d024fcd,
     type: 3}
   StimulusRight: {fileID: 1162354935584064, guid: 144c63e19de3bc04e8e2d1a799e51153,
     type: 3}
-  Corridor_Wall: {fileID: 5210724604782690298, guid: f8ad123ba2b8e9347af5e20386686dfd,
-    type: 3}
-  Corridor_Floor: {fileID: 7373407561866774468, guid: ee03949aa8345c84a83ee08f3afa9c7e,
-    type: 3}
   OpenArena_Wall: {fileID: 3514400495162239984, guid: e5d4305f3f68c2845a60f885cc177032,
     type: 3}
   OpenArena_Floor: {fileID: 3965226786500956324, guid: 004501f4242283141a9a95e19fa1f69c,
-    type: 3}
-  OpenArena_Wall_Smooth: {fileID: 2466241947069746045, guid: 20851ae16a5989541bfa3db3a8b5b6d3,
-    type: 3}
-  OpenArena_Floor_Smooth: {fileID: 8673625865333054315, guid: 7fec0f784ccf78d4994bbdf5e6bbae85,
-    type: 3}
-  SquareArena_Wall: {fileID: 7598872856604261455, guid: a60e7df2f5c969d4dadac38f77c04994,
-    type: 3}
-  SquareArena_Floor: {fileID: 4418916772838778971, guid: d337fff756cd29745a617601f762bef8,
     type: 3}
   Stimulus3DLeft: {fileID: 1887508501120864, guid: 81573c92f9694244ea6f63e09897a7ed,
     type: 3}
