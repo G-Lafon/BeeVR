@@ -17,9 +17,9 @@ namespace ManyMouseUnity
 
         [SerializeField] ManyMouseUpdateMode updateMode = ManyMouseUpdateMode.Update;
 
-        [Header("Reconnect logic not currently implemented")]
+       /* [Header("Reconnect logic not currently implemented")]
         [SerializeField] bool tryToReconnect = true;
-        [SerializeField] float reconnectDelay = 5;
+        [SerializeField] float reconnectDelay = 5;*/
 
         private static ManyMouseWrapper instance;
         public static ManyMouseWrapper Instance
@@ -199,18 +199,18 @@ namespace ManyMouseUnity
             return Encoding.UTF8.GetString(buffer);
         }
 
-        Coroutine reconnectRoutine;
+       // Coroutine reconnectRoutine;
         private void OnAnyMouseDisconnected(ManyMouse obj)
         {
             Debug.Log("Mouse " + obj.DeviceName + " disconnected!");
 
-            //if (reconnectRoutine != null)
-            //{
-            //    reconnectRoutine = StartCoroutine(ReconnectRoutine());
-            //}
+            /*if (reconnectRoutine != null)
+            {
+                reconnectRoutine = StartCoroutine(ReconnectRoutine());
+            }*/
         }
 
-        IEnumerator ReconnectRoutine()
+       /* IEnumerator ReconnectRoutine()
         {
             while (lostMice.Count > 0)
             {
@@ -222,6 +222,6 @@ namespace ManyMouseUnity
                 yield return new WaitForSeconds(reconnectDelay);
             }
             reconnectRoutine = null;
-        }
+        }*/
     }
 }
