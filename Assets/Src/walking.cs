@@ -65,11 +65,11 @@ public class walking : MonoBehaviour
 
         void GetMice() {
             //set detector 1
-            YDelta[0] = -rawMice[Dect1].Delta.y;
-            XDelta[0] = -rawMice[Dect1].Delta.x;
+            YDelta[0] = rawMice[Dect1].Delta.y;
+            XDelta[0] = rawMice[Dect1].Delta.x;
             //set detector2
-            YDelta[1] = -rawMice[Dect2].Delta.y;
-            XDelta[1] = -rawMice[Dect2].Delta.x;
+            YDelta[1] = rawMice[Dect2].Delta.y;
+            XDelta[1] = rawMice[Dect2].Delta.x;
 
         }
 
@@ -101,8 +101,8 @@ public class walking : MonoBehaviour
                                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
             INMouseDPI.text = 1000.ToString(); // initialize mouse DPI to 1000dpi
 
-            INXsensitivity.text = ( -1 ).ToString(); // -1 because bee is on the other side of the screen
-            INYSensitivity.text = 1.ToString(); //
+            INXsensitivity.text = 1.ToString(); 
+            INYSensitivity.text = (-1).ToString(); // -1 because bee is on the other side of the screen
 
             position_teleporter();
 
