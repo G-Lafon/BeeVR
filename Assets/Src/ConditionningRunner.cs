@@ -34,6 +34,7 @@ public class Timer
 
         public void Stop() {
             is_on = false;
+            Reset_timer();
         }
 
         private void Mod_curr_time( float time ) {
@@ -516,6 +517,13 @@ public class ConditionningRunner : MonoBehaviour
             CS_timer.Start();
         }
 
+        private void Stop_all_timers() {
+            Prep_phase_timer.Stop();
+            CS_timer.Stop();
+            Trial_timer.Stop();
+            US_Timer.Stop();
+        }
+
 
         public void Stop() {
             if( Power_on ) {// No need to do anythhing if the XP is not running
@@ -537,6 +545,7 @@ public class ConditionningRunner : MonoBehaviour
                 ToggleFullScreenStim( false );
                 Spawn_Stim( false, all_stim_flag );
                 Reset_Choice();
+                Stop_all_timers();
             }
         }
 
