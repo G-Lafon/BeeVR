@@ -101,7 +101,7 @@ public class walking : MonoBehaviour
                                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
             INMouseDPI.text = 1000.ToString(); // initialize mouse DPI to 1000dpi
 
-            INXsensitivity.text = 1.ToString(); 
+            INXsensitivity.text = (-1).ToString(); 
             INYSensitivity.text = (-1).ToString(); // -1 because bee is on the other side of the screen
 
             position_teleporter();
