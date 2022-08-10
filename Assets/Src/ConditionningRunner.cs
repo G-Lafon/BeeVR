@@ -68,6 +68,7 @@ public class ConditionningRunner : MonoBehaviour
         public bool ChoiceIsMade = false; // If the Bee made a choice eg. went to one of the stimuli
         public string Choice; // choice made by the bee, gets wrote down in the txt file results
         public string Side_Chosen;
+        public string CS_Chosen;
         public string Side;
         private string Side_Centered;
         public string Centered_object;
@@ -663,10 +664,15 @@ public class ConditionningRunner : MonoBehaviour
                 } else {
                     Choice = "None";
                     Side_Chosen = "None";
+                    CS_Chosen = "None";
                     ChoiceIsMade = false;
                 }
             }
             return false;
+        }
+
+        private string Get_chosen_cs() {
+            return Choice == CSp.text ? "+" : "-";
         }
 
         private void Make_Choice( string side_chosen, bool is_ignored = false ) {
@@ -675,16 +681,13 @@ public class ConditionningRunner : MonoBehaviour
 
             Choice = FindName( side_chosen );
             Side_Chosen = side_chosen;
+            CS_Chosen = Get_chosen_cs();
 
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
                 transform.LookAt( GameObject.FindGameObjectWithTag( side_chosen ).transform.position );
                 US_Timer.Start();
                 Trial_timer.Stop();
-                if( Choice == CSp.text ) {
-                    Ping( "+" );
-                } else {
-                    Ping( "-" );
-                }
+                Ping( Get_chosen_cs() );
             }
 
             if( PreTest == 0 && !bell_notif && !is_ignored ) {
@@ -703,6 +706,7 @@ public class ConditionningRunner : MonoBehaviour
             Side = "None";
             Choice = "None"; // reset the choice to none
             Side_Chosen = "None";
+            CS_Chosen = "None";
             Side_Centered = "Wall";
             Centered_object = "Wall";
             Side_looked_at = "None";
