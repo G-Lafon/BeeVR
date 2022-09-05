@@ -9,6 +9,7 @@ public class Experiment : ScriptableObject
 {
         public string[] USDuration;//array Of duration to wait for US
         public string[] PrepPhaseDuration;
+        public string[] ExtraTimeDuration;
         public string[] CSStart; // array of wait time before CS and Arena Apperanace
         public string[] CSStop; //  array of trial duration
         public string[] Repetition; // number of repetition of each line of instructions
@@ -158,6 +159,7 @@ public class ExperimentManager : MonoBehaviour
             Experiment_data.USDuration = new
             string[LineNb]; // initialize size of the arrays according to the number of line of instructions
             Experiment_data.PrepPhaseDuration = new string[LineNb];
+            Experiment_data.ExtraTimeDuration = new string[LineNb];
             Experiment_data.CSStart = new string[LineNb];
             Experiment_data.CSStop = new string[LineNb];
             Experiment_data.Repetition = new string[LineNb];
@@ -176,6 +178,7 @@ public class ExperimentManager : MonoBehaviour
             for( int i = 0; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = string.Empty; // initialize the textfields
                 Experiment_data.PrepPhaseDuration[i] = string.Empty; // initialize the textfields
+                Experiment_data.ExtraTimeDuration[i] = string.Empty;
                 Experiment_data.CSStart[i] = string.Empty; // initialize the textfields
                 Experiment_data.CSStop[i] = string.Empty; // initialize the textfields
 
@@ -197,6 +200,7 @@ public class ExperimentManager : MonoBehaviour
             for( int i = 1; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = Experiment_data.USDuration[0]; /// ith line = 0th line
                 Experiment_data.PrepPhaseDuration[i] = Experiment_data.PrepPhaseDuration[0];
+                Experiment_data.ExtraTimeDuration[i] = Experiment_data.ExtraTimeDuration[0];
                 Experiment_data.CSStart[i] = Experiment_data.CSStart[0];
                 Experiment_data.CSStop[i] = Experiment_data.CSStop[0];
                 Experiment_data.Wall_on[i] = Experiment_data.Wall_on[0];
@@ -224,6 +228,7 @@ public class ExperimentManager : MonoBehaviour
             for( int i = 1; i < LineNb; i++ ) {
                 Experiment_data.USDuration[i] = Experiment_data.USDuration[0]; /// ith line = 0th line
                 Experiment_data.PrepPhaseDuration[i] = Experiment_data.PrepPhaseDuration[0];
+                Experiment_data.ExtraTimeDuration[i] = Experiment_data.ExtraTimeDuration[0];
                 Experiment_data.CSStart[i] = Experiment_data.CSStart[0];
                 Experiment_data.CSStop[i] = Experiment_data.CSStop[0];
                 Experiment_data.Repetition[i] = "1";
@@ -460,6 +465,7 @@ public class ExperimentManager : MonoBehaviour
                 GUILayout.BeginHorizontal();
                 GUILayout.Box( "US Duration", GUILayout.Width( 90 ) );
                 GUILayout.Box( "Prep Duration", GUILayout.Width( 90 ) );
+                GUILayout.Box( "Extra Time", GUILayout.Width( 90 ) );
                 GUILayout.Box( "CS Start", GUILayout.Width( 90 ) );
                 GUILayout.Box( "CS Stop", GUILayout.Width( 90 ) );
                 GUILayout.Box( "Repetiton", GUILayout.Width( 90 ) );
@@ -474,6 +480,8 @@ public class ExperimentManager : MonoBehaviour
                 Experiment_data.USDuration[i] = GUILayout.TextField( Experiment_data.USDuration[i], 3,
                                                 GUILayout.Width( 90 ) );
                 Experiment_data.PrepPhaseDuration[i] = GUILayout.TextField( Experiment_data.PrepPhaseDuration[i], 3,
+                                                       GUILayout.Width( 90 ) );
+                Experiment_data.ExtraTimeDuration[i] = GUILayout.TextField( Experiment_data.ExtraTimeDuration[i], 3,
                                                        GUILayout.Width( 90 ) );
                 Experiment_data.CSStart[i] = GUILayout.TextField( Experiment_data.CSStart[i], 3,
                                              GUILayout.Width( 90 ) );
