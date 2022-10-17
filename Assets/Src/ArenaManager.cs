@@ -133,6 +133,22 @@ public class ArenaManager : MonoBehaviour
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
 
                     break;
+                case 2:
+                Clear_arena();
+
+                if (Xpmanager.Experiment_data.is_2D)
+                {
+                    Instantiate<GameObject>(Plane_BackGround);
+                    Instantiate<GameObject>(Teleporter_Left);
+                    Instantiate<GameObject>(Teleporter_Right);
+                    Get_Animate("BackPlane");
+                }
+
+                bee.transform.position = pos_O; // place the bee
+                bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
+
+                break;
+
 
                 default:
                     Clear_arena();
