@@ -87,6 +87,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private Timer
         Prep_phase_timer;// Duration of the pre trial phase, between the inter trial interval and the actual trial
+        private Timer Extra_timer;
         private Timer CS_timer;// duration before the CS appearance
         private Timer Trial_timer;// duration of the trial
         private Timer US_Timer;// Amount of time to give the US
@@ -119,6 +120,7 @@ public class ConditionningRunner : MonoBehaviour
 
 
         public InputField PREPTIME; // Inputfield to display duration of the prep phase
+        public InputField EXTRA_PRETIME;
         public InputField CSSTART; // Inputfield to display delay before CS
         public InputField CSSTOP; // inputfield to display duration of trial
         public InputField US; // inputfield to display duration of US
@@ -180,6 +182,7 @@ public class ConditionningRunner : MonoBehaviour
             Xpmanager = gameObject.GetComponent<ExperimentManager>();
 
             Prep_phase_timer = new Timer( PREPTIME );
+            Extra_timer = new Timer( EXTRA_PRETIME );
             CS_timer = new Timer( CSSTART );
             US_Timer = new Timer( US );
             Trial_timer = new Timer( CSSTOP );
@@ -210,9 +213,7 @@ public class ConditionningRunner : MonoBehaviour
             ToggleFullScreenStim(); // Turn Off
             Spawn_Stim( false, "Center" );
 
-            Trial_timer.Start();
-            Spawn_Stim( true, stim_flag );
-            gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+            Extra_timer.Start();
         }
 
         private void CS_action_on() {
@@ -221,6 +222,12 @@ public class ConditionningRunner : MonoBehaviour
         private void CS_action_off() {
             // CS start timer finished
             Prep_phase_timer.Start();
+        }
+
+        private void Extra_time_action_off() {
+            Trial_timer.Start();
+            Spawn_Stim( true, stim_flag );
+            gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
         }
 
         private void US_action_on() {
@@ -275,6 +282,7 @@ public class ConditionningRunner : MonoBehaviour
             if( Go == true ) { // runs the experiment
                 CS_timer.Run_timer( Time.deltaTime, CS_action_on, CS_action_off );
                 Prep_phase_timer.Run_timer( Time.deltaTime, Prep_phase_action_on, Prep_phase_action_off );
+                Extra_timer.Run_timer( Time.deltaTime, CS_action_on, Extra_time_action_off );
 
                 US_Timer.Run_timer( Time.deltaTime, US_action_on, NextTrial );
 
@@ -409,6 +417,8 @@ public class ConditionningRunner : MonoBehaviour
         private void Set_values( bool startup = false ) {
             Prep_phase_timer.Set_total_time( float.Parse(
                                                  Xpmanager.Experiment_data.PrepPhaseDuration[Line] ) );
+            Extra_timer.Set_total_time( float.Parse(
+                                            Xpmanager.Experiment_data.ExtraTimeDuration[Line] ) );
             Trial_timer.Set_total_time( float.Parse(
                                             Xpmanager.Experiment_data.CSStop[Line] ) ); // gets the trial duration
             CS_timer.Set_total_time( float.Parse(
@@ -519,6 +529,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Stop_all_timers() {
             Prep_phase_timer.Stop();
+            Extra_timer.Stop();
             CS_timer.Stop();
             Trial_timer.Stop();
             US_Timer.Stop();
