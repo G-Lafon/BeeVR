@@ -8,34 +8,21 @@ using SimpleFileBrowser;
 public class ArenaManager : MonoBehaviour
 {
 
+        static Vector3 LEFT = new Vector3( -0.1f, 0.025f, 0 );
+        static Vector3 RIGHT = new Vector3( 0.1f, 0.025f, 0 );
+        static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
+
+
         public Dropdown ChooseArena; // dropdown list to choose Arena
         public Dropdown ChooseShape; // dropdown list to choose stim shape
-
-        public GameObject StimulusLeft; // The 2D stimulus with the detection area attached to it
-        public GameObject StimulusRight;// same but on the right
 
         public GameObject OpenArena_Wall; // The 3D object OpenArena Wall
         public GameObject OpenArena_Floor; // The 3D object OpenArena Floor
 
-        public GameObject Stimulus3DLeft; // 3D stimulus and area attached to it
-        public GameObject Stimulus3DRight;
-        public GameObject Stimulus3DLeft_Cylinder;
-        public GameObject Stimulus3DRight_Cylinder;
-
-        public GameObject Stimulus3DCenter;
-        public GameObject Stimulus3DCenter_Cylinder;
-
-        public GameObject Stimulus2DLeft; // The 2D stimulus with the detection area attached to it
-        public GameObject Stimulus2DRight;// same but on the right
-
+        public GameObject Stimulus2D;
         public GameObject Stimulus3D_Cube;
         public GameObject Stimulus3D_Cylinder;
         public GameObject StimulusSprite;
-
-        /** The 2D stimulus with the camera tracking script with the detection area attached to it*/
-        public GameObject StimulusSpriteLeft;
-        public GameObject StimulusSpriteRight;
-        public GameObject StimulusSpriteCenter;
 
         public GameObject Teleporter_Left;
         public GameObject Teleporter_Right;
@@ -166,75 +153,40 @@ public class ArenaManager : MonoBehaviour
         }
 
         public void Spawn_shape( bool center = false ) {
-
-            if( Xpmanager.Experiment_data.is_2D ) {
-                Instantiate<GameObject>( Stimulus2DLeft );
-                Instantiate<GameObject>( Stimulus2DRight );
-                return;
+            Clear_Shape();
+            if( center ) {
+                Spawn_shape( CENTER );
+            } else {
+                Spawn_shape( LEFT );
+                Spawn_shape( RIGHT );
             }
 
-            switch( ChooseShape.value ) {
-                case 0://cube
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( Stimulus3DCenter );
-                    } else {
-
-
-                        GameObject left = Instantiate<GameObject>( Stimulus3DLeft );
-                        GameObject right = Instantiate<GameObject>( Stimulus3DRight );
-                        Set_edge_scale( left );
-                        Set_edge_scale( right );
-
-                    }
-                    break;
-                case 1://cylinder
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( Stimulus3DCenter_Cylinder );
-                    } else {
-                        Instantiate<GameObject>( Stimulus3DLeft_Cylinder );
-                        Instantiate<GameObject>( Stimulus3DRight_Cylinder );
-                    }
-                    break;
-                case 2://sprite
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( StimulusSpriteCenter );
-                    } else {
-                        Instantiate<GameObject>( StimulusSpriteLeft );
-                        Instantiate<GameObject>( StimulusSpriteRight );
-                    }
-                    break;
-                default:
-                    break;
-            }
         }
 
         public void Spawn_shape( Vector3 pos ) {
 
-            //TODO: Make sure this can't happen
-            if( Xpmanager.Experiment_data.is_2D ) {
-                Debug.Log( "Trying to spawn at specific location in 2D mod doesn't make sense" );
-                return;
-            }
-
             GameObject new_stim = null;
             string ID = pos.x.ToString( "F4" ) + "_" + pos.y.ToString( "F4" ) + "_" + pos.z.ToString( "F4" );
-            switch( ChooseShape.value ) {
-                case 0://cube
-                    new_stim = Instantiate<GameObject>( Stimulus3D_Cube, pos, Quaternion.identity );
-                    Set_edge_scale( new_stim );
-                    break;
-                case 1://cylinder
-                    new_stim = Instantiate<GameObject>( Stimulus3D_Cylinder, pos, Quaternion.identity );
-                    break;
-                case 2://sprite
-                    new_stim =  Instantiate<GameObject>( StimulusSprite, pos, Quaternion.identity );
-                    break;
-                default:
-                    break;
+
+            if( Xpmanager.Experiment_data.is_2D ) {
+                new_stim = Instantiate<GameObject>( Stimulus2D, pos, Quaternion.identity );
+            } else {
+                switch( ChooseShape.value ) {
+                    case 0://cube
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cube, pos, Quaternion.identity );
+                        Set_edge_scale( new_stim );
+                        break;
+                    case 1://cylinder
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cylinder, pos, Quaternion.identity );
+                        break;
+                    case 2://sprite
+                        new_stim = Instantiate<GameObject>( StimulusSprite, pos, Quaternion.identity );
+                        break;
+                    default:
+                        break;
+                }
             }
+
             if( new_stim ) {
                 foreach( var item in new_stim.GetComponentsInChildren<Transform>() ) {
                     item.name += " " + ID;
@@ -379,8 +331,8 @@ public class ArenaManager : MonoBehaviour
                                                    texture.height ), new Vector2( 0.5f, 0.5f ),
                                                    float.Parse( INScale.text ) ); // create sprite from texture in www
                 }
+                indx++;
             }
-            indx++;
         }
 
         public void ApplyTexture( string side, string name ) {

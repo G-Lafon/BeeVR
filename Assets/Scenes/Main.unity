@@ -7191,29 +7191,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChooseArena: {fileID: 197633763}
   ChooseShape: {fileID: 912714909}
-  StimulusLeft: {fileID: 1245081151797930, guid: ac4994093c28b4e408bb3ec70d024fcd,
-    type: 3}
-  StimulusRight: {fileID: 1162354935584064, guid: 144c63e19de3bc04e8e2d1a799e51153,
-    type: 3}
   OpenArena_Wall: {fileID: 3514400495162239984, guid: e5d4305f3f68c2845a60f885cc177032,
     type: 3}
   OpenArena_Floor: {fileID: 3965226786500956324, guid: 004501f4242283141a9a95e19fa1f69c,
     type: 3}
-  Stimulus3DLeft: {fileID: 1887508501120864, guid: 81573c92f9694244ea6f63e09897a7ed,
-    type: 3}
-  Stimulus3DRight: {fileID: 1251058846189226, guid: 3ef795f32a1cbb84388ecd3256f63fb8,
-    type: 3}
-  Stimulus3DLeft_Cylinder: {fileID: 1790918762041821799, guid: 0e762eefc05e6974d879ff5ce3012da4,
-    type: 3}
-  Stimulus3DRight_Cylinder: {fileID: 4460565912299603383, guid: 7e96c1a05e101ec4da967fb4e0a932c2,
-    type: 3}
-  Stimulus3DCenter: {fileID: 4707376792450533710, guid: 314674760aac84047bce4f2d42dcae4d,
-    type: 3}
-  Stimulus3DCenter_Cylinder: {fileID: 28458718089223676, guid: 903d141cc615ba049836a38d6b96e07c,
-    type: 3}
   Stimulus2DLeft: {fileID: 7229617801181163220, guid: d0890fc731f1ad147ad3b828d2456806,
     type: 3}
   Stimulus2DRight: {fileID: 7571373151571796139, guid: 3b057822a1d1ad847a56b3cbb52403f8,
+    type: 3}
+  Stimulus2D: {fileID: 6869105165918953874, guid: 28d949818418956409a2e4311378e2e7,
     type: 3}
   Stimulus3D_Cube: {fileID: 7551771299999761014, guid: 790a053869847524a8ecc6ef1ece73ba,
     type: 3}

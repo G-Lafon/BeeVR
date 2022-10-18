@@ -638,17 +638,17 @@ public class ConditionningRunner : MonoBehaviour
 
         private void ChoiceTimer( string side, bool done ) {
 
-            if( side == "-0,1000_0,0250_0,0000" ) {
+            if( side == "-0,1000_0,0250_0,0000") {
                 TimerLeft += Time.deltaTime;
-            } else if( side == "0,1000_0,0250_0,0000" ) {
+            } else if( side == "0,1000_0,0250_0,0000") {
                 TimerRight += Time.deltaTime;
             }
 
             if( done ) {
                 if( TimerLeft > TimerRight ) {
-                    INPretestChoice.text = FindName( "-0,1000_0,0250_0,0000" );
+                    INPretestChoice.text = FindName("-0,1000_0,0250_0,0000");
                 } else if( TimerRight > TimerLeft ) {
-                    INPretestChoice.text = FindName( "0,1000_0,0250_0,0000" );
+                    INPretestChoice.text = FindName("0,1000_0,0250_0,0000");
                 } else {
                     INPretestChoice.text = "None";
                 }
@@ -713,8 +713,8 @@ public class ConditionningRunner : MonoBehaviour
             CS_Chosen = Get_chosen_cs();
 
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
-                GameObject object_looked_at = arenaManager.Get_stim_object( side_chosen );
-                transform.LookAt( object_looked_at.transform.position );
+            GameObject object_looked_at = arenaManager.Get_stim_object(side_chosen);
+                transform.LookAt(object_looked_at.transform.position );
                 US_Timer.Start();
                 Trial_timer.Stop();
                 Ping( Get_chosen_cs() );
@@ -826,9 +826,9 @@ public class ConditionningRunner : MonoBehaviour
             }
             string Object;
             if( Edge_looked_at.transform.position.x > 0 ) {
-                Object = FindName( "0,1000_0,0250_0,0000" );
+                Object = FindName("0,1000_0,0250_0,0000");
             } else {
-                Object = FindName( "-0,1000_0,0250_0,0000" );
+                Object = FindName("-0,1000_0,0250_0,0000");
             }
             data = Object + "_" + Edge_looked_at.name + ";" +
                    Edge_looked_at.transform.localPosition;
