@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -142,13 +143,11 @@ public class ConditionningRunner : MonoBehaviour
 
         private bool TrialSummaryDisp = false;
 
-        private float TimerLeft2D = 0.0f;
-        private float TimerRight2D = 0.0f;
-
-
         private float TimerLeft = 0;
         private float TimerRight = 0;
         public InputField INPretestChoice;
+
+        private SortedDictionary<string, float> Choice_timers;
 
         public GameObject BeeScreen; //Screen diplaying stuff to the bee
         public RenderTexture screenText;
@@ -185,6 +184,8 @@ public class ConditionningRunner : MonoBehaviour
             CS_timer = new Timer( CSSTART );
             US_Timer = new Timer( US );
             Trial_timer = new Timer( CSSTOP );
+
+            Choice_timers = new SortedDictionary<string, float> { };
         }
 
         public bool bee_can_move() {
@@ -585,23 +586,23 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Looking_Timer2D() {
-            if( Side_looked_at == "Left" ) {
-                TimerLeft2D += Time.deltaTime;
-            } else if( Side_looked_at == "Right" ) {
-                TimerRight2D += Time.deltaTime;
-            } else { // We only want continuous time, if something elese is centered the time is reset
-                TimerRight2D = 0.0f;
-                TimerLeft2D = 0.0f;
+            if( Side_looked_at != "None" ) {
+                float time;
+                Choice_timers.TryGetValue( Side_looked_at, out time );
+                Choice_timers[Side_looked_at] = time + Time.deltaTime;
+            } else {
+                // We only want continuous time, if something else is centered the time is reset
+                List<string> keys = new List<string>( Choice_timers.Keys );
+                foreach( string key in keys ) {
+                    Choice_timers[key] = 0.0f;
+                }
             }
         }
 
         private float get_Looking_Time2D( string side ) {
-            if( side == "Left" ) {
-                return TimerLeft2D;
-            } else if( side == "Right" ) {
-                return TimerRight2D;
-            }
-            return 0.0f;
+            float Looking_time = 0.0f;
+            Choice_timers.TryGetValue( side, out Looking_time );
+            return Looking_time;
         }
 
         private void ChoiceTimer( string side, bool done ) {
