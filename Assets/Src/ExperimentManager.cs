@@ -473,7 +473,7 @@ public class ExperimentManager : MonoBehaviour
                 GUILayout.Box( "Stim 2", GUILayout.Width( 90 ) );
                 GUILayout.Box( "Test ?" + YeNo[Experiment_data.selGridTest[i]], GUILayout.Width( 90 ) );
                 GUILayout.Box( "PreTest ?" + YeNo[Experiment_data.selGridPreTest[i]], GUILayout.Width( 90 ) );
-                GUILayout.Box( "Concept ?" + Concepts[Experiment_data.selGridPreTest[i]], GUILayout.Width( 180 ) );
+                GUILayout.Box( "Concept ?" + Concepts[Experiment_data.selGridConcept[i]], GUILayout.Width( 180 ) );
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();

@@ -1,8 +1,103 @@
-﻿using System.IO.Ports;
+﻿using System;
+using System.IO.Ports;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class Inspected_object : IEquatable<Inspected_object>
+{
+        //TODO: Make private
+        public string Name;
+        public float Looking_time;
+        public string Pos_ID;
+
+        public Inspected_object( string id, string name, float time ) {
+            Name = name;
+            Looking_time = time;
+            Pos_ID = id;
+        }
+
+        public bool Equals( Inspected_object other ) {
+            if( other == null ) {
+                return false;
+            }
+            return other.Name == Name;
+        }
+
+        public override bool Equals( System.Object obj ) {
+            if( obj == null ) {
+                return false;
+            }
+
+            Inspected_object Obj_insp = obj as Inspected_object;
+            if( Obj_insp == null ) {
+                return false;
+            } else {
+                return Equals( Obj_insp );
+            }
+        }
+
+        public override int GetHashCode() {
+            return this.Name.GetHashCode();
+        }
+
+        public static bool operator ==( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return System.Object.Equals( Obj1, Obj2 );
+            }
+
+            return Obj1.Equals( Obj2 );
+        }
+
+        public static bool operator !=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return !System.Object.Equals( Obj1, Obj2 );
+            }
+
+            return !( Obj1.Equals( Obj2 ) );
+        }
+
+        public static bool operator >( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time > Obj2.Looking_time;
+        }
+
+        public static bool operator <( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time < Obj2.Looking_time;
+        }
+
+        public static bool operator >=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time >= Obj2.Looking_time;
+        }
+
+        public static bool operator <=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time <= Obj2.Looking_time;
+        }
+
+        public void timer_tick() {
+            Looking_time += Time.deltaTime;
+        }
+
+        public void timer_reset() {
+            Looking_time = 0.0f;
+        }
+}
 
 public class Timer
 {
@@ -143,11 +238,9 @@ public class ConditionningRunner : MonoBehaviour
 
         private bool TrialSummaryDisp = false;
 
-        private float TimerLeft = 0;
-        private float TimerRight = 0;
         public InputField INPretestChoice;
 
-        private SortedDictionary<string, float> Choice_timers;
+        private List<Inspected_object> Choices;
 
         public GameObject BeeScreen; //Screen diplaying stuff to the bee
         public RenderTexture screenText;
@@ -185,7 +278,7 @@ public class ConditionningRunner : MonoBehaviour
             US_Timer = new Timer( US );
             Trial_timer = new Timer( CSSTOP );
 
-            Choice_timers = new SortedDictionary<string, float> { };
+            Choices = new List<Inspected_object> { };
         }
 
         public bool bee_can_move() {
@@ -499,8 +592,7 @@ public class ConditionningRunner : MonoBehaviour
                 a += 1;
             }
 
-            TimerLeft = 0;
-            TimerRight = 0;
+            Choices.Clear();
 
             CS_timer.Start();
         }
@@ -573,8 +665,7 @@ public class ConditionningRunner : MonoBehaviour
 
             Set_values( true );
 
-            TimerLeft = 0;
-            TimerRight = 0;
+            Choices.Clear();
 
             UpdateText();
 
@@ -585,39 +676,44 @@ public class ConditionningRunner : MonoBehaviour
             Ping( "1" );
         }
 
+        private void Update_choices( string id ) {
+            Inspected_object obj = new Inspected_object( id, FindName( id ), 0.0f );
+            if( Choices.Contains( obj ) ) {
+                var indx = Choices.FindIndex( a => a == obj );
+                Choices[indx].timer_tick();
+            } else {
+                Choices.Add( obj );
+            }
+        }
+
         private void Looking_Timer2D() {
             if( Side_looked_at != "None" ) {
-                float time;
-                Choice_timers.TryGetValue( Side_looked_at, out time );
-                Choice_timers[Side_looked_at] = time + Time.deltaTime;
+                Update_choices( Side_looked_at );
             } else {
                 // We only want continuous time, if something else is centered the time is reset
-                List<string> keys = new List<string>( Choice_timers.Keys );
-                foreach( string key in keys ) {
-                    Choice_timers[key] = 0.0f;
-                }
+                Choices.ForEach( delegate( Inspected_object obj ) {
+                    obj.timer_reset();
+                } );
             }
         }
 
         private float get_Looking_Time2D( string side ) {
-            float Looking_time = 0.0f;
-            Choice_timers.TryGetValue( side, out Looking_time );
-            return Looking_time;
+            foreach( var item in Choices ) {
+                if( item.Pos_ID == side ) {
+                    return item.Looking_time;
+                }
+            }
+            return 0.0f;
         }
 
         private void ChoiceTimer( string side, bool done ) {
-
-            if( side == "-0,1000_0,0250_0,0000" ) {
-                TimerLeft += Time.deltaTime;
-            } else if( side == "0,1000_0,0250_0,0000" ) {
-                TimerRight += Time.deltaTime;
+            if( side != "None" ) {
+                Update_choices( side );
             }
-
             if( done ) {
-                if( TimerLeft > TimerRight ) {
-                    INPretestChoice.text = FindName( "-0,1000_0,0250_0,0000" );
-                } else if( TimerRight > TimerLeft ) {
-                    INPretestChoice.text = FindName( "0,1000_0,0250_0,0000" );
+                Inspected_object chosen_obj = Choices.Max();
+                if( chosen_obj != null ) {
+                    INPretestChoice.text = chosen_obj.Name;
                 } else {
                     INPretestChoice.text = "None";
                 }
