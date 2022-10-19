@@ -19,6 +19,8 @@ public class ArenaManager : MonoBehaviour
         public GameObject OpenArena_Wall; // The 3D object OpenArena Wall
         public GameObject OpenArena_Floor; // The 3D object OpenArena Floor
 
+        private List<GameObject> Wall_and_Floor;
+
         public GameObject Stimulus2D;
         public GameObject Stimulus3D_Cube;
         public GameObject Stimulus3D_Cylinder;
@@ -100,6 +102,9 @@ public class ArenaManager : MonoBehaviour
                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // default scale 10000pixel/m = 10 pix/mm
 
             Stimulations = new List<Texture> { };
+
+            Wall_and_Floor = new List<GameObject> { };
+            Stim_Objects = new List<GameObject> { };
         }
 
         public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
@@ -115,9 +120,10 @@ public class ArenaManager : MonoBehaviour
                         Instantiate<GameObject>( Teleporter_Right );
                         Get_Animate( "BackPlane" );
                     } else {
-                        Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
-                        Instantiate<GameObject>( OpenArena_Floor );
-
+                        GameObject wall = Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
+                        Wall_and_Floor.Add( wall );
+                        GameObject floor = Instantiate<GameObject>( OpenArena_Floor );
+                        Wall_and_Floor.Add( floor );
                         Get_Animate( "Wall" );
                     }
 
@@ -149,17 +155,6 @@ public class ArenaManager : MonoBehaviour
                     break;
             }
 
-
-        }
-
-        public void Spawn_shape( bool center = false ) {
-            Clear_Shape();
-            if( center ) {
-                Spawn_shape( CENTER );
-            } else {
-                Spawn_shape( LEFT );
-                Spawn_shape( RIGHT );
-            }
 
         }
 
@@ -195,6 +190,14 @@ public class ArenaManager : MonoBehaviour
             }
         }
 
+        public List<GameObject> Get_Wall_and_Floor() {
+            return Wall_and_Floor;
+        }
+
+        public List<GameObject> Get_all_stim_objects() {
+            return Stim_Objects;
+        }
+
         public GameObject Get_stim_object( string ID ) {
             foreach( var item in Stim_Objects ) {
                 string[] splited_name = item.name.Split( ' ' );
@@ -226,9 +229,11 @@ public class ArenaManager : MonoBehaviour
             }
             Stim_Objects.Clear();
         }
-        void Clear_arena() {
+
+        private void Clear_arena() {
             Destroy( GameObject.FindGameObjectWithTag( "Wall" ) );
             Destroy( GameObject.FindGameObjectWithTag( "Floor" ) );
+            Wall_and_Floor.Clear();
 
             Clear_Shape();
 
@@ -393,7 +398,10 @@ public class ArenaManager : MonoBehaviour
             prev = !prev;
             ShowList = !ShowList;
             if( prev ) {
-                Spawn_shape();
+                Clear_Shape();
+                Spawn_shape( LEFT );
+                Spawn_shape( RIGHT );
+
                 ApplyTexture();
                 bee.GetComponent<ConditionningRunner>().Stim( prev ); // show stim
             } else {

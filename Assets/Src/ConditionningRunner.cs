@@ -65,8 +65,7 @@ public class Timer
 public class ConditionningRunner : MonoBehaviour
 {
 
-        static Vector3 LEFT = new Vector3( -0.1f, 0.025f, 0 );
-        static Vector3 RIGHT = new Vector3( 0.1f, 0.025f, 0 );
+        static Vector3[] LEFT_RIGHT = new Vector3[] { new Vector3( -0.1f, 0.025f, 0 ), new Vector3( 0.1f, 0.025f, 0 ) };
         static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
 
 
@@ -156,11 +155,6 @@ public class ConditionningRunner : MonoBehaviour
 
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
 
-        //TODO: Remove those flags
-        private string[] stim_flag = { "-0,1000_0,0250_0,0000", "0,1000_0,0250_0,0000" };
-        private string[] all_stim_flag = { "-0,1000_0,0250_0,0000", "0,1000_0,0250_0,0000", "0,0000_0,0250_0,0000" };
-        private string[] env_flag = { "Wall", "Floor" };
-
         private SerialPort serial_port;
         public InputField IN_port_name;
         public InputField IN_conection_status;
@@ -199,7 +193,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Prep_phase_action_on() {
             if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
-                Spawn_Stim( true, "Center" );
+                Spawn_Stim( CENTER );
                 gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
                 if( Check_choice() ) {
                     Reset_Choice();
@@ -216,7 +210,7 @@ public class ConditionningRunner : MonoBehaviour
             Stick_the_bee(); // Reset position
 
             ToggleFullScreenStim(); // Turn Off
-            Spawn_Stim( false, "Center" );
+            arenaManager.Clear_Shape();
 
             Extra_timer.Start();
         }
@@ -231,7 +225,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Extra_time_action_off() {
             Trial_timer.Start();
-            Spawn_Stim( true, stim_flag );
+            Spawn_Stim( LEFT_RIGHT );
             gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
         }
 
@@ -334,74 +328,48 @@ public class ConditionningRunner : MonoBehaviour
                 Xpmanager.Experiment_data.selGridTest[Line].ToString();
         }
 
-        private void Spawn_Stim( bool spawn, string flg ) {
-            GameObject flg_stim = arenaManager.Get_stim_object( flg );
-            if( spawn ) {
-                if( flg_stim ) {
-                    flg_stim.GetComponentInChildren<Renderer>().enabled = true;
-                } else {
-
-                    switch( flg ) {
-                        case "0,0000_0,0250_0,0000":
-                            arenaManager.Clear_Shape();
-                            arenaManager.Spawn_shape( CENTER );
-                            break;
-                        case "-0,1000_0,0250_0,0000":
-                        case "0,1000_0,0250_0,0000":
-                            arenaManager.Clear_Shape();
-                            arenaManager.Spawn_shape( LEFT );
-                            arenaManager.Spawn_shape( RIGHT );
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-                Set_stims();
-                arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
-                Stim( true );
-            } else if( flg_stim ) {
-                arenaManager.Clear_Shape();
+        private void Spawn_Stim( Vector3[] positions ) {
+            arenaManager.Clear_Shape();
+            foreach( var pos in positions ) {
+                arenaManager.Spawn_shape( pos );
             }
+            Set_stims();
+            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            Stim( true );
         }
 
-        public void Spawn_Stim( bool spawn, string[] flag ) {
-            foreach( string flg in flag ) {
-                Spawn_Stim( spawn, flg );
-            }
+        private void Spawn_Stim( Vector3 pos ) {
+            arenaManager.Clear_Shape();
+            arenaManager.Spawn_shape( pos );
+            Set_stims();
+            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            Stim( true );
         }
 
         public void Stim( bool show ) {
+            foreach( GameObject obj in arenaManager.Get_all_stim_objects() ) {
+                Renderer rend_3D = obj.GetComponentInChildren<Renderer>();
+                SpriteRenderer rend_2D = obj.GetComponent<SpriteRenderer>();
 
-            foreach( string flag in stim_flag ) {
-                GameObject obj = arenaManager.Get_stim_object( flag );
-                if( obj ) {
-                    Renderer rend_3D = obj.GetComponentInChildren<Renderer>();
-                    SpriteRenderer rend_2D = obj.GetComponent<SpriteRenderer>();
-
-                    if( rend_3D != null ) {
-                        rend_3D.enabled = show;
-                    }
-                    if( rend_2D != null ) {
-                        rend_2D.enabled = show;
-                    }
+                if( rend_3D != null ) {
+                    rend_3D.enabled = show;
+                }
+                if( rend_2D != null ) {
+                    rend_2D.enabled = show;
                 }
             }
 
             if( !Xpmanager.Experiment_data.is_2D ) {
-                foreach( string flag in env_flag ) {// Enable wall and floor renderer
-                    GameObject obj = arenaManager.Get_stim_object( flag );
-                    if( obj ) {
-                        Renderer rend_env = obj.GetComponentInChildren<Renderer>();
-                        if( rend_env != null ) {
-                            //TODO: differentiate between wall and floor
-                            if( Xpmanager.Experiment_data.Wall_on != null ) {
-                                // if show = false then we want the thing to be off
-                                // if show = true then we want to follow Wall_on instruction
-                                rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
-                            } else {
-                                rend_env.enabled = show;
-                            }
+                foreach( GameObject obj in arenaManager.Get_Wall_and_Floor() ) {// Enable wall and floor renderer
+                    Renderer rend_env = obj.GetComponentInChildren<Renderer>();
+                    if( rend_env != null ) {
+                        //TODO: differentiate between wall and floor
+                        if( Xpmanager.Experiment_data.Wall_on != null ) {
+                            // if show = false then we want the thing to be off
+                            // if show = true then we want to follow Wall_on instruction
+                            rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
+                        } else {
+                            rend_env.enabled = show;
                         }
                     }
                 }
@@ -501,7 +469,7 @@ public class ConditionningRunner : MonoBehaviour
             Recorder.reset_chrono();
 
             // Despawn CS
-            Spawn_Stim( false, stim_flag );
+            arenaManager.Clear_Shape();
 
             transform.position = Stand; // move position to initial
             transform.rotation = look; // rotate to initial orientation
@@ -563,7 +531,7 @@ public class ConditionningRunner : MonoBehaviour
                 transform.rotation = look; // rotate to initial orientation
 
                 ToggleFullScreenStim( false );
-                Spawn_Stim( false, all_stim_flag );
+                arenaManager.Clear_Shape();
                 Reset_Choice();
                 Stop_all_timers();
             }
