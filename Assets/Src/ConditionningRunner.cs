@@ -841,7 +841,7 @@ public class ConditionningRunner : MonoBehaviour
         // get the name of the stimulus, which is also the name of the texture
         private string FindName( GameObject object_to_name ) {
 
-            Renderer Renderer_in_object = object_to_name.GetComponent<Renderer>();
+            Renderer Renderer_in_object = object_to_name.GetComponentInChildren<Renderer>();
             Transform Parent = object_to_name.transform.parent;
 
             if( Renderer_in_object ) {
