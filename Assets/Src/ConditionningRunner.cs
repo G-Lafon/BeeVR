@@ -724,7 +724,7 @@ public class ConditionningRunner : MonoBehaviour
         private bool Check_choice() {
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {
-                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' )[1];
+                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' ).Last();
                 Centered_object = FindName( gameObject.GetComponent<walking>().hit.collider.gameObject );
             } else {
                 Side_Centered = "Wall";
@@ -774,7 +774,22 @@ public class ConditionningRunner : MonoBehaviour
             ChoiceIsMade = !is_ignored; // choice is made
 
             Choice = FindName( side_chosen );
-            Side_Chosen = side_chosen;
+
+            //Simplify the side recorded for those three special cases
+            switch( side_chosen ) {
+                case "-0,1000_0,0250_0,0000":
+                    Side_Chosen = "Left";
+                    break;
+                case "0,1000_0,0250_0,0000":
+                    Side_Chosen = "Right";
+                    break;
+                case "0,0000_0,0250_0,0000":
+                    Side_Chosen = "Center";
+                    break;
+                default:
+                    Side_Chosen = side_chosen;
+                    break;
+            }
             CS_Chosen = Get_chosen_cs();
 
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
@@ -823,9 +838,19 @@ public class ConditionningRunner : MonoBehaviour
         }
 
 
+        // get the name of the stimulus, which is also the name of the texture
         private string FindName( GameObject object_to_name ) {
-            if( object_to_name.GetComponentInChildren<Renderer>() ) {
-                return object_to_name.GetComponentInChildren<Renderer>().material.mainTexture.name; // get the name of the stimulus, which is also the name of the texture
+
+            Renderer Renderer_in_object = object_to_name.GetComponent<Renderer>();
+            Transform Parent = object_to_name.transform.parent;
+
+            if( Renderer_in_object ) {
+                return Renderer_in_object.material.mainTexture.name;
+            } else if( Parent ) {
+                Renderer Renderer_in_parent = Parent.gameObject.GetComponentInChildren<Renderer>();
+                if( Renderer_in_parent ) {
+                    return Renderer_in_parent.material.mainTexture.name;
+                }
             }
 
             if( object_to_name.GetComponent<SpriteRenderer>() ) {
