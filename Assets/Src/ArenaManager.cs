@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -30,6 +31,9 @@ public class ArenaManager : MonoBehaviour
         public GameObject Teleporter_Right;
 
         public List<GameObject> Stim_Objects;
+        private Dictionary<Vector3, GameObject> Forest;
+
+        private List<Vector3> Grid;
 
         public GameObject Plane_BackGround;
 
@@ -105,6 +109,26 @@ public class ArenaManager : MonoBehaviour
 
             Wall_and_Floor = new List<GameObject> { };
             Stim_Objects = new List<GameObject> { };
+
+            Forest = new Dictionary<Vector3, GameObject> { };
+
+            Init_grid();
+        }
+
+        private void Init_grid() {
+            //Bounds of the forest centered on the bee
+            float x_min = Mathf.Round( ( 0.0f - 10 ) * 10.0f ) * 0.1f;
+            float x_max = Mathf.Round( ( 0.0f + 10 ) * 10.0f ) * 0.1f;
+            float z_min = Mathf.Round( ( -0.0995f - 10 ) * 10.0f ) * 0.1f;
+            float z_max = Mathf.Round( ( -0.0995f + 10 ) * 10.0f ) * 0.1f;
+
+            // list of al possible tree positions
+            Grid = new List<Vector3>();
+            for( float i = x_min; i < x_max; i += 0.4f ) {
+                for( float j = z_min; j < z_max; j += 0.4f ) {
+                    Grid.Add( new Vector3( i, 0.025f, j ) );
+                }
+            }
         }
 
         public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
@@ -158,10 +182,10 @@ public class ArenaManager : MonoBehaviour
 
         }
 
-        public void Spawn_shape( Vector3 pos ) {
+        public GameObject Spawn_shape( Vector3 pos ) {
 
             GameObject new_stim = null;
-            string ID = pos.x.ToString( "F4" ) + "_" + pos.y.ToString( "F4" ) + "_" + pos.z.ToString( "F4" );
+            string ID = Pos_to_id( pos );
 
             if( Xpmanager.Experiment_data.is_2D ) {
                 new_stim = Instantiate<GameObject>( Stimulus2D, pos, Quaternion.identity );
@@ -187,6 +211,46 @@ public class ArenaManager : MonoBehaviour
                     item.name += " " + ID;
                 }
                 Stim_Objects.Add( new_stim );
+            }
+            return new_stim;
+        }
+
+        public void Update_forest() {
+            Vector3 Bee_pos = bee.transform.position;
+            int dist = 1;
+            List<Vector3> Free_plots = new List<Vector3>( Grid.Where( pos => pos.x < Bee_pos.x + dist &&
+                    pos.x > Bee_pos.x - dist && pos.z < Bee_pos.z + dist &&
+                    pos.z > Bee_pos.z - dist ) );
+            List<Vector3> Plots_to_free = new List<Vector3>( Grid.Where( pos => pos.x > Bee_pos.x + dist ||
+                    pos.x < Bee_pos.x - dist || pos.z > Bee_pos.z + dist ||
+                    pos.z < Bee_pos.z - dist ) );
+
+            foreach( Vector3 pos in Free_plots ) {
+                Add_tree( pos );
+            }
+
+
+            foreach( Vector3 pos in Plots_to_free ) {
+                Remove_tree( pos );
+            }
+        }
+
+        private string Pos_to_id( Vector3 pos ) {
+            return pos.x.ToString( "F4" ) + "_" + pos.y.ToString( "F4" ) + "_" + pos.z.ToString( "F4" );
+        }
+
+        private void Add_tree( Vector3 pos ) {
+            if( !Forest.Keys.Contains( pos ) ) {
+                Forest[pos] = Spawn_shape( pos );
+            }
+        }
+
+        private void Remove_tree( Vector3 pos ) {
+            if( Forest.Keys.Contains( pos ) ) {
+                //TODO: De duplicate data between forest and Stim_object?
+                Stim_Objects.Remove( Forest[pos] );
+                Destroy( Forest[pos] );
+                Forest.Remove( pos );
             }
         }
 

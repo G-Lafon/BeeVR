@@ -205,6 +205,8 @@ public class ConditionningRunner : MonoBehaviour
         private float Tmp_X;
         private float Tmp_Z;
 
+        private Vector3 Prev_pos;
+
         public float Dist; // Distance walked on the ball
         private float tempsDist; // hold final value of dist in one trial for display
         public float Speed; // Walking speed of the bee
@@ -279,6 +281,8 @@ public class ConditionningRunner : MonoBehaviour
             Trial_timer = new Timer( CSSTOP );
 
             Choices = new List<Inspected_object> { };
+
+            Prev_pos = gameObject.transform.position;
         }
 
         public bool bee_can_move() {
@@ -372,7 +376,17 @@ public class ConditionningRunner : MonoBehaviour
                 }
             }
 
-            if( Go == true ) { // runs the experiment
+            if( Go && arenaManager.ChooseArena.value == 2 ) {
+                if( Vector3.Distance( Prev_pos, gameObject.transform.position ) >= 0.1 ) {
+                    arenaManager.Update_forest();
+                    Prev_pos = gameObject.transform.position;
+                }
+
+                arenaManager.ApplyTexture();
+                Stim( true );
+                gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+
+            } else if( Go == true ) { // runs the experiment
                 CS_timer.Run_timer( Time.deltaTime, CS_action_on, CS_action_off );
                 Prep_phase_timer.Run_timer( Time.deltaTime, Prep_phase_action_on, Prep_phase_action_off );
                 Extra_timer.Run_timer( Time.deltaTime, CS_action_on, Extra_time_action_off );
