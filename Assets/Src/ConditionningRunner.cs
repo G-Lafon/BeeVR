@@ -323,7 +323,11 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Extra_time_action_off() {
             Trial_timer.Start();
-            Spawn_Stim( LEFT_RIGHT );
+            if( arenaManager.ChooseArena.value == 2 ) {
+                Forest_update();
+            } else {
+                Spawn_Stim( LEFT_RIGHT );
+            }
             gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
         }
 
@@ -359,6 +363,11 @@ public class ConditionningRunner : MonoBehaviour
             }
         }
 
+        private void Forest_update() {
+            arenaManager.Update_forest();
+            Prev_pos = gameObject.transform.position;
+        }
+
         // Update is called once per frame
         void Update() {
             if( Power_on && Waiting ) {
@@ -376,17 +385,7 @@ public class ConditionningRunner : MonoBehaviour
                 }
             }
 
-            if( Go && arenaManager.ChooseArena.value == 2 ) {
-                if( Vector3.Distance( Prev_pos, gameObject.transform.position ) >= 0.1 ) {
-                    arenaManager.Update_forest();
-                    Prev_pos = gameObject.transform.position;
-                }
-
-                arenaManager.ApplyTexture();
-                Stim( true );
-                gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
-
-            } else if( Go == true ) { // runs the experiment
+            if( Go == true ) { // runs the experiment
                 CS_timer.Run_timer( Time.deltaTime, CS_action_on, CS_action_off );
                 Prep_phase_timer.Run_timer( Time.deltaTime, Prep_phase_action_on, Prep_phase_action_off );
                 Extra_timer.Run_timer( Time.deltaTime, CS_action_on, Extra_time_action_off );
@@ -394,6 +393,12 @@ public class ConditionningRunner : MonoBehaviour
                 US_Timer.Run_timer( Time.deltaTime, US_action_on, NextTrial );
 
                 Trial_timer.Run_timer( Time.deltaTime, Trial_action_on, NextTrial );
+
+                if( arenaManager.ChooseArena.value == 2 ) {
+                    if( Vector3.Distance( Prev_pos, gameObject.transform.position ) >= 0.1 ) {
+                        Forest_update();
+                    }
+                }
 
                 if( ChoiceIsMade == true && PreTest == 1 ) {
                     ChoiceTimer( Side, false );

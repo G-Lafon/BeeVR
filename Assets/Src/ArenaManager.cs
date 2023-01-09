@@ -242,6 +242,14 @@ public class ArenaManager : MonoBehaviour
         private void Add_tree( Vector3 pos ) {
             if( !Forest.Keys.Contains( pos ) ) {
                 Forest[pos] = Spawn_shape( pos );
+
+                Texture texture = Stimulations[ Random.Range( 0, 2 ) ];
+                if( Forest[pos].GetComponentInChildren<Renderer>() ) {
+                    // if renderer exist
+                    rend = Forest[pos].GetComponentInChildren<Renderer>(); // find renderer
+                    rend.material.mainTexture = texture; // change texture with image
+                    rend.enabled = true;
+                }
             }
         }
 
@@ -292,6 +300,7 @@ public class ArenaManager : MonoBehaviour
                 Destroy( item );
             }
             Stim_Objects.Clear();
+            Forest.Clear();
         }
 
         private void Clear_arena() {
