@@ -5,18 +5,13 @@ NOTE: Please grant permission for repository maintainers to edit your PR.  It is
 -->
 
 #### Summary
+Category "Brief description"
 
 <!-- This section should consist of exactly one line, formatted like this:
 
-SUMMARY: [Category] "[Briefly describe the change in these quotation marks]"
+1. Replace the word "Category" with one of these words: Features, Interface, Bugfixes, Performance, Infrastructure.
 
-Do not enter the square brackets [].  Category must be one of these:
-
-- Features
-- Interface
-- Bugfixes
-- Performance
-- Infrastructure
+2. Replace the text inside the quotes with a brief description of your changes.
 
 -->
 
@@ -30,10 +25,6 @@ If there is no related issue, explain here what issue, feature, or other concern
 #### Describe the solution
 
 <!-- How does the feature work, or how does this fix a bug?  The easier you make your solution to understand, the faster it can get merged.  -->
-
-#### Describe alternatives you've considered
-
-<!-- Explain any alternative solutions, different approaches, or possibilities you've considered using to solve the same problem. -->
 
 #### Testing
 
