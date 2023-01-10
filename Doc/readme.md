@@ -33,8 +33,8 @@ Have the walking compensator and the video projector plugged in before starting 
 
 ![Select Mice](/Doc/img/select_mice.png)
  
-By moving the cursor, you should be able to see which mice is the computer connected one since it will change the value next to its corresponding mouse number. By elimination the detectors are the two other mice. To be sure which mice are the detectors just move your trackball and see what values are changing.
-Click once on each mouse you want as detectors and then click **Done**. 
+Move your trackball and note what values are changing, this should tell you which mice are part of the trackball.
+Click once on each mouse you want as detectors, order doesn’t matter, and then click **Done**. 
 
 NB: If you make a mistake in this step can click **Re-select Mice** to re-open the selection window.
 
@@ -45,7 +45,7 @@ NB: If you make a mistake in this step can click **Re-select Mice** to re-open t
  
 ![Load To List](/Doc/img/load_stims.png)
 
-For the picture 400x400 pixels works well with the default settings.
+For the texture a 400x400 pixels image works well with the default settings.
 If you only want one stimulus you can load one normal texture and one transparent one, and then click **Ignore This** to keep the transparent object from triggering a choice.
  
 ![Ignore This](/Doc/img/ignored_stim.png)
@@ -56,8 +56,10 @@ If you only want one stimulus you can load one normal texture and one transparen
  
 ![Load Wall and Floor](/Doc/img/load_wall_floor.png)
  
-Using a transparent texture works well to set a simple environment 
+Leaving the wall and floor transparent works well to set a simple environment 
 -	You can then click **Inspect List** to check if everything was loaded properly and how the environment looks
+
+NB: If you wish to keep the wall and floor transparent you can skip this step. By default wall and floor are not displayed.
 
 ![Inspect List](/Doc/img/inspect_list.png)
  
@@ -70,21 +72,30 @@ Pressing **F11** again will bring you back to the normal display. Click **Inspec
  	- Enter how many different type of task there will be, for this exemple we’ll chose 1 learning phase and 1 test.
 
 ![Protocol](/Doc/img/protocole.png)	
+
  	- Fill in the parameters
 
-![Parameters1](/Doc/img/us_cs_timers.png)
+![Parameters1](/Doc/img/us_cs_timers.png)	
 ![Parameters2](/Doc/img/repetitions.png)	
+
   
-**US Duration**: How long, in seconds, will the simulation freeze for the US delivery
-**CS Start**: How long before the stimuli appear on screen and the bee can start moving in the VR. This is basically the inter trial interval.
-**CS Stop**: How long before the trial end. Here 90s for CS Stop and 30s for CS Start means that a trial last for 60s.
-**Repetition**: How many time should the line occur.
-  *NB*: You can click **Copy To All** to copy **US Duration**, **CS Start**, and  **CS Stop** on every line.
-**Stim 1** and **Stim 2**: The name of the stimulations to use for this line, only useful if you’ve loaded more than two stimulations.
-**Test ?**: Is this line a test? If No the simulation will freeze for US Duration seconds if the bee makes a choice. If Yes the simulation doesn’t freeze when the bee makes a choise.
-**PreTest ?**: If Yes the software will compute which stimulus the bee spent the most time choosing and display its name in the lower right corner at the end of the trial.
+- **US Duration**: How long, in seconds, will the simulation freeze for the US delivery
+- **Prep Duration**: Display either **Stim 1** or **Stim 2**, randomly chosen, on screen for the specified duration. If set to 0 this phase is skipped.
+- **CS Start**: How long before the stimuli appear on screen and the bee can start moving in the VR. This is the inter trial interval.
+- **CS Stop**: How long before the trial end. This the maximum duration of the trial.
+- **Repetition**: How many time should the line occur. For exemple 10 on our first line here means 10 trials.
+	*NB*: You can click **Copy To All** to copy **US Duration**, **CS Start**, and  **CS Stop** on every line.
+- **Stim 1** and **Stim 2**: The name of the stimulations to use for this line. If our texture files are named *Green.png* and *Blue.png*, the entries will be *Green* and *Blue*.
+- **Test ?**: Is this line a test? If No the simulation will freeze for **US Duration** seconds if the bee makes a choice. If Yes the simulation doesn’t freeze when the bee makes a choise.
+- **PreTest ?**: If Yes the software will compute which stimulus the bee spent the most time choosing and display its name in the lower right corner at the end of the trial.
 
 ![PreTest ?](/Doc/img/pretest_display.png)	
+
+- **Wall on ?**: If checked wall and floor are displayed, defaults to off.
+
+- **Concept ?**: /!\ Not fully functional /!\ This option is not fully functional yet and should be left on *none*
+
+![Concept ?](/Doc/img/concept.png)	
 
 **Is 2D ?** If selected this option will switch the VR to a 2D mode where the bee can only turn on the spot making the stimuli turn around her.
 
@@ -118,7 +129,7 @@ Chose the name of the file, and click **Browse** to chose where to save it.
 
 ![Save the data](/Doc/img/save_data.png)
  
-Upon starting the experiment, the software will create a file with a name following this format: **Name_of_this_Exp_DATE_BEE-ID**. Each time a full protocol is completed the **BEE-ID** will increase by one and a new file is created.
+Upon starting the experiment, the software will create a file with a name following this format: **<Name_of_this_Exp>_<Date>_<Bee_ID>**. Each time a full protocol is completed the **Bee_ID** will increase by one and a new file is created.
  
 -	Set the **Latency**
 By default it’s set to 10s, meaning that the experiment will start 10s after you press start.
@@ -145,7 +156,7 @@ Excel or R should have no problem opening them, there might be some issue to ope
 
 -	**Line**: The number of the instruction line in your protocol. In our example above line 0 is the learning trials and line 1 is the test
 -	**Trial**: The number of the repetition within the line. In our example line 0 has 10 trials and line 1 has 1.
--	**Time(s)**: Time in seconds since the beginning of the experiment.
+-	**Time(s)**: Time in seconds since the beginning of the trial. Resets every trial.
 -	**PositionX/Z**: coordinate of the bee on the horizontal plane.
 -	**Rotation**: Heading of the bee, 0 is forward.
 -	**DistanceTotale**: Total distance walked since the beginning of the trial.
@@ -154,8 +165,8 @@ Excel or R should have no problem opening them, there might be some issue to ope
 -	**Test**: Is this a test, 0 for no and 1 for yes.
 -	**Centered**: What object is the bee centering on the screen.
 -	**Looking_at**: What object is close to the center of the screen.
--	**Edge**: Is the bee centering the edge of and object and if yes which one.
--	**Edge_coord**: Coordinate of the centered edge
+-	**Edge**: Is the bee centering the edge of and object and if yes which one. *For cube object only*.
+-	**Edge_coord**: Coordinate of the centered edge. *For cube object only*.
 
 # Extra functionalities <a name="extra-functionalities"></a>
 ## Settings and calibrations <a name="settings-and-calibrations"></a>
