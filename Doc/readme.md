@@ -68,15 +68,15 @@ NB: pressing **F11** twice switch the monitors so you can have the VR scene on y
 ![F11](/Doc/img/f11.png)
  
 Pressing **F11** again will bring you back to the normal display. Click **Inspect List** one more time to stop the preview.
--	Set your experiment’s protocol:
+- Set your experiment’s protocol:
  	- Enter how many different type of task there will be, for this exemple we’ll chose 1 learning phase and 1 test.
 
-![Protocol](/Doc/img/protocole.png)	
+	![Protocol](/Doc/img/protocole.png)	
 
  	- Fill in the parameters
 
-![Parameters1](/Doc/img/us_cs_timers.png)	
-![Parameters2](/Doc/img/repetitions.png)	
+	![Parameters1](/Doc/img/us_cs_timers.png)	
+	![Parameters2](/Doc/img/repetitions.png)	
 
   
 - **US Duration**: How long, in seconds, will the simulation freeze for the US delivery
