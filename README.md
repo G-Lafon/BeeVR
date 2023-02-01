@@ -182,7 +182,7 @@ Grégory Lafon - gregory.lafon@univ-tlse3.fr
 
 <!-- DEPENDENCIES -->
 ## Dependencies
-* Multi-Mice detection Library: [Unity_RawMouseDriver]( https://github.com/robidev/Unity_RawMouseDriver)
+* ManyMouseUnity plug-in: [ManyMouseUnity](https://github.com/jackyyang09/Many-Mouse-Unity)
 * File browser: [UnitySimpleFileBrowser](https://github.com/yasirkula/UnitySimpleFileBrowser/)
 * README-Template: [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
