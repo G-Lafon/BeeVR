@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,34 +9,31 @@ using SimpleFileBrowser;
 public class ArenaManager : MonoBehaviour
 {
 
+        static Vector3 LEFT = new Vector3( -0.1f, 0.025f, 0 );
+        static Vector3 RIGHT = new Vector3( 0.1f, 0.025f, 0 );
+        static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
+
+
         public Dropdown ChooseArena; // dropdown list to choose Arena
         public Dropdown ChooseShape; // dropdown list to choose stim shape
-
-        public GameObject StimulusLeft; // The 2D stimulus with the detection area attached to it
-        public GameObject StimulusRight;// same but on the right
 
         public GameObject OpenArena_Wall; // The 3D object OpenArena Wall
         public GameObject OpenArena_Floor; // The 3D object OpenArena Floor
 
-        public GameObject Stimulus3DLeft; // 3D stimulus and area attached to it
-        public GameObject Stimulus3DRight;
-        public GameObject Stimulus3DLeft_Cylinder;
-        public GameObject Stimulus3DRight_Cylinder;
+        private List<GameObject> Wall_and_Floor;
 
-        public GameObject Stimulus3DCenter;
-        public GameObject Stimulus3DCenter_Cylinder;
-
-        public GameObject Stimulus2DLeft; // The 2D stimulus with the detection area attached to it
-        public GameObject Stimulus2DRight;// same but on the right
-
-        /** The 2D stimulus with the camera tracking script with the detection area attached to it*/
-        public GameObject StimulusSpriteLeft;
-        public GameObject StimulusSpriteRight;
-        public GameObject StimulusSpriteCenter;
+        public GameObject Stimulus2D;
+        public GameObject Stimulus3D_Cube;
+        public GameObject Stimulus3D_Cylinder;
+        public GameObject StimulusSprite;
 
         public GameObject Teleporter_Left;
         public GameObject Teleporter_Right;
 
+        public List<GameObject> Stim_Objects;
+        private Dictionary<Vector3, GameObject> Forest;
+
+        private List<Vector3> Grid;
 
         public GameObject Plane_BackGround;
 
@@ -108,6 +106,29 @@ public class ArenaManager : MonoBehaviour
                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // default scale 10000pixel/m = 10 pix/mm
 
             Stimulations = new List<Texture> { };
+
+            Wall_and_Floor = new List<GameObject> { };
+            Stim_Objects = new List<GameObject> { };
+
+            Forest = new Dictionary<Vector3, GameObject> { };
+
+            Init_grid();
+        }
+
+        private void Init_grid() {
+            //Bounds of the forest centered on the bee
+            float x_min = Mathf.Round( ( 0.0f - 10 ) * 10.0f ) * 0.1f;
+            float x_max = Mathf.Round( ( 0.0f + 10 ) * 10.0f ) * 0.1f;
+            float z_min = Mathf.Round( ( -0.0995f - 10 ) * 10.0f ) * 0.1f;
+            float z_max = Mathf.Round( ( -0.0995f + 10 ) * 10.0f ) * 0.1f;
+
+            // list of al possible tree positions
+            Grid = new List<Vector3>();
+            for( float i = x_min; i < x_max; i += 0.4f ) {
+                for( float j = z_min; j < z_max; j += 0.4f ) {
+                    Grid.Add( new Vector3( i, 0.025f, j ) );
+                }
+            }
         }
 
         public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
@@ -123,9 +144,10 @@ public class ArenaManager : MonoBehaviour
                         Instantiate<GameObject>( Teleporter_Right );
                         Get_Animate( "BackPlane" );
                     } else {
-                        Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
-                        Instantiate<GameObject>( OpenArena_Floor );
-
+                        GameObject wall = Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
+                        Wall_and_Floor.Add( wall );
+                        GameObject floor = Instantiate<GameObject>( OpenArena_Floor );
+                        Wall_and_Floor.Add( floor );
                         Get_Animate( "Wall" );
                     }
 
@@ -133,6 +155,21 @@ public class ArenaManager : MonoBehaviour
                     bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
 
                     break;
+                case 2:
+                    Clear_arena();
+
+                    if( Xpmanager.Experiment_data.is_2D ) {
+                        Instantiate<GameObject>( Plane_BackGround );
+                        Instantiate<GameObject>( Teleporter_Left );
+                        Instantiate<GameObject>( Teleporter_Right );
+                        Get_Animate( "BackPlane" );
+                    }
+
+                    bee.transform.position = pos_O; // place the bee
+                    bee.GetComponent<walking>().enabled = true; // enables control of the bee from the track ball
+
+                    break;
+
 
                 default:
                     Clear_arena();
@@ -145,63 +182,111 @@ public class ArenaManager : MonoBehaviour
 
         }
 
-        public void Spawn_shape( bool center = false ) {
+        public GameObject Spawn_shape( Vector3 pos ) {
+
+            GameObject new_stim = null;
+            string ID = Pos_to_id( pos );
 
             if( Xpmanager.Experiment_data.is_2D ) {
-                Instantiate<GameObject>( Stimulus2DLeft );
-                Instantiate<GameObject>( Stimulus2DRight );
-                return;
+                new_stim = Instantiate<GameObject>( Stimulus2D, pos, Quaternion.identity );
+            } else {
+                switch( ChooseShape.value ) {
+                    case 0://cube
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cube, pos, Quaternion.identity );
+                        Set_edge_scale( new_stim );
+                        break;
+                    case 1://cylinder
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cylinder, pos, Quaternion.identity );
+                        break;
+                    case 2://sprite
+                        new_stim = Instantiate<GameObject>( StimulusSprite, pos, Quaternion.identity );
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            switch( ChooseShape.value ) {
-                case 0://cube
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( Stimulus3DCenter );
-                    } else {
+            if( new_stim ) {
+                foreach( var item in new_stim.GetComponentsInChildren<Transform>() ) {
+                    item.name += " " + ID;
+                }
+                Stim_Objects.Add( new_stim );
+            }
+            return new_stim;
+        }
+
+        public void Update_forest() {
+            Vector3 Bee_pos = bee.transform.position;
+            int dist = 1;
+            List<Vector3> Free_plots = new List<Vector3>( Grid.Where( pos => pos.x < Bee_pos.x + dist &&
+                    pos.x > Bee_pos.x - dist && pos.z < Bee_pos.z + dist &&
+                    pos.z > Bee_pos.z - dist ) );
+            List<Vector3> Plots_to_free = new List<Vector3>( Grid.Where( pos => pos.x > Bee_pos.x + dist ||
+                    pos.x < Bee_pos.x - dist || pos.z > Bee_pos.z + dist ||
+                    pos.z < Bee_pos.z - dist ) );
+
+            foreach( Vector3 pos in Free_plots ) {
+                Add_tree( pos );
+            }
 
 
-                        Instantiate<GameObject>( Stimulus3DLeft );
-                        Instantiate<GameObject>( Stimulus3DRight );
-                        Set_edge_scale();
-                    }
-                    break;
-                case 1://cylinder
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( Stimulus3DCenter_Cylinder );
-                    } else {
-                        Instantiate<GameObject>( Stimulus3DLeft_Cylinder );
-                        Instantiate<GameObject>( Stimulus3DRight_Cylinder );
-                    }
-                    break;
-                case 2://sprite
-                    Clear_Shape();
-                    if( center ) {
-                        Instantiate<GameObject>( StimulusSpriteCenter );
-                    } else {
-                        Instantiate<GameObject>( StimulusSpriteLeft );
-                        Instantiate<GameObject>( StimulusSpriteRight );
-                    }
-                    break;
-                default:
-                    break;
+            foreach( Vector3 pos in Plots_to_free ) {
+                Remove_tree( pos );
             }
         }
 
-        public void Set_edge_scale() {
-            CubeManager Current_cube_right =
-                GameObject.FindGameObjectWithTag( "Right" ).GetComponentInChildren<CubeManager>();
-            CubeManager Current_cube_left =
-                GameObject.FindGameObjectWithTag( "Left" ).GetComponentInChildren<CubeManager>();
-            if( Current_cube_left != null && Current_cube_right != null ) {
-                Current_cube_left.Edges_scale = float.Parse( Edge_Scale.text,
-                                                System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-                Current_cube_left.Set_edges();
-                Current_cube_right.Edges_scale = float.Parse( Edge_Scale.text,
-                                                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
-                Current_cube_right.Set_edges();
+        private string Pos_to_id( Vector3 pos ) {
+            return pos.x.ToString( "F4" ) + "_" + pos.y.ToString( "F4" ) + "_" + pos.z.ToString( "F4" );
+        }
 
+        private void Add_tree( Vector3 pos ) {
+            if( !Forest.Keys.Contains( pos ) ) {
+                Forest[pos] = Spawn_shape( pos );
+
+                Texture texture = Stimulations[ Random.Range( 0, 2 ) ];
+                if( Forest[pos].GetComponentInChildren<Renderer>() ) {
+                    // if renderer exist
+                    rend = Forest[pos].GetComponentInChildren<Renderer>(); // find renderer
+                    rend.material.mainTexture = texture; // change texture with image
+                    rend.enabled = true;
+                }
+            }
+        }
+
+        private void Remove_tree( Vector3 pos ) {
+            if( Forest.Keys.Contains( pos ) ) {
+                //TODO: De duplicate data between forest and Stim_object?
+                Stim_Objects.Remove( Forest[pos] );
+                Destroy( Forest[pos] );
+                Forest.Remove( pos );
+            }
+        }
+
+        public List<GameObject> Get_Wall_and_Floor() {
+            return Wall_and_Floor;
+        }
+
+        public List<GameObject> Get_all_stim_objects() {
+            return Stim_Objects;
+        }
+
+        public GameObject Get_stim_object( string ID ) {
+            foreach( var item in Stim_Objects ) {
+                string[] splited_name = item.name.Split( ' ' );
+                string name = splited_name[splited_name.Length - 1];
+                if( name == ID ) {
+                    return item;
+                }
+            }
+            return null;
+        }
+
+        public void Set_edge_scale( GameObject cube_to_scale ) {
+            CubeManager Current_cube = cube_to_scale.GetComponentInChildren<CubeManager>();
+            if( Current_cube ) {
+                Current_cube.Edges_scale = float.Parse( Edge_Scale.text,
+                                                        System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
+                Current_cube.Set_edges();
             }
         }
 
@@ -210,16 +295,20 @@ public class ArenaManager : MonoBehaviour
             Animate = GameObject.FindGameObjectWithTag( target ).GetComponentInChildren<AnimateTiledTexture>();
         }
 
-        void Clear_Shape() {
-            Destroy( GameObject.FindGameObjectWithTag( "Left" ) );
-            Destroy( GameObject.FindGameObjectWithTag( "Right" ) );
-            Destroy( GameObject.FindGameObjectWithTag( "Center" ) );
+        public void Clear_Shape() {
+            foreach( var item in Stim_Objects ) {
+                Destroy( item );
+            }
+            Stim_Objects.Clear();
+            Forest.Clear();
         }
-        void Clear_arena() {
+
+        private void Clear_arena() {
             Destroy( GameObject.FindGameObjectWithTag( "Wall" ) );
             Destroy( GameObject.FindGameObjectWithTag( "Floor" ) );
-            Destroy( GameObject.FindGameObjectWithTag( "Left" ) );
-            Destroy( GameObject.FindGameObjectWithTag( "Right" ) );
+            Wall_and_Floor.Clear();
+
+            Clear_Shape();
 
             Destroy( GameObject.Find( "Plane(Clone)" ) );
             Destroy( GameObject.Find( "Teleporter Right(Clone)" ) );
@@ -302,27 +391,30 @@ public class ArenaManager : MonoBehaviour
 
         }
 
-        public void ApplyTexture( string side, int stimIndex ) {
-            if( GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<Renderer>() !=
-                null ) { // if renderer exist
-                rend = GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<Renderer>(); // find renderer
-                rend.material.mainTexture = Stimulations[stimIndex]; // change texture with image
+        public void ApplyTexture() {
+
+            int indx = 0;
+            foreach( var item in Stim_Objects ) {
+                Texture texture = Stimulations[indx % 2];
+                if( item.GetComponentInChildren<Renderer>() ) {
+                    // if renderer exist
+                    rend = item.GetComponentInChildren<Renderer>(); // find renderer
+                    rend.material.mainTexture = texture; // change texture with image
+                }
+
+                if( item.GetComponentInChildren<SpriteRenderer>() ) {
+                    // same with Sprite  renderer
+                    rend2D = item.GetComponentInChildren<SpriteRenderer>(); // find renderer
+                    rend2D.sprite = Sprite.Create( ( Texture2D )texture, new Rect( 0, 0, texture.width,
+                                                   texture.height ), new Vector2( 0.5f, 0.5f ),
+                                                   float.Parse( INScale.text ) ); // create sprite from texture in www
+                }
+                indx++;
             }
-
-
-            if( GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<SpriteRenderer>() !=
-                null ) { // same with Sprite  renderer
-                rend2D = GameObject.FindGameObjectWithTag(
-                             side ).GetComponentInChildren<SpriteRenderer>(); // find renderer
-                rend2D.sprite = Sprite.Create( ( Texture2D )Stimulations[stimIndex], new Rect( 0, 0,
-                                               Stimulations[stimIndex].width, Stimulations[stimIndex].height ), new Vector2( 0.5f, 0.5f ),
-                                               float.Parse( INScale.text ) ); // create sprite from texture in www
-            }
-
         }
 
         public void ApplyTexture( string side, string name ) {
-            GameObject obj = GameObject.FindGameObjectWithTag( side );
+            GameObject obj = Get_stim_object( side );
             if( obj ) {
 
                 rend = obj.GetComponentInChildren<Renderer>(); // find renderer
@@ -379,9 +471,11 @@ public class ArenaManager : MonoBehaviour
             prev = !prev;
             ShowList = !ShowList;
             if( prev ) {
-                Spawn_shape();
-                ApplyTexture( "Left", 0 );
-                ApplyTexture( "Right", 1 );
+                Clear_Shape();
+                Spawn_shape( LEFT );
+                Spawn_shape( RIGHT );
+
+                ApplyTexture();
                 bee.GetComponent<ConditionningRunner>().Stim( prev ); // show stim
             } else {
                 Clear_Shape();

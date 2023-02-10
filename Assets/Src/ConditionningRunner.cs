@@ -1,7 +1,103 @@
-﻿using System.IO.Ports;
+﻿using System;
+using System.IO.Ports;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class Inspected_object : IEquatable<Inspected_object>
+{
+        //TODO: Make private
+        public string Name;
+        public float Looking_time;
+        public string Pos_ID;
+
+        public Inspected_object( string id, string name, float time ) {
+            Name = name;
+            Looking_time = time;
+            Pos_ID = id;
+        }
+
+        public bool Equals( Inspected_object other ) {
+            if( other == null ) {
+                return false;
+            }
+            return other.Name == Name;
+        }
+
+        public override bool Equals( System.Object obj ) {
+            if( obj == null ) {
+                return false;
+            }
+
+            Inspected_object Obj_insp = obj as Inspected_object;
+            if( Obj_insp == null ) {
+                return false;
+            } else {
+                return Equals( Obj_insp );
+            }
+        }
+
+        public override int GetHashCode() {
+            return this.Name.GetHashCode();
+        }
+
+        public static bool operator ==( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return System.Object.Equals( Obj1, Obj2 );
+            }
+
+            return Obj1.Equals( Obj2 );
+        }
+
+        public static bool operator !=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return !System.Object.Equals( Obj1, Obj2 );
+            }
+
+            return !( Obj1.Equals( Obj2 ) );
+        }
+
+        public static bool operator >( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time > Obj2.Looking_time;
+        }
+
+        public static bool operator <( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time < Obj2.Looking_time;
+        }
+
+        public static bool operator >=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time >= Obj2.Looking_time;
+        }
+
+        public static bool operator <=( Inspected_object Obj1, Inspected_object Obj2 ) {
+            if( ( ( object )Obj1 ) == null || ( ( object )Obj2 ) == null ) {
+                return false;
+            }
+
+            return Obj1.Looking_time <= Obj2.Looking_time;
+        }
+
+        public void timer_tick() {
+            Looking_time += Time.deltaTime;
+        }
+
+        public void timer_reset() {
+            Looking_time = 0.0f;
+        }
+}
 
 public class Timer
 {
@@ -65,6 +161,9 @@ public class Timer
 public class ConditionningRunner : MonoBehaviour
 {
 
+        static Vector3[] LEFT_RIGHT = new Vector3[] { new Vector3( -0.1f, 0.025f, 0 ), new Vector3( 0.1f, 0.025f, 0 ) };
+        static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
+
 
         public bool ChoiceIsMade = false; // If the Bee made a choice eg. went to one of the stimuli
         public string Choice; // choice made by the bee, gets wrote down in the txt file results
@@ -106,6 +205,8 @@ public class ConditionningRunner : MonoBehaviour
         private float Tmp_X;
         private float Tmp_Z;
 
+        private Vector3 Prev_pos;
+
         public float Dist; // Distance walked on the ball
         private float tempsDist; // hold final value of dist in one trial for display
         public float Speed; // Walking speed of the bee
@@ -139,22 +240,14 @@ public class ConditionningRunner : MonoBehaviour
 
         private bool TrialSummaryDisp = false;
 
-        private float TimerLeft2D = 0.0f;
-        private float TimerRight2D = 0.0f;
-
-
-        private float TimerLeft = 0;
-        private float TimerRight = 0;
         public InputField INPretestChoice;
+
+        private List<Inspected_object> Choices;
 
         public GameObject BeeScreen; //Screen diplaying stuff to the bee
         public RenderTexture screenText;
 
         private bool is_full_stim_on = false; // Is the full Screen Stim toggled
-
-        private string[] stim_flag = { "Left", "Right" };
-        private string[] all_stim_flag = {"Left", "Right", "Center"};
-        private string[] env_flag = { "Wall", "Floor" };
 
         private SerialPort serial_port;
         public InputField IN_port_name;
@@ -186,6 +279,10 @@ public class ConditionningRunner : MonoBehaviour
             CS_timer = new Timer( CSSTART );
             US_Timer = new Timer( US );
             Trial_timer = new Timer( CSSTOP );
+
+            Choices = new List<Inspected_object> { };
+
+            Prev_pos = gameObject.transform.position;
         }
 
         public bool bee_can_move() {
@@ -194,7 +291,7 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Prep_phase_action_on() {
             if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
-                Spawn_Stim( true, "Center" );
+                Spawn_Stim( CENTER );
                 gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
                 if( Check_choice() ) {
                     Reset_Choice();
@@ -211,7 +308,7 @@ public class ConditionningRunner : MonoBehaviour
             Stick_the_bee(); // Reset position
 
             ToggleFullScreenStim(); // Turn Off
-            Spawn_Stim( false, "Center" );
+            arenaManager.Clear_Shape();
 
             Extra_timer.Start();
         }
@@ -226,7 +323,11 @@ public class ConditionningRunner : MonoBehaviour
 
         private void Extra_time_action_off() {
             Trial_timer.Start();
-            Spawn_Stim( true, stim_flag );
+            if( arenaManager.ChooseArena.value == 2 ) {
+                Forest_update();
+            } else {
+                Spawn_Stim( LEFT_RIGHT );
+            }
             gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
         }
 
@@ -262,6 +363,11 @@ public class ConditionningRunner : MonoBehaviour
             }
         }
 
+        private void Forest_update() {
+            arenaManager.Update_forest();
+            Prev_pos = gameObject.transform.position;
+        }
+
         // Update is called once per frame
         void Update() {
             if( Power_on && Waiting ) {
@@ -287,6 +393,12 @@ public class ConditionningRunner : MonoBehaviour
                 US_Timer.Run_timer( Time.deltaTime, US_action_on, NextTrial );
 
                 Trial_timer.Run_timer( Time.deltaTime, Trial_action_on, NextTrial );
+
+                if( arenaManager.ChooseArena.value == 2 ) {
+                    if( Vector3.Distance( Prev_pos, gameObject.transform.position ) >= 0.1 ) {
+                        Forest_update();
+                    }
+                }
 
                 if( ChoiceIsMade == true && PreTest == 1 ) {
                     ChoiceTimer( Side, false );
@@ -329,71 +441,48 @@ public class ConditionningRunner : MonoBehaviour
                 Xpmanager.Experiment_data.selGridTest[Line].ToString();
         }
 
-        private void Spawn_Stim( bool spawn, string flg ) {
-            GameObject flg_stim = GameObject.FindGameObjectWithTag( flg );
-            if( spawn ) {
-                if( flg_stim ) {
-                    flg_stim.GetComponentInChildren<Renderer>().enabled = true;
-                } else {
-
-                    switch( flg ) {
-                        case "Center":
-                            arenaManager.Spawn_shape( true );
-                            break;
-                        case "Left":
-                        case "Right":
-                            arenaManager.Spawn_shape();
-                            break;
-                        default:
-                            break;
-                    }
-
-                }
-                Set_stims();
-                arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
-                Stim( true );
-            } else if( flg_stim ) {
-                Destroy( flg_stim );
+        private void Spawn_Stim( Vector3[] positions ) {
+            arenaManager.Clear_Shape();
+            foreach( var pos in positions ) {
+                arenaManager.Spawn_shape( pos );
             }
+            Set_stims();
+            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            Stim( true );
         }
 
-        public void Spawn_Stim( bool spawn, string[] flag ) {
-            foreach( string flg in flag ) {
-                Spawn_Stim( spawn, flg );
-            }
+        private void Spawn_Stim( Vector3 pos ) {
+            arenaManager.Clear_Shape();
+            arenaManager.Spawn_shape( pos );
+            Set_stims();
+            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            Stim( true );
         }
 
         public void Stim( bool show ) {
+            foreach( GameObject obj in arenaManager.Get_all_stim_objects() ) {
+                Renderer rend_3D = obj.GetComponentInChildren<Renderer>();
+                SpriteRenderer rend_2D = obj.GetComponent<SpriteRenderer>();
 
-            foreach( string flag in stim_flag ) {
-                GameObject obj = GameObject.FindGameObjectWithTag( flag );
-                if( obj ) {
-                    Renderer rend_3D = obj.GetComponentInChildren<Renderer>();
-                    SpriteRenderer rend_2D = obj.GetComponent<SpriteRenderer>();
-
-                    if( rend_3D != null ) {
-                        rend_3D.enabled = show;
-                    }
-                    if( rend_2D != null ) {
-                        rend_2D.enabled = show;
-                    }
+                if( rend_3D != null ) {
+                    rend_3D.enabled = show;
+                }
+                if( rend_2D != null ) {
+                    rend_2D.enabled = show;
                 }
             }
 
             if( !Xpmanager.Experiment_data.is_2D ) {
-                foreach( string flag in env_flag ) {// Enable wall and floor renderer
-                    GameObject obj = GameObject.FindGameObjectWithTag( flag );
-                    if( obj ) {
-                        Renderer rend_env = obj.GetComponentInChildren<Renderer>();
-                        if( rend_env != null ) {
-                            //TODO: differentiate between wall and floor
-                            if( Xpmanager.Experiment_data.Wall_on != null ) {
-                                // if show = false then we want the thing to be off
-                                // if show = true then we want to follow Wall_on instruction
-                                rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
-                            } else {
-                                rend_env.enabled = show;
-                            }
+                foreach( GameObject obj in arenaManager.Get_Wall_and_Floor() ) {// Enable wall and floor renderer
+                    Renderer rend_env = obj.GetComponentInChildren<Renderer>();
+                    if( rend_env != null ) {
+                        //TODO: differentiate between wall and floor
+                        if( Xpmanager.Experiment_data.Wall_on != null ) {
+                            // if show = false then we want the thing to be off
+                            // if show = true then we want to follow Wall_on instruction
+                            rend_env.enabled = Xpmanager.Experiment_data.Wall_on[Line] & show;
+                        } else {
+                            rend_env.enabled = show;
                         }
                     }
                 }
@@ -444,9 +533,10 @@ public class ConditionningRunner : MonoBehaviour
         private void Set_stims() {
             //updates sides of the stimuli\\
             string stim_one = Xpmanager.Experiment_data.Sequences[Line][a - 1];
-            arenaManager.ApplyTexture( "Center", PrepPhase_Stim );
-            arenaManager.ApplyTexture( "Right", stim_one );
-            arenaManager.ApplyTexture( "Left", Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
+            arenaManager.ApplyTexture( "0,0000_0,0250_0,0000", PrepPhase_Stim );
+            arenaManager.ApplyTexture( "0,1000_0,0250_0,0000", stim_one );
+            arenaManager.ApplyTexture( "-0,1000_0,0250_0,0000",
+                                       Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
         }
 
         private void Set_CSp( int index ) {
@@ -492,7 +582,7 @@ public class ConditionningRunner : MonoBehaviour
             Recorder.reset_chrono();
 
             // Despawn CS
-            Spawn_Stim( false, stim_flag );
+            arenaManager.Clear_Shape();
 
             transform.position = Stand; // move position to initial
             transform.rotation = look; // rotate to initial orientation
@@ -521,8 +611,7 @@ public class ConditionningRunner : MonoBehaviour
                 a += 1;
             }
 
-            TimerLeft = 0;
-            TimerRight = 0;
+            Choices.Clear();
 
             CS_timer.Start();
         }
@@ -554,7 +643,7 @@ public class ConditionningRunner : MonoBehaviour
                 transform.rotation = look; // rotate to initial orientation
 
                 ToggleFullScreenStim( false );
-                Spawn_Stim( false, all_stim_flag );
+                arenaManager.Clear_Shape();
                 Reset_Choice();
                 Stop_all_timers();
             }
@@ -595,8 +684,7 @@ public class ConditionningRunner : MonoBehaviour
 
             Set_values( true );
 
-            TimerLeft = 0;
-            TimerRight = 0;
+            Choices.Clear();
 
             UpdateText();
 
@@ -607,39 +695,44 @@ public class ConditionningRunner : MonoBehaviour
             Ping( "1" );
         }
 
+        private void Update_choices( string id ) {
+            Inspected_object obj = new Inspected_object( id, FindName( id ), 0.0f );
+            if( Choices.Contains( obj ) ) {
+                var indx = Choices.FindIndex( a => a == obj );
+                Choices[indx].timer_tick();
+            } else {
+                Choices.Add( obj );
+            }
+        }
+
         private void Looking_Timer2D() {
-            if( Side_looked_at == "Left" ) {
-                TimerLeft2D += Time.deltaTime;
-            } else if( Side_looked_at == "Right" ) {
-                TimerRight2D += Time.deltaTime;
-            } else { // We only want continuous time, if something elese is centered the time is reset
-                TimerRight2D = 0.0f;
-                TimerLeft2D = 0.0f;
+            if( Side_looked_at != "None" ) {
+                Update_choices( Side_looked_at );
+            } else {
+                // We only want continuous time, if something else is centered the time is reset
+                Choices.ForEach( delegate( Inspected_object obj ) {
+                    obj.timer_reset();
+                } );
             }
         }
 
         private float get_Looking_Time2D( string side ) {
-            if( side == "Left" ) {
-                return TimerLeft2D;
-            } else if( side == "Right" ) {
-                return TimerRight2D;
+            foreach( var item in Choices ) {
+                if( item.Pos_ID == side ) {
+                    return item.Looking_time;
+                }
             }
             return 0.0f;
         }
 
         private void ChoiceTimer( string side, bool done ) {
-
-            if( side == "Left" ) {
-                TimerLeft += Time.deltaTime;
-            } else if( side == "Right" ) {
-                TimerRight += Time.deltaTime;
+            if( side != "None" ) {
+                Update_choices( side );
             }
-
             if( done ) {
-                if( TimerLeft > TimerRight ) {
-                    INPretestChoice.text = FindName( "Left" );
-                } else if( TimerRight > TimerLeft ) {
-                    INPretestChoice.text = FindName( "Right" );
+                Inspected_object chosen_obj = Choices.Max();
+                if( chosen_obj != null ) {
+                    INPretestChoice.text = chosen_obj.Name;
                 } else {
                     INPretestChoice.text = "None";
                 }
@@ -650,8 +743,8 @@ public class ConditionningRunner : MonoBehaviour
         private bool Check_choice() {
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {
-                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' )[1];
-                Centered_object = FindName( Side_Centered );
+                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' ).Last();
+                Centered_object = FindName( gameObject.GetComponent<walking>().hit.collider.gameObject );
             } else {
                 Side_Centered = "Wall";
                 Centered_object = "Wall";
@@ -660,7 +753,7 @@ public class ConditionningRunner : MonoBehaviour
             if( gameObject.GetComponent<walking>().looking.collider != null &&
                 gameObject.GetComponent<walking>().looking.collider.name.Split( ' ' ).Length > 1 ) {
                 Side_looked_at = gameObject.GetComponent<walking>().looking.collider.name.Split( ' ' )[1];
-                Object_looked_at = FindName( Side_looked_at );
+                Object_looked_at = FindName( gameObject.GetComponent<walking>().looking.collider.gameObject );
             } else {
                 Side_looked_at = "None";
                 Object_looked_at = "None";
@@ -700,11 +793,27 @@ public class ConditionningRunner : MonoBehaviour
             ChoiceIsMade = !is_ignored; // choice is made
 
             Choice = FindName( side_chosen );
-            Side_Chosen = side_chosen;
+
+            //Simplify the side recorded for those three special cases
+            switch( side_chosen ) {
+                case "-0,1000_0,0250_0,0000":
+                    Side_Chosen = "Left";
+                    break;
+                case "0,1000_0,0250_0,0000":
+                    Side_Chosen = "Right";
+                    break;
+                case "0,0000_0,0250_0,0000":
+                    Side_Chosen = "Center";
+                    break;
+                default:
+                    Side_Chosen = side_chosen;
+                    break;
+            }
             CS_Chosen = Get_chosen_cs();
 
             if( Test == 0 && PreTest == 0 && !is_ignored ) {
-                transform.LookAt( GameObject.FindGameObjectWithTag( side_chosen ).transform.position );
+                GameObject object_looked_at = arenaManager.Get_stim_object( side_chosen );
+                transform.LookAt( object_looked_at.transform.position );
                 US_Timer.Start();
                 Trial_timer.Stop();
                 Ping( Get_chosen_cs() );
@@ -743,17 +852,28 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private string FindName( string side ) {
-            side = side.Split( '(' )[0]; // Hacky way to get rid of the "(Clone)" part in the name
-            if( GameObject.FindGameObjectWithTag( side ).GetComponentInChildren<Renderer>() !=
-                null ) { // if it exist
-                return GameObject.FindGameObjectWithTag(
-                           side ).GetComponentInChildren<Renderer>().material.mainTexture.name; // get the name of the stimulus, which is also the name of the texture
+            GameObject object_to_name = arenaManager.Get_stim_object( side );
+            return FindName( object_to_name );
+        }
+
+
+        // get the name of the stimulus, which is also the name of the texture
+        private string FindName( GameObject object_to_name ) {
+
+            Renderer Renderer_in_object = object_to_name.GetComponentInChildren<Renderer>();
+            Transform Parent = object_to_name.transform.parent;
+
+            if( Renderer_in_object ) {
+                return Renderer_in_object.material.mainTexture.name;
+            } else if( Parent ) {
+                Renderer Renderer_in_parent = Parent.gameObject.GetComponentInChildren<Renderer>();
+                if( Renderer_in_parent ) {
+                    return Renderer_in_parent.material.mainTexture.name;
+                }
             }
 
-            if( GameObject.FindGameObjectWithTag( side ).GetComponent<SpriteRenderer>() !=
-                null ) { // /!\ Might need a more straightforward implemantation /!\
-                return GameObject.FindGameObjectWithTag(
-                           side ).GetComponent<SpriteRenderer>().sprite.name; // get the name of the stimulus, which is the name of the sprite
+            if( object_to_name.GetComponent<SpriteRenderer>() ) {
+                return object_to_name.GetComponent<SpriteRenderer>().sprite.name; // get the name of the stimulus, which is the name of the sprite
             }
 
             return string.Empty;
@@ -815,9 +935,9 @@ public class ConditionningRunner : MonoBehaviour
             }
             string Object;
             if( Edge_looked_at.transform.position.x > 0 ) {
-                Object = FindName( "Right" );
+                Object = FindName( "0,1000_0,0250_0,0000" );
             } else {
-                Object = FindName( "Left" );
+                Object = FindName( "-0,1000_0,0250_0,0000" );
             }
             data = Object + "_" + Edge_looked_at.name + ";" +
                    Edge_looked_at.transform.localPosition;

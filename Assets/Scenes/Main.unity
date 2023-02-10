@@ -2089,6 +2089,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Open Arena
       m_Image: {fileID: 0}
+    - m_Text: No Arena
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -7189,40 +7191,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChooseArena: {fileID: 197633763}
   ChooseShape: {fileID: 912714909}
-  StimulusLeft: {fileID: 1245081151797930, guid: ac4994093c28b4e408bb3ec70d024fcd,
-    type: 3}
-  StimulusRight: {fileID: 1162354935584064, guid: 144c63e19de3bc04e8e2d1a799e51153,
-    type: 3}
   OpenArena_Wall: {fileID: 3514400495162239984, guid: e5d4305f3f68c2845a60f885cc177032,
     type: 3}
   OpenArena_Floor: {fileID: 3965226786500956324, guid: 004501f4242283141a9a95e19fa1f69c,
     type: 3}
-  Stimulus3DLeft: {fileID: 1887508501120864, guid: 81573c92f9694244ea6f63e09897a7ed,
+  Stimulus2D: {fileID: 6869105165918953874, guid: 28d949818418956409a2e4311378e2e7,
     type: 3}
-  Stimulus3DRight: {fileID: 1251058846189226, guid: 3ef795f32a1cbb84388ecd3256f63fb8,
+  Stimulus3D_Cube: {fileID: 7551771299999761014, guid: 790a053869847524a8ecc6ef1ece73ba,
     type: 3}
-  Stimulus3DLeft_Cylinder: {fileID: 1790918762041821799, guid: 0e762eefc05e6974d879ff5ce3012da4,
+  Stimulus3D_Cylinder: {fileID: 4106790647982139113, guid: 472350127df271b42871d1c1662e5323,
     type: 3}
-  Stimulus3DRight_Cylinder: {fileID: 4460565912299603383, guid: 7e96c1a05e101ec4da967fb4e0a932c2,
-    type: 3}
-  Stimulus3DCenter: {fileID: 4707376792450533710, guid: 314674760aac84047bce4f2d42dcae4d,
-    type: 3}
-  Stimulus3DCenter_Cylinder: {fileID: 28458718089223676, guid: 903d141cc615ba049836a38d6b96e07c,
-    type: 3}
-  Stimulus2DLeft: {fileID: 7229617801181163220, guid: d0890fc731f1ad147ad3b828d2456806,
-    type: 3}
-  Stimulus2DRight: {fileID: 7571373151571796139, guid: 3b057822a1d1ad847a56b3cbb52403f8,
-    type: 3}
-  StimulusSpriteLeft: {fileID: 2014832224913581918, guid: 73482185736aa8343ab1341f5dd99571,
-    type: 3}
-  StimulusSpriteRight: {fileID: 1601638631575655520, guid: 5579f97269a07734482b584006462874,
-    type: 3}
-  StimulusSpriteCenter: {fileID: 2456833516840300646, guid: 705b1a5fd6bfb9442848e636c35054d6,
+  StimulusSprite: {fileID: 4944357045989466689, guid: 0a5d6d5a40ca9ee49886e95542cb2f7a,
     type: 3}
   Teleporter_Left: {fileID: 7123910882606171637, guid: e2bc8564f2519d140afada6b4b255c85,
     type: 3}
   Teleporter_Right: {fileID: 2450748664542312359, guid: ac6a33d5c157d9a4da537971f82973be,
     type: 3}
+  Stim_Objects: []
   Plane_BackGround: {fileID: 7796205048892716156, guid: e936e45b86a2661488184750785aa788,
     type: 3}
   Xpmanager: {fileID: 1993972322}
