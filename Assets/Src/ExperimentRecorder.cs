@@ -106,8 +106,8 @@ public class ExperimentRecorder : MonoBehaviour
                               +
                               Conditionner.a.ToString( Inv_C ) + ";" +
                               Chrono.ToString( Inv_C ) + ";" +
-                              Translation.position.x.ToString( Inv_C )
-                              + ";" + Translation.position.z.ToString(
+                              (-Translation.position.x).ToString( Inv_C )
+                              + ";" + (-Translation.position).z.ToString(
                                   Inv_C ) + ";" +
                               Rotation.rotation.eulerAngles.y.ToString(
                                   Inv_C ) + ";" +
