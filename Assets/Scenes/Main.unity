@@ -1875,6 +1875,21 @@ PrefabInstance:
       propertyPath: m_TargetDisplay
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7821619756254870113, guid: 9417a05f06ad45c45965f3a5f3b92b98,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.y
+      value: 0.962963
+      objectReference: {fileID: 0}
+    - target: {fileID: 7821619756254870113, guid: 9417a05f06ad45c45965f3a5f3b92b98,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.width
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7821619756254870113, guid: 9417a05f06ad45c45965f3a5f3b92b98,
+        type: 3}
+      propertyPath: m_NormalizedViewPortRect.height
+      value: 0.037037037
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9417a05f06ad45c45965f3a5f3b92b98, type: 3}
 --- !u!1 &176149798
@@ -3164,7 +3179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &338327804
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -18660,7 +18675,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1572881027
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -22462,7 +22477,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &1901577455
 MeshRenderer:
   m_ObjectHideFlags: 0
