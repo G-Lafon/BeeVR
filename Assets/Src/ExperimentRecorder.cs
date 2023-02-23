@@ -24,6 +24,9 @@ public class ExperimentRecorder : MonoBehaviour
 
         private ConditionningRunner Conditionner;
 
+        private Transform Translation;
+        private Transform Rotation;
+
         // Use this for initialization
         void Start() {
             BeeID.text = ID.ToString(); //get Bee ID
@@ -32,6 +35,9 @@ public class ExperimentRecorder : MonoBehaviour
 
             Ex_Name.text = "Results"; //default name for result text file
             Conditionner = gameObject.GetComponent<ConditionningRunner>();
+
+            Rotation = transform.GetChild( 0 );
+            Translation = Rotation.GetChild( 0 );
         }
 
         public void Browse() {
@@ -100,10 +106,10 @@ public class ExperimentRecorder : MonoBehaviour
                               +
                               Conditionner.a.ToString( Inv_C ) + ";" +
                               Chrono.ToString( Inv_C ) + ";" +
-                              gameObject.transform.position.x.ToString( Inv_C )
-                              + ";" + gameObject.transform.position.z.ToString(
+                              Translation.position.x.ToString( Inv_C )
+                              + ";" + Translation.position.z.ToString(
                                   Inv_C ) + ";" +
-                              gameObject.transform.rotation.eulerAngles.y.ToString(
+                              Rotation.rotation.eulerAngles.y.ToString(
                                   Inv_C ) + ";" +
                               Conditionner.Dist.ToString( Inv_C ) + ";" +
                               Conditionner.Speed.ToString( Inv_C ) +

@@ -161,8 +161,8 @@ public class Timer
 public class ConditionningRunner : MonoBehaviour
 {
 
-        static Vector3[] LEFT_RIGHT = new Vector3[] { new Vector3( -0.1f, 0.025f, 0 ), new Vector3( 0.1f, 0.025f, 0 ) };
-        static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
+        static Vector3[] LEFT_RIGHT = new Vector3[] { new Vector3( -0.1f, 0, 0.18f ), new Vector3( 0.1f, 0, 0.18f ) };
+        static Vector3 CENTER = new Vector3( 0, 0, 0.18f );
 
 
         public bool ChoiceIsMade = false; // If the Bee made a choice eg. went to one of the stimuli
@@ -286,13 +286,13 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         public bool bee_can_move() {
-            return gameObject.GetComponent<CharacterController>().enabled;
+            return GetComponentInChildren<CharacterController>().enabled;
         }
 
         private void Prep_phase_action_on() {
             if( Xpmanager.Experiment_data.selGridConcept[Line] > 0 ) {
                 Spawn_Stim( CENTER );
-                gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+                GetComponentInChildren<CharacterController>().enabled = true; // enables movement of the bee
                 if( Check_choice() ) {
                     Reset_Choice();
                     Prep_phase_action_off();
@@ -328,11 +328,11 @@ public class ConditionningRunner : MonoBehaviour
             } else {
                 Spawn_Stim( LEFT_RIGHT );
             }
-            gameObject.GetComponent<CharacterController>().enabled = true; // enables movement of the bee
+            GetComponentInChildren<CharacterController>().enabled = true; // enables movement of the bee
         }
 
         private void US_action_on() {
-            gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+            GetComponentInChildren<CharacterController>().enabled = false; // disable movement of the bee
             transform.position = Stay; // stuck position
         }
 
@@ -421,7 +421,7 @@ public class ConditionningRunner : MonoBehaviour
             transform.position = Stand; // stuck to initial position
             transform.rotation = look; // stuck to initial rotation
 
-            gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+            GetComponentInChildren<CharacterController>().enabled = false; // disable movement of the bee
         }
 
         private void ToggleFullScreenStim( bool On = false ) {
@@ -533,9 +533,9 @@ public class ConditionningRunner : MonoBehaviour
         private void Set_stims() {
             //updates sides of the stimuli\\
             string stim_one = Xpmanager.Experiment_data.Sequences[Line][a - 1];
-            arenaManager.ApplyTexture( "0,0000_0,0250_0,0000", PrepPhase_Stim );
-            arenaManager.ApplyTexture( "0,1000_0,0250_0,0000", stim_one );
-            arenaManager.ApplyTexture( "-0,1000_0,0250_0,0000",
+            arenaManager.ApplyTexture("0,0000_0,0000_0,1800", PrepPhase_Stim );
+            arenaManager.ApplyTexture("0,1000_0,0000_0,1800", stim_one );
+            arenaManager.ApplyTexture("-0,1000_0,0000_0,1800",
                                        Xpmanager.Experiment_data.pick_opposite_stim( stim_one, Line ) );
         }
 
@@ -638,7 +638,7 @@ public class ConditionningRunner : MonoBehaviour
                 IN_latency.text = latency.ToString();
                 Waiting = false;
 
-                gameObject.GetComponent<CharacterController>().enabled = false; // disable movement of the bee
+                GetComponentInChildren<CharacterController>().enabled = false; // disable movement of the bee
                 transform.position = Stand; // move position to initial
                 transform.rotation = look; // rotate to initial orientation
 

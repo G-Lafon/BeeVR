@@ -62,6 +62,7 @@ public class walking : MonoBehaviour
         Rect windowRect1 = new Rect( Screen.width / 2, Screen.height / 2, Screen.width / 3.5f,
                                      Screen.height / 2 );
 
+        private Transform World_rotation;
 
         void GetMice() {
             //set detector 1
@@ -94,15 +95,17 @@ public class walking : MonoBehaviour
             YDelta = new float[2];
             XDelta = new float[2];
 
-            BeeController = GetComponent<CharacterController>();
+            BeeController = GetComponentInChildren<CharacterController>();
             BeeController.minMoveDistance = 0;
+
+            World_rotation = transform.GetChild( 0 );
 
             INBallRadius.text = 2.45.ToString(
                                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
             INMouseDPI.text = 1000.ToString(); // initialize mouse DPI to 1000dpi
 
-            INXsensitivity.text = (-1).ToString(); 
-            INYSensitivity.text = (-1).ToString(); // -1 because bee is on the other side of the screen
+            INXsensitivity.text = ( 1 ).ToString();
+            INYSensitivity.text = ( 1 ).ToString(); // -1 because bee is on the other side of the screen
 
             position_teleporter();
 
@@ -152,7 +155,7 @@ public class walking : MonoBehaviour
                 BeeController.Move( Move * 0.01f );
 
                 if( !gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
-                    transform.Rotate( 0, RotationY * float.Parse( INXsensitivity.text ), 0 );
+                    World_rotation.Rotate( 0, RotationY * float.Parse( INXsensitivity.text ), 0 );
                 }
 
             }

@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 81474236605460736}
   - component: {fileID: 23270982689705478}
   - component: {fileID: 33898051433161206}
-  - component: {fileID: 143622500968676090}
   - component: {fileID: 114927297705362524}
   - component: {fileID: 114231484636407250}
   - component: {fileID: 82077773740364932}
+  - component: {fileID: 1804771407154186659}
   m_Layer: 0
   m_Name: BeeView
   m_TagString: Untagged
@@ -32,8 +32,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770489954803446}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.017905, z: -0.0995}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -50,9 +51,10 @@ Camera:
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -71,7 +73,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 1
+  m_TargetDisplay: 7
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
@@ -99,9 +101,12 @@ MeshRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 0
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -113,6 +118,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -125,6 +131,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &33898051433161206
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -133,24 +140,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770489954803446}
   m_Mesh: {fileID: 4300002, guid: 86456f5fb41ee5846aef1887bb83108a, type: 3}
---- !u!143 &143622500968676090
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1770489954803446}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 0.01
-  m_Radius: 0.0109
-  m_SlopeLimit: 45
-  m_StepOffset: 0.01
-  m_SkinWidth: 0.002
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114927297705362524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,9 +161,11 @@ MonoBehaviour:
   Distance: {fileID: 0}
   RotationY: 0
   Move: {x: 0, y: 0, z: 0}
+  World_Controller: {fileID: 0}
   SideMove: 1
   line: {fileID: 0}
   dist: 16
+  World_rotation: {fileID: 0}
 --- !u!114 &114231484636407250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,22 +180,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChoiceIsMade: 0
   Choice: 
+  Side_Chosen: 
+  CS_Chosen: 
   Side: 
   Centered_object: 
   Object_looked_at: 
+  Side_looked_at: 
   Edge_looked_at: {fileID: 0}
   Go: 0
   arenaManager: {fileID: 0}
+  PrepPhase_Stim: 
   IN_latency: {fileID: 0}
   Dist: 0
   Speed: 0
   Line: 0
   a: 0
+  PREPTIME: {fileID: 0}
+  EXTRA_PRETIME: {fileID: 0}
   CSSTART: {fileID: 0}
   CSSTOP: {fileID: 0}
   US: {fileID: 0}
   where: {fileID: 0}
   what: {fileID: 0}
+  CSp: {fileID: 0}
   bell: {fileID: 0}
   Reload: {fileID: 0}
   BeeDone: 0
@@ -214,6 +212,7 @@ MonoBehaviour:
   screenText: {fileID: 0}
   IN_port_name: {fileID: 0}
   IN_conection_status: {fileID: 0}
+  World_controller: {fileID: 0}
 --- !u!82 &82077773740364932
 AudioSource:
   m_ObjectHideFlags: 0
@@ -310,3 +309,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1804771407154186659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770489954803446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
