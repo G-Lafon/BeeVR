@@ -262,7 +262,7 @@ public class ConditionningRunner : MonoBehaviour
         void Start() {
 
             Reset_Choice();
-            latency = 10;
+            latency = 0;
             Tmp_latency = latency;
             IN_latency.text = latency.ToString();
 
