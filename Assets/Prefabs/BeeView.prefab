@@ -13,11 +13,12 @@ GameObject:
   - component: {fileID: 81474236605460736}
   - component: {fileID: 23270982689705478}
   - component: {fileID: 33898051433161206}
+  - component: {fileID: 8815014052781497503}
   - component: {fileID: 114927297705362524}
   - component: {fileID: 114231484636407250}
   - component: {fileID: 82077773740364932}
   - component: {fileID: 1804771407154186659}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BeeView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +141,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770489954803446}
   m_Mesh: {fileID: 4300002, guid: 86456f5fb41ee5846aef1887bb83108a, type: 3}
+--- !u!64 &8815014052781497503
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770489954803446}
+  m_Material: {fileID: 13400000, guid: b2be97560ae7ba64ca6811cf914712ec, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300002, guid: 86456f5fb41ee5846aef1887bb83108a, type: 3}
 --- !u!114 &114927297705362524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,11 +176,9 @@ MonoBehaviour:
   Distance: {fileID: 0}
   RotationY: 0
   Move: {x: 0, y: 0, z: 0}
-  World_Controller: {fileID: 0}
   SideMove: 1
   line: {fileID: 0}
   dist: 16
-  World_rotation: {fileID: 0}
 --- !u!114 &114231484636407250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +225,6 @@ MonoBehaviour:
   screenText: {fileID: 0}
   IN_port_name: {fileID: 0}
   IN_conection_status: {fileID: 0}
-  World_controller: {fileID: 0}
 --- !u!82 &82077773740364932
 AudioSource:
   m_ObjectHideFlags: 0

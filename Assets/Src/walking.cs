@@ -44,7 +44,7 @@ public class walking : MonoBehaviour
 
         private bool Show_Mice_Select_Window = true; // display or not window to select detectors
 
-        private CharacterController BeeController;
+        public CharacterController World_Controller;
 
         public bool SideMove = false;
 
@@ -62,7 +62,7 @@ public class walking : MonoBehaviour
         Rect windowRect1 = new Rect( Screen.width / 2, Screen.height / 2, Screen.width / 3.5f,
                                      Screen.height / 2 );
 
-        private Transform World_rotation;
+        public Transform World_rotation;
 
         void GetMice() {
             //set detector 1
@@ -95,10 +95,7 @@ public class walking : MonoBehaviour
             YDelta = new float[2];
             XDelta = new float[2];
 
-            BeeController = GetComponentInChildren<CharacterController>();
-            BeeController.minMoveDistance = 0;
-
-            World_rotation = transform.GetChild( 0 );
+            World_Controller.minMoveDistance = 0;
 
             INBallRadius.text = 2.45.ToString(
                                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat ); // initialize ball radius to 5cm
@@ -151,8 +148,8 @@ public class walking : MonoBehaviour
                 }
             }
 
-            if( BeeController.enabled == true ) {
-                BeeController.Move( Move * 0.01f );
+            if( World_Controller.enabled == true ) {
+                World_Controller.Move( Move * 0.01f );
 
                 if( !gameObject.GetComponent<ExperimentManager>().Experiment_data.is_2D ) {
                     World_rotation.Rotate( 0, RotationY * float.Parse( INXsensitivity.text ), 0 );
@@ -173,19 +170,16 @@ public class walking : MonoBehaviour
                 Heading.text = transform.rotation.eulerAngles.y.ToString(
                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
             }
-            //Raycasting and display of line of sight
-            var layerMask = ~( ( 1 << 2 ) | ( 1 << 5 ) );
 
-
-
-            Physics.Raycast( transform.position, transform.forward, out hit, 50, layerMask );
+            Physics.Raycast( transform.position, transform.forward, out hit, 50,
+                             LayerMask.GetMask( "Center" ) );
             Physics.Raycast( transform.position, transform.forward, out looking, 50,
                              LayerMask.GetMask( "Ignore Raycast" ) );
             Physics.Raycast( transform.position, transform.forward, out edge_ray, 50,
                              LayerMask.GetMask( "Edge" ) );
 
-            if( edge_ray.collider != null ) {
-                raycast_line_dist = edge_ray.distance;
+            if( hit.collider != null ) {
+                raycast_line_dist = hit.distance;
             } else {
                 raycast_line_dist = 50;
             }

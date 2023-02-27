@@ -24,8 +24,8 @@ public class ExperimentRecorder : MonoBehaviour
 
         private ConditionningRunner Conditionner;
 
-        private Transform Translation;
-        private Transform Rotation;
+        public Transform Translation;
+        public Transform Rotation;
 
         // Use this for initialization
         void Start() {
@@ -35,9 +35,6 @@ public class ExperimentRecorder : MonoBehaviour
 
             Ex_Name.text = "Results"; //default name for result text file
             Conditionner = gameObject.GetComponent<ConditionningRunner>();
-
-            Rotation = transform.GetChild( 0 );
-            Translation = Rotation.GetChild( 0 );
         }
 
         public void Browse() {

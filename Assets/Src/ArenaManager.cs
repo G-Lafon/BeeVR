@@ -40,7 +40,7 @@ public class ArenaManager : MonoBehaviour
         public ExperimentManager Xpmanager;
 
         public GameObject bee; // The bee object wuith the camera and character controller
-        private Transform World;
+        public Transform World;
 
         public InputField INScale; // scale of the image to put in the 2D stuimulus in pixel/m
 
@@ -112,8 +112,6 @@ public class ArenaManager : MonoBehaviour
             Stim_Objects = new List<GameObject> { };
 
             Forest = new Dictionary<Vector3, GameObject> { };
-
-            World = bee.transform.GetChild( 0 ).GetChild( 0 );
 
             Init_grid();
         }
