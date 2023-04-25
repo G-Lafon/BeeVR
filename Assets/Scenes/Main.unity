@@ -22476,6 +22476,11 @@ PrefabInstance:
       objectReference: {fileID: 848178240}
     - target: {fileID: 114231484636407250, guid: f81c4d7a4cbdfb24e8da9814932dc770,
         type: 3}
+      propertyPath: Rotation
+      value: 
+      objectReference: {fileID: 428329997}
+    - target: {fileID: 114231484636407250, guid: f81c4d7a4cbdfb24e8da9814932dc770,
+        type: 3}
       propertyPath: BeeScreen
       value: 
       objectReference: {fileID: 342202980}
@@ -22494,6 +22499,11 @@ PrefabInstance:
       propertyPath: screenText
       value: 
       objectReference: {fileID: 8400000, guid: d359d7a9c24da1a469879371323cb78c, type: 2}
+    - target: {fileID: 114231484636407250, guid: f81c4d7a4cbdfb24e8da9814932dc770,
+        type: 3}
+      propertyPath: Translation
+      value: 
+      objectReference: {fileID: 447326791}
     - target: {fileID: 114231484636407250, guid: f81c4d7a4cbdfb24e8da9814932dc770,
         type: 3}
       propertyPath: IN_port_name

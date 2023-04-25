@@ -190,7 +190,6 @@ public class ConditionningRunner : MonoBehaviour
         private Timer Trial_timer;// duration of the trial
         private Timer US_Timer;// Amount of time to give the US
 
-        private bool Stim_On = false;
         private int Repetition; // numbre of repetition of the line
         private int Test; // Is the line a test or not
         private int PreTest; // Is the line a Pretest or not
@@ -338,16 +337,19 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Trial_action_on() {
-            Dist += Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
-                                           2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) );
 
-            Speed = Mathf.Sqrt( Mathf.Pow( gameObject.transform.position.x - Tmp_X,
-                                           2 ) + Mathf.Pow( gameObject.transform.position.z - Tmp_Z, 2 ) ) / Time.deltaTime;
+            float pos_x = -World_controller.transform.localPosition.x;
+            float pos_z = -World_controller.transform.localPosition.z;
+
+            Dist += Mathf.Sqrt( Mathf.Pow( pos_x - Tmp_X, 2 ) + Mathf.Pow( pos_z - Tmp_Z, 2 ) );
+
+            Speed = Mathf.Sqrt( Mathf.Pow( pos_x - Tmp_X, 2 ) + Mathf.Pow( pos_z - Tmp_Z,
+                                2 ) ) / Time.deltaTime;
 
             gameObject.GetComponent<walking>().Distance.text = ( Dist * 100 ).ToString();
 
-            Tmp_X = gameObject.transform.position.x;
-            Tmp_Z = gameObject.transform.position.z;
+            Tmp_X = pos_x;
+            Tmp_Z = pos_z;
 
             if( Check_choice() ) {
                 bool is_ignored = Xpmanager.Experiment_data.Textures_to_ignore.Contains( Centered_object );
@@ -500,8 +502,6 @@ public class ConditionningRunner : MonoBehaviour
                     }
                 }
             }
-
-            Stim_On = show;
         }
 
         private void Set_values( bool startup = false ) {
