@@ -96,6 +96,8 @@ public class ExperimentRecorder : MonoBehaviour
         }
 
         public void Record_data_point() {
+
+        Debug.Log("pos : "+Translation.position.ToString()+ " loc : " + Translation.localPosition.ToString() );
             if( sw != null ) {
                 System.Globalization.CultureInfo Inv_C = System.Globalization.CultureInfo.InvariantCulture;
 
@@ -103,8 +105,8 @@ public class ExperimentRecorder : MonoBehaviour
                               +
                               Conditionner.a.ToString( Inv_C ) + ";" +
                               Chrono.ToString( Inv_C ) + ";" +
-                              (-Translation.position.x).ToString( Inv_C )
-                              + ";" + (-Translation.position).z.ToString(
+                              (-Translation.localPosition.x).ToString( Inv_C )
+                              + ";" + (-Translation.localPosition.z).ToString(
                                   Inv_C ) + ";" +
                               Rotation.rotation.eulerAngles.y.ToString(
                                   Inv_C ) + ";" +

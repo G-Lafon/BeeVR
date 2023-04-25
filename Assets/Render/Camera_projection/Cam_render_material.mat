@@ -26,7 +26,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_f43fe50661b24a42bbaff4fa38b269bd:
-        m_Texture: {fileID: 2800000, guid: bda121cd4fae1554d9818343b5257503, type: 3}
+        m_Texture: {fileID: 2800000, guid: cb6cdd358ecb8f44e8f2c6ac5c828014, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
