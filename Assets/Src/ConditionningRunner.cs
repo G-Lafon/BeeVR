@@ -169,7 +169,6 @@ public class ConditionningRunner : MonoBehaviour
         public string Choice; // choice made by the bee, gets wrote down in the txt file results
         public string Side_Chosen;
         public string CS_Chosen;
-        private string Side_Centered;
         public string Centered_object;
         public string Object_looked_at;
         public string Side_looked_at;
@@ -214,10 +213,6 @@ public class ConditionningRunner : MonoBehaviour
 
         private Vector3 Stay; // position of the bee when it enter the stimuli area
 
-        private Quaternion look; // the initial orientation
-        private Vector3 Stand; // the initial position
-
-
         public InputField PREPTIME; // Inputfield to display duration of the prep phase
         public InputField EXTRA_PRETIME;
         public InputField CSSTART; // Inputfield to display delay before CS
@@ -257,6 +252,8 @@ public class ConditionningRunner : MonoBehaviour
         private ExperimentManager Xpmanager;
 
         public CharacterController World_controller;
+
+        public Transform World_rotation;
 
         // Use this for initialization
         void Start() {
@@ -409,8 +406,8 @@ public class ConditionningRunner : MonoBehaviour
 
                 if( Line >= int.Parse( Xpmanager.INTestNb.text ) - 1 &&
                     a > Repetition ) { // if experiment finished
-                    transform.position = Stand; // move position to initial
-                    transform.rotation = look; // rotate to initial orientation
+                    World_controller.transform.position = Vector3.zero; // move position to initial
+                    World_rotation.rotation = Quaternion.identity; // rotate to initial orientation
 
                     BeeDone = true;
                     Stop();// stops the experiment
@@ -421,8 +418,9 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Stick_the_bee() {
-            transform.position = Stand; // stuck to initial position
-            transform.rotation = look; // stuck to initial rotation
+            World_controller.transform.position = Vector3.zero; // stuck to initial position
+            World_rotation.rotation = Quaternion.identity; // stuck to initial rotation
+
 
             World_controller.enabled = false; // disable movement of the bee
         }
@@ -585,8 +583,9 @@ public class ConditionningRunner : MonoBehaviour
             // Despawn CS
             arenaManager.Clear_Shape();
 
-            transform.position = Stand; // move position to initial
-            transform.rotation = look; // rotate to initial orientation
+            World_controller.transform.position = Vector3.zero; // move position to initial
+            World_rotation.rotation = Quaternion.identity; // rotate to initial orientation
+
 
             Tmp_X = gameObject.transform.position.x;
             Tmp_Z = gameObject.transform.position.z;
@@ -640,8 +639,8 @@ public class ConditionningRunner : MonoBehaviour
                 Waiting = false;
 
                 World_controller.enabled = false; // disable movement of the bee
-                transform.position = Stand; // move position to initial
-                transform.rotation = look; // rotate to initial orientation
+                World_controller.transform.position = Vector3.zero; // move position to initial
+                World_rotation.rotation = Quaternion.identity; // rotate to initial orientation
 
                 ToggleFullScreenStim( false );
                 arenaManager.Clear_Shape();
@@ -674,8 +673,6 @@ public class ConditionningRunner : MonoBehaviour
 
             Butt_Power.interactable =
                 false;// Power button is engaged, can't be re-click while experiment is running
-            look = transform.rotation; // gets initial rotation
-            Stand = transform.position; // gets initial position
 
             latency = float.Parse( IN_latency.text );//latency before real start of XP
             Tmp_latency = latency;// Latency timer to be decremented each cycle
@@ -744,7 +741,6 @@ public class ConditionningRunner : MonoBehaviour
         private bool Check_choice() {
             Collider hit_coll = gameObject.GetComponent<walking>().hit.collider;
             if( hit_coll != null && hit_coll.name.Split( ' ' ).Length > 1 ) {
-                Side_Centered = gameObject.GetComponent<walking>().hit.collider.name.Split( ' ' ).Last();
                 Centered_object = FindName( gameObject.GetComponent<walking>().hit.collider.gameObject );
 
                 if( Is_close_enough( hit_coll.transform.position ) ) {
@@ -752,7 +748,6 @@ public class ConditionningRunner : MonoBehaviour
                 }
 
             } else {
-                Side_Centered = "Wall";
                 Centered_object = "Wall";
             }
 
@@ -843,7 +838,6 @@ public class ConditionningRunner : MonoBehaviour
             Choice = "None"; // reset the choice to none
             Side_Chosen = "None";
             CS_Chosen = "None";
-            Side_Centered = "Wall";
             Centered_object = "Wall";
             Side_looked_at = "None";
             Object_looked_at = "None";
