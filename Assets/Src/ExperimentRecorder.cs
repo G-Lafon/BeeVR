@@ -24,6 +24,9 @@ public class ExperimentRecorder : MonoBehaviour
 
         private ConditionningRunner Conditionner;
 
+        public Transform Translation;
+        public Transform Rotation;
+
         // Use this for initialization
         void Start() {
             BeeID.text = ID.ToString(); //get Bee ID
@@ -93,6 +96,8 @@ public class ExperimentRecorder : MonoBehaviour
         }
 
         public void Record_data_point() {
+
+        Debug.Log("pos : "+Translation.position.ToString()+ " loc : " + Translation.localPosition.ToString() );
             if( sw != null ) {
                 System.Globalization.CultureInfo Inv_C = System.Globalization.CultureInfo.InvariantCulture;
 
@@ -100,10 +105,10 @@ public class ExperimentRecorder : MonoBehaviour
                               +
                               Conditionner.a.ToString( Inv_C ) + ";" +
                               Chrono.ToString( Inv_C ) + ";" +
-                              gameObject.transform.position.x.ToString( Inv_C )
-                              + ";" + gameObject.transform.position.z.ToString(
+                              (-Translation.localPosition.x).ToString( Inv_C )
+                              + ";" + (-Translation.localPosition.z).ToString(
                                   Inv_C ) + ";" +
-                              gameObject.transform.rotation.eulerAngles.y.ToString(
+                              Rotation.rotation.eulerAngles.y.ToString(
                                   Inv_C ) + ";" +
                               Conditionner.Dist.ToString( Inv_C ) + ";" +
                               Conditionner.Speed.ToString( Inv_C ) +

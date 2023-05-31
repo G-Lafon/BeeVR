@@ -9,9 +9,9 @@ using SimpleFileBrowser;
 public class ArenaManager : MonoBehaviour
 {
 
-        static Vector3 LEFT = new Vector3( -0.1f, 0.025f, 0 );
-        static Vector3 RIGHT = new Vector3( 0.1f, 0.025f, 0 );
-        static Vector3 CENTER = new Vector3( 0, 0.025f, 0 );
+        static Vector3 LEFT = new Vector3( -0.1f, 0, 0.18f );
+        static Vector3 RIGHT = new Vector3( 0.1f, 0, 0.18f );
+        static Vector3 CENTER = new Vector3( 0, 0, 0.18f );
 
 
         public Dropdown ChooseArena; // dropdown list to choose Arena
@@ -40,6 +40,7 @@ public class ArenaManager : MonoBehaviour
         public ExperimentManager Xpmanager;
 
         public GameObject bee; // The bee object wuith the camera and character controller
+        public Transform World;
 
         public InputField INScale; // scale of the image to put in the 2D stuimulus in pixel/m
 
@@ -97,7 +98,7 @@ public class ArenaManager : MonoBehaviour
         // Use this for initialization
         void Start() {
             pos_Y = new Vector3( 0, 0.017905f, -0.095f );
-            pos_O = new Vector3( 0, 0.012905f, -0.189f );
+            pos_O = new Vector3( 0, 0, 0 );
             pos_C = new Vector3( 0, 0.013f, -0.38f );
 
             Edge_Scale.text = 0.1f.ToString( System.Globalization.CultureInfo.InvariantCulture.NumberFormat );
@@ -139,14 +140,15 @@ public class ArenaManager : MonoBehaviour
                     Clear_arena();
 
                     if( Xpmanager.Experiment_data.is_2D ) {
-                        Instantiate<GameObject>( Plane_BackGround );
-                        Instantiate<GameObject>( Teleporter_Left );
-                        Instantiate<GameObject>( Teleporter_Right );
+                        Instantiate<GameObject>( Plane_BackGround, CENTER, Quaternion.identity, World );
+                        Instantiate<GameObject>( Teleporter_Left, World );
+                        Instantiate<GameObject>( Teleporter_Right, World );
                         Get_Animate( "BackPlane" );
                     } else {
-                        GameObject wall = Instantiate<GameObject>( OpenArena_Wall ); // instantiate OpenArena
+                        GameObject wall = Instantiate<GameObject>( OpenArena_Wall, CENTER, Quaternion.identity,
+                                          World ); // instantiate OpenArena
                         Wall_and_Floor.Add( wall );
-                        GameObject floor = Instantiate<GameObject>( OpenArena_Floor );
+                        GameObject floor = Instantiate<GameObject>( OpenArena_Floor, CENTER, Quaternion.identity, World );
                         Wall_and_Floor.Add( floor );
                         Get_Animate( "Wall" );
                     }
@@ -159,9 +161,9 @@ public class ArenaManager : MonoBehaviour
                     Clear_arena();
 
                     if( Xpmanager.Experiment_data.is_2D ) {
-                        Instantiate<GameObject>( Plane_BackGround );
-                        Instantiate<GameObject>( Teleporter_Left );
-                        Instantiate<GameObject>( Teleporter_Right );
+                        Instantiate<GameObject>( Plane_BackGround, World );
+                        Instantiate<GameObject>( Teleporter_Left, World );
+                        Instantiate<GameObject>( Teleporter_Right, World );
                         Get_Animate( "BackPlane" );
                     }
 
@@ -188,18 +190,18 @@ public class ArenaManager : MonoBehaviour
             string ID = Pos_to_id( pos );
 
             if( Xpmanager.Experiment_data.is_2D ) {
-                new_stim = Instantiate<GameObject>( Stimulus2D, pos, Quaternion.identity );
+                new_stim = Instantiate<GameObject>( Stimulus2D, pos, Quaternion.identity, World );
             } else {
                 switch( ChooseShape.value ) {
                     case 0://cube
-                        new_stim = Instantiate<GameObject>( Stimulus3D_Cube, pos, Quaternion.identity );
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cube, pos, Quaternion.identity, World );
                         Set_edge_scale( new_stim );
                         break;
                     case 1://cylinder
-                        new_stim = Instantiate<GameObject>( Stimulus3D_Cylinder, pos, Quaternion.identity );
+                        new_stim = Instantiate<GameObject>( Stimulus3D_Cylinder, pos, Quaternion.identity, World );
                         break;
                     case 2://sprite
-                        new_stim = Instantiate<GameObject>( StimulusSprite, pos, Quaternion.identity );
+                        new_stim = Instantiate<GameObject>( StimulusSprite, pos, Quaternion.identity, World );
                         break;
                     default:
                         break;
