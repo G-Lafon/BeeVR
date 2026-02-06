@@ -56,7 +56,7 @@ public class AreaManager : MonoBehaviour
 
         private void Update() {
 
-            if( MySide == Bee.GetComponent<ConditionningRunner>().Side ) {
+            if( MySide == Bee.GetComponent<ConditionningRunner>().Side_looked_at ) {
                 color = Color.green;
             } else {
                 color = Color.grey;

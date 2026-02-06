@@ -8,7 +8,6 @@ public class DisplayManager : MonoBehaviour
 
         public Camera MainCamera;
         public Canvas Menu;
-        public Camera BeeCamera;
         public Camera ScreenCamera;
 
         public GameObject Screen;
@@ -18,9 +17,7 @@ public class DisplayManager : MonoBehaviour
 
         private bool a = false;
         public bool cali = false;
-
-        public Dropdown ChoseDisplay;
-
+    
         // Use this for initialization
         void Start() {
 
@@ -41,40 +38,6 @@ public class DisplayManager : MonoBehaviour
         public void StopCursor() {
             Cursor.visible = !Cursor.visible;
         }
-
-        public void ChangeCamera() {
-            ScreenCamera.targetDisplay = Display.displays.Length +
-                                         2; // switch the last camera selected to a non existent display
-            ScreenCamera.enabled = false;
-            switch( ChoseDisplay.value ) {
-                case 1:
-                    ScreenCamera = GetCamera( "Cylinder" );
-                    Screen = GetScreen( "Cylinder" );
-                    break;
-                case 2:
-                    ScreenCamera = GetCamera( "Flat" );
-                    Screen = GetScreen( "Flat" );
-                    break;
-                case 3:
-                    ScreenCamera = GetCamera( "Sphere" );
-                    Screen = GetScreen( "Sphere" );
-                    break;
-                default:
-                    break;
-            }
-            ScreenCamera.targetDisplay = 1;// put the selected camera on the second display
-            ScreenCamera.enabled = true;
-
-        }
-
-
-        Camera GetCamera( string target ) {
-            return GameObject.FindGameObjectWithTag( target ).GetComponentInChildren<Camera>();
-        }
-        GameObject GetScreen( string target ) {
-            return GameObject.FindGameObjectWithTag( target );
-        }
-
 
 
         private void OnGUI() {
