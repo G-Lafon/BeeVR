@@ -447,7 +447,7 @@ public class ConditionningRunner : MonoBehaviour
                 arenaManager.Spawn_shape( pos );
             }
             Set_stims();
-            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            arenaManager.On_scale_change();
             Stim( true );
         }
 
@@ -455,7 +455,7 @@ public class ConditionningRunner : MonoBehaviour
             arenaManager.Clear_Shape();
             arenaManager.Spawn_shape( pos );
             Set_stims();
-            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
+            arenaManager.On_scale_change();
             Stim( true );
         }
 

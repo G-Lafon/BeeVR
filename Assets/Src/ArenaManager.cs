@@ -94,8 +94,15 @@ public class ArenaManager : MonoBehaviour
                                      Screen.height / 2 );
         AnimateTiledTexture Animate;
 
-        // Use this for initialization
-        void Start() {
+        // Stims
+        public InputField Scale_X;
+        public InputField Scale_Z;
+        public InputField Scale_Y;
+
+        private Vector3 scale_stim;
+
+    // Use this for initialization
+    void Start() {
             pos_Y = new Vector3( 0, 0.017905f, -0.095f );
             pos_O = new Vector3( 0, 0.012905f, -0.189f );
             pos_C = new Vector3( 0, 0.013f, -0.38f );
@@ -111,6 +118,10 @@ public class ArenaManager : MonoBehaviour
             Stim_Objects = new List<GameObject> { };
 
             Forest = new Dictionary<Vector3, GameObject> { };
+
+            Scale_X.text = (0.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Scale_Y.text = (0.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Scale_Z.text = (0.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
 
             Init_grid();
         }
@@ -131,7 +142,41 @@ public class ArenaManager : MonoBehaviour
             }
         }
 
-        public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
+        private void Update_scale()
+        {
+            int num_of_object = Stim_Objects.Count;
+            if (num_of_object > 0)
+            {
+                // here we look at the last object because the first one might be slated for destruction
+                // destroy() only happen at the end of the loop
+                scale_stim.x = Stim_Objects[num_of_object - 1].transform.localScale.x;
+                scale_stim.y = Stim_Objects[num_of_object - 1].transform.localScale.y;
+                scale_stim.z = Stim_Objects[num_of_object - 1].transform.localScale.z;
+
+                Scale_X.text = scale_stim.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                Scale_Y.text = scale_stim.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                Scale_Z.text = scale_stim.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            }
+        }
+
+        public void On_scale_change()
+        {
+            Vector3 temp_scale = new Vector3(float.Parse(Scale_X.text,
+                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Scale_Y.text,
+                                                      System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Scale_Z.text,
+                                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+
+            scale_stim.x = temp_scale.x != 0.0f ? temp_scale.x : scale_stim.x;
+            scale_stim.y = temp_scale.y != 0.0f ? temp_scale.y : scale_stim.y;
+            scale_stim.z = temp_scale.z != 0.0f ? temp_scale.z : scale_stim.z;
+
+            for (int i = 0; i < Stim_Objects.Count; i++)
+            {
+                Stim_Objects[i].transform.localScale = scale_stim;
+            }
+        }
+
+    public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
 
 
             switch( ChooseArena.value ) {
@@ -212,6 +257,8 @@ public class ArenaManager : MonoBehaviour
                 }
                 Stim_Objects.Add( new_stim );
             }
+
+            Update_scale();
             return new_stim;
         }
 
