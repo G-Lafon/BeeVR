@@ -706,7 +706,7 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Looking_Timer2D() {
-            if( Side_looked_at != "None" ) {
+            if( Side_Centered != "Wall" ) {
                 Update_choices( Side_Centered );
             } else {
                 // We only want continuous time, if something else is centered the time is reset
