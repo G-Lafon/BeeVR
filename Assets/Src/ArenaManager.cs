@@ -268,6 +268,10 @@ public class ArenaManager : MonoBehaviour
                 }
                 Stim_Objects.Add( new_stim );
             }
+
+            On_scale_change();
+            On_pos_change();
+
             return new_stim;
         }
 

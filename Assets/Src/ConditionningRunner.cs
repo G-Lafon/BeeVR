@@ -447,7 +447,6 @@ public class ConditionningRunner : MonoBehaviour
                 arenaManager.Spawn_shape( pos );
             }
             Set_stims();
-            arenaManager.On_scale_change();
             Stim( true );
         }
 
@@ -455,7 +454,6 @@ public class ConditionningRunner : MonoBehaviour
             arenaManager.Clear_Shape();
             arenaManager.Spawn_shape( pos );
             Set_stims();
-            arenaManager.On_scale_change();
             Stim( true );
         }
 
