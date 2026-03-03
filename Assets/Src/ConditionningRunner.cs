@@ -351,7 +351,7 @@ public class ConditionningRunner : MonoBehaviour
             if( Check_choice() ) {
                 bool is_ignored = Xpmanager.Experiment_data.Textures_to_ignore.Contains( Centered_object );
                 if( Xpmanager.Experiment_data.is_2D ) {
-                    Make_Choice( Side_looked_at, is_ignored );
+                    Make_Choice( Side_Centered, is_ignored );
                 } else {
                     Make_Choice( Side, is_ignored );
                 }
@@ -447,7 +447,6 @@ public class ConditionningRunner : MonoBehaviour
                 arenaManager.Spawn_shape( pos );
             }
             Set_stims();
-            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
             Stim( true );
         }
 
@@ -455,7 +454,6 @@ public class ConditionningRunner : MonoBehaviour
             arenaManager.Clear_Shape();
             arenaManager.Spawn_shape( pos );
             Set_stims();
-            arenaManager.GetComponentInParent<Stim_Manager>().On_scale_change();
             Stim( true );
         }
 
@@ -706,8 +704,8 @@ public class ConditionningRunner : MonoBehaviour
         }
 
         private void Looking_Timer2D() {
-            if( Side_looked_at != "None" ) {
-                Update_choices( Side_looked_at );
+            if( Side_Centered != "Wall" ) {
+                Update_choices( Side_Centered );
             } else {
                 // We only want continuous time, if something else is centered the time is reset
                 Choices.ForEach( delegate( Inspected_object obj ) {

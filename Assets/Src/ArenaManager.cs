@@ -94,8 +94,17 @@ public class ArenaManager : MonoBehaviour
                                      Screen.height / 2 );
         AnimateTiledTexture Animate;
 
-        // Use this for initialization
-        void Start() {
+        // Stims
+        public InputField Scale_X;
+        public InputField Scale_Z;
+        public InputField Scale_Y;
+
+        public InputField Pos_X;
+        public InputField Pos_Z;
+        public InputField Pos_Y;
+
+    // Use this for initialization
+    void Start() {
             pos_Y = new Vector3( 0, 0.017905f, -0.095f );
             pos_O = new Vector3( 0, 0.012905f, -0.189f );
             pos_C = new Vector3( 0, 0.013f, -0.38f );
@@ -112,7 +121,15 @@ public class ArenaManager : MonoBehaviour
 
             Forest = new Dictionary<Vector3, GameObject> { };
 
-            Init_grid();
+            Scale_X.text = (1.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Scale_Y.text = (1.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Scale_Z.text = (1.0f).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+
+            Pos_X.text = RIGHT.x.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Pos_Y.text = RIGHT.y.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            Pos_Z.text = RIGHT.z.ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+
+        Init_grid();
         }
 
         private void Init_grid() {
@@ -131,7 +148,46 @@ public class ArenaManager : MonoBehaviour
             }
         }
 
-        public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
+        public void On_scale_change()
+        {
+            Vector3 temp_scale = new Vector3(float.Parse(Scale_X.text,
+                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Scale_Y.text,
+                                                      System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Scale_Z.text,
+                                                              System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+
+            for (int i = 0; i < Stim_Objects.Count; i++)
+            {
+                Vector3 curr_scale = Stim_Objects[i].transform.localScale;
+                Vector3 new_scale = temp_scale;
+
+                new_scale.x = temp_scale.x != 0.0f ? temp_scale.x : curr_scale.x;
+                new_scale.y = temp_scale.y != 0.0f ? temp_scale.y : curr_scale.y;
+                new_scale.z = temp_scale.z != 0.0f ? temp_scale.z : curr_scale.z;
+
+                Stim_Objects[i].transform.localScale = new_scale;
+            }
+        }
+
+        public void On_pos_change()
+            {
+                Vector3 temp_pos = new Vector3(float.Parse(Pos_X.text,
+                                                  System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Pos_Y.text,
+                                                          System.Globalization.CultureInfo.InvariantCulture.NumberFormat), float.Parse(Pos_Z.text,
+                                                                  System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
+
+                for (int i = 0; i < Stim_Objects.Count; i++)
+                {
+                    Vector3 curr_pos = Stim_Objects[i].transform.localPosition;
+                    Vector3 new_pos = temp_pos;
+                    if (curr_pos.x < 0)
+                    {
+                        new_pos.x = -temp_pos.x;
+                    }
+                    Stim_Objects[i].transform.SetLocalPositionAndRotation(new_pos, Quaternion.identity);
+                }
+            }
+
+    public void Spawn() { // instantiate the arena and the stimulus according to choice in ChooseArena
 
 
             switch( ChooseArena.value ) {
@@ -212,6 +268,10 @@ public class ArenaManager : MonoBehaviour
                 }
                 Stim_Objects.Add( new_stim );
             }
+
+            On_scale_change();
+            On_pos_change();
+
             return new_stim;
         }
 
